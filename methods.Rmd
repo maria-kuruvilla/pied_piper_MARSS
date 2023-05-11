@@ -1,0 +1,126 @@
+---
+title: "Methods"
+author: "Maria Kuruvilla"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data
+
+### Smolt trap data
+
+<!-- Rotatory screw traps, WDFW, dungeness,  -->
+
+Rotatry screw traps along with a variety of other techniques are used to monitor salmon smolts that migrate from their natal sites to the ocean. The smolts that are caught in the trap and enumerated and and recorded twice a day. In this paper, I have used data collected using a rotatory screw trap monitored by the Washington Department of Fish and Wildlife (WDFW) in the Dungeness river. To test the 'pied piper hypothesis' or the influence of hatchery salmon on the migration timing of wild salmon, we used a subset of the data of species with a hatchery program in the Dungeness river. Namely, we collated data representing Coho yearlings, Chinook subyearlings and yearlings, and Steelhead smolts. The hatchery fish are identified by the code wire tag, the adipose fin clipped or by their size when the fish are unmarked and unclipped (<10%). Since the salmon smolts caught in the trap are counted at a different time everyday and since the number of hours for which the trap is operating in the river varies everyday, we have taken the sum of the all the salmon smolts migrating on a given say to give a daily count along with the corresponding total number of hours for which the trap was operating that day. 
+
+
+### Environmental data
+
+To account for the effect of environmental variables that affect the migration of wild salmon, we collated environmental data from various websites.
+
+#### Temperature
+
+We collected temperature data for years 2005-2013 from the Washington Department of Ecology website. For the years 2014-2020, we used temperature data collected by a logger near the trap. However, data from 2015 was missing.
+
+#### Flow
+
+We collected flow data for the years 2005-2020 from the Washington Department of Ecology.
+
+#### Accumulated thermal units
+
+We calculated accumulated thermal units as the cumulative sum of the temperature experienced since Winter Solstice.
+
+
+
+## Analysis
+
+
+
+```{r packages, include=FALSE}
+#packages
+library(here)
+library(MARSS)
+library(tidyverse)
+library(ggplot2)
+library(zoo)
+```
+
+
+
+```{r data}
+data <- read.csv(here("data","dungeness_subset_covariates.csv"), header = TRUE)
+
+```
+
+
+Wrangling data for coho - I am leaving out 2015 data because I do not have temperature data for 2015. Since most of the migration for coho happens between day of year 100 and 200, I am filtering on day of year. I am converting 0's to NA and logging the rest of the data.
+
+```{r wrangle_data}
+
+coho <- arrange(data,doy) %>%
+  filter(year != 2015 & doy > 100 & doy <=200) %>%
+  mutate(log.value = ifelse(coho1_wild_num == 0, NA, log(coho1_wild_num))) %>%
+  select(log.value,year,doy) %>%
+  pivot_wider(names_from = year, values_from = log.value) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+
+```
+
+
+Wrangling covariate data - I am interpolating hatchery data to fill in the missing values. I am making a dataframe with interpolated hatchery values and temperature values.
+
+```{r covariates}
+data$coho1_hatchery_num_interpolate <- na.approx(data$coho1_hatchery_num)
+
+covariates_coho_hatchery_temp_all_years <- arrange(data,doy) %>%
+  filter(year != 2015 & doy > 100 & doy <=200) %>%
+  select(coho1_hatchery_num_interpolate,year,doy, temp) %>%
+  pivot_wider(names_from = year, values_from = c(coho1_hatchery_num_interpolate,temp)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+```
+
+
+```{r mod_list, cache = TRUE}
+mod.list.hatchery_temp_all_years <- list(
+  U = "unequal",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = matrix(list("h2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"h2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"h2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2007",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"h2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2008",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"h2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2009",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"h2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2010",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"h2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2011",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"h2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2012",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"h2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2013",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"h2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2014",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"h2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2016",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"h2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2017",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"h2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2018",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"h2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2019",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2020"),
+             15,30, byrow = TRUE),
+  c = covariates_coho_hatchery_temp_all_years
+)
+
+fit_temp_hatchery_all_years <- MARSS(coho, model = mod.list.hatchery_temp_all_years, method = "BFGS")
+
+```
+
+Plotting model diagnostics.
+```{r cache=TRUE, fig.width = 14, fig.height= 10}
+autoplot(fit_temp_hatchery_all_years)
+
+
+```
+
