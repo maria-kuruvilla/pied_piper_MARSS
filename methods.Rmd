@@ -15,8 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 <!-- Rotatory screw traps, WDFW, dungeness,  -->
 
-Rotatry screw traps along with a variety of other techniques are used to monitor salmon smolts that migrate from their natal sites to the ocean. The smolts that are caught in the trap and enumerated and and recorded twice a day. In this paper, I have used data collected using a rotatory screw trap monitored by the Washington Department of Fish and Wildlife (WDFW) in the Dungeness river. To test the 'pied piper hypothesis' or the influence of hatchery salmon on the migration timing of wild salmon, we used a subset of the data of species with a hatchery program in the Dungeness river. Namely, we collated data representing Coho yearlings, Chinook subyearlings and yearlings, and Steelhead smolts. The hatchery fish are identified by the code wire tag, the adipose fin clipped or by their size when the fish are unmarked and unclipped (<10%). Since the salmon smolts caught in the trap are counted at a different time everyday and since the number of hours for which the trap is operating in the river varies everyday, we have taken the sum of the all the salmon smolts migrating on a given say to give a daily count along with the corresponding total number of hours for which the trap was operating that day. 
-
+Rotatry screw traps along with a variety of other techniques are used to monitor salmon smolts that migrate from their natal sites to the ocean. The smolts that are caught in the trap and enumerated and and recorded twice a day. In this paper, I have used data collected using a rotatory screw trap monitored by the Washington Department of Fish and Wildlife (WDFW) in the Dungeness river. To test the 'pied piper hypothesis' or the influence of hatchery salmon on the migration timing of wild salmon, we used a subset of the data of species with a hatchery program in the Dungeness river. Namely, we collated data representing Coho yearlings, Chinook subyearlings and yearlings, and Steelhead smolts. The hatchery fish are identified by the code wire tag, the adipose fin clipped or by their size when the fish are unmarked and unclipped (\<10%). Since the salmon smolts caught in the trap are counted at a different time everyday and since the number of hours for which the trap is operating in the river varies everyday, we took the sum of the all the salmon smolts migrating on a given day to give a daily count along with the corresponding total number of hours for which the trap was operating that day.
 
 ### Environmental data
 
@@ -24,7 +23,7 @@ To account for the effect of environmental variables that affect the migration o
 
 #### Temperature
 
-We collected temperature data for years 2005-2013 from the Washington Department of Ecology website. For the years 2014-2020, we used temperature data collected by a logger near the trap. However, data from 2015 was missing.
+We collected temperature data for years 2005-2013 from the Washington Department of Ecology website <https://ecology.wa.gov/>. For the years 2014-2020, we used temperature data collected by a logger near the trap. However, data from 2015 was missing.
 
 #### Flow
 
@@ -32,11 +31,25 @@ We collected flow data for the years 2005-2020 from the Washington Department of
 
 #### Accumulated thermal units
 
-We calculated accumulated thermal units as the cumulative sum of the temperature experienced since Winter Solstice.
+We calculated 'accumulated thermal units solstice' for years 2005-2013 as the cumulative sum of the temperature experienced since Winter Solstice. For the rest of the years, we have temperature data only during migration season. Therefore, we calculated 'accumulated thermal units april' as the cumulative sum of the temperature experienced since April 1st.
 
+#### Photoperiod
 
+We calculated day light hours for a given day using <https://api.sunrise-sunset.org> for latitude 48.11591 and longitude -123.14318.
 
 ## Analysis
+
+We used the multivariate auto regressive state-space (MARSS) model to estimate the influence of the number of hatchery salmon in the river, and the different environmental variables on the number of wild salmon migrating. MARSS models have been used to analyse time series data that are auto correlated. In the MARSS framework, $y_t$ is used to describe the observed number of wild salmon at time t. 
+
+$$
+\begin{bmatrix}
+y_{2005} \\
+
+\vdots\\
+y_{2020}
+
+\end{bmatrix} = 
+$$
 
 
 
@@ -49,13 +62,10 @@ library(ggplot2)
 library(zoo)
 ```
 
-
-
 ```{r data}
 data <- read.csv(here("data","dungeness_subset_covariates.csv"), header = TRUE)
 
 ```
-
 
 Wrangling data for coho - I am leaving out 2015 data because I do not have temperature data for 2015. Since most of the migration for coho happens between day of year 100 and 200, I am filtering on day of year. I am converting 0's to NA and logging the rest of the data.
 
@@ -73,7 +83,6 @@ coho <- arrange(data,doy) %>%
 
 ```
 
-
 Wrangling covariate data - I am interpolating hatchery data to fill in the missing values. I am making a dataframe with interpolated hatchery values and temperature values.
 
 ```{r covariates}
@@ -87,7 +96,6 @@ covariates_coho_hatchery_temp_all_years <- arrange(data,doy) %>%
   as.matrix() %>%
   t()
 ```
-
 
 ```{r mod_list, cache = TRUE}
 mod.list.hatchery_temp_all_years <- list(
@@ -118,9 +126,52 @@ fit_temp_hatchery_all_years <- MARSS(coho, model = mod.list.hatchery_temp_all_ye
 ```
 
 Plotting model diagnostics.
+
 ```{r cache=TRUE, fig.width = 14, fig.height= 10}
 autoplot(fit_temp_hatchery_all_years)
 
 
 ```
 
+Now, I will add flow as a covariate in the model.
+
+```{r flow}
+covariates_coho_hatchery_temp_flow_all_years <- arrange(data,doy) %>%
+  filter(year != 2015 & doy > 100 & doy <=200) %>%
+  select(coho1_hatchery_num_interpolate,year,doy, temp, flow) %>%
+  pivot_wider(names_from = year, values_from = c(coho1_hatchery_num_interpolate,temp, flow)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+```
+
+Specifying the model framework:
+
+```{r mod_flow, cache = TRUE}
+mod.list.hatchery_temp_flow_all_years <- list(
+  U = "unequal",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = matrix(list(
+    "h2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,"h2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,"h2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2007",0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,"h2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2008",0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,"h2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2009",0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,"h2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2010",0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,"h2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2011",0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,"h2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2012",0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,"h2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2013",0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,"h2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2014",0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,"h2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2016",0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,"h2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2017",0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,"h2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2018",0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,"h2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2019",0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"t2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2020"),
+             15,45, byrow = TRUE),
+  c = covariates_coho_hatchery_temp_flow_all_years
+)
+
+fit_temp_hatchery_flow_all_years <- MARSS(coho, model = mod.list.hatchery_temp_flow_all_years, method = "BFGS")
+
+```
