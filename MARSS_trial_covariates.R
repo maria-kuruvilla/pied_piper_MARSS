@@ -227,3 +227,83 @@ AIC(fit_temp_all_years) #2608
 # the q matrix is usually accounting for the variance
 
 ##########
+
+#subset demean
+subset <- arrange(data,doy) %>%
+  filter(year >= 2005 & year < 2010 & doy > 100 & doy <=200) %>%
+  mutate(log.value = ifelse(coho1_wild_num == 0, NA, log(coho1_wild_num))) %>%
+  select(log.value,year,doy) %>%
+  pivot_wider(names_from = year, values_from = log.value) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:dim(subset)[1]){
+  subset[i,] = subset[i,] - mean(subset[i,], na.rm = TRUE)
+}
+
+covariates_temp_zscore <- arrange(data,doy) %>%
+  filter(year >= 2005 & year < 2010 & doy > 100 & doy <=200) %>%
+  mutate(temp_z = zscore(temp)) %>%
+  select(year,doy, temp_z) %>%
+  pivot_wider(names_from = year, values_from = temp_z) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+mod.list <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal"
+)
+
+fit <- MARSS(subset, model = mod.list, method = "BFGS")
+
+autoplot(fit)
+
+AIC(fit)
+
+mod.list_temp <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = "diagonal and unequal",
+  c = covariates_temp_zscore
+)
+
+fit_temp <- MARSS(subset, model = mod.list_temp, method = "BFGS")
+
+autoplot(fit_temp)
+
+AIC(fit_temp)
+
+
+covariates_temp_zscore_hatchery <- arrange(data,doy) %>%
+  filter(year >= 2005 & year < 2010 & doy > 100 & doy <=200) %>%
+  mutate(temp_z = zscore(temp)) %>%
+  select(year,doy, temp_z, coho1_hatchery_num_interpolate) %>%
+  pivot_wider(names_from = year, values_from = c(temp_z,coho1_hatchery_num_interpolate)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+mod.list_temp_hatchery <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C =  matrix(list("h2005",0,0,0,0,"t2005",0,0,0,0,
+                      0,"h2006",0,0,0,0,"t2006",0,0,0,
+                      0,0,"h2007",0,0,0,0,"t2007",0,0,
+                      0,0,0,"h2008",0,0,0,0,"t2008",0,
+                      0,0,0,0,"h2009",0,0,0,0,"t2009"
+                      ),
+                 5,10, byrow = TRUE),
+  c = covariates_temp_zscore_hatchery
+)
+fit_temp_hatchery <- MARSS(subset, model = mod.list_temp_hatchery, method = "BFGS")
+
+autoplot(fit_temp_hatchery)
+
+AIC(fit_temp_hatchery)
+
+

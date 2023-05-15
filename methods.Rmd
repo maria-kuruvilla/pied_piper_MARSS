@@ -3,11 +3,17 @@ title: "Methods"
 author: "Maria Kuruvilla"
 date: "`r Sys.Date()`"
 output: word_document
+bibliography: marss.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+## River
+
+The Dungeness River is a 28 mile river located in northwest part of Washington State. It originates in the Olympic mountains and drains into the Strait of Juan de Fuca. The Dungeness river is fed through melting snowpack from the Olympics as well as the rain. The lowest flows are in August-September whereas the highest temperature is around 15 degree Celsius in July-August. The Dungeness River supports five species of salmonids - Chinook, Coho, Chum, Pink, and Steelhead. There are multiple hatcheries that release Chinook, Coho and Steelhead salmon into the river at various stages. The Dungeness River hatchery, Gray Wolf, Hurd Creek, and Upper Dungeness hatchery are the main hatcheries on the Dungeness River.
+
 
 ## Data
 
@@ -27,7 +33,7 @@ We collected temperature data for years 2005-2013 from the Washington Department
 
 #### Flow
 
-We collected flow data for the years 2005-2020 from the Washington Department of Ecology.
+We collected flow data in cubic feet per second for the years 2005-2020 from the Washington Department of Ecology.
 
 #### Accumulated thermal units
 
@@ -39,18 +45,51 @@ We calculated day light hours for a given day using <https://api.sunrise-sunset.
 
 ## Analysis
 
-We used the multivariate auto regressive state-space (MARSS) model to estimate the influence of the number of hatchery salmon in the river, and the different environmental variables on the number of wild salmon migrating. MARSS models have been used to analyse time series data that are auto correlated. In the MARSS framework, $y_t$ is used to describe the observed number of wild salmon at time t. 
+We used the multivariate auto regressive state-space (MARSS) model to estimate the influence of the number of hatchery salmon in the river, and the different environmental variables on the number of wild salmon migrating [@hinrichsen_using_2009]. MARSS models have been used to analyse time series data that are auto correlated. In the MARSS framework, $y_t$ is used to describe the observed number of wild salmon at time t and $x_t$ represents the true number of wild salmon at time t. They are related by the following equations:
 
 $$
+\mathbf{y_t = Zx_t + a_t + Dd_t + v_t, v_t \sim MVN(}0,\mathbf{R)}
+$$ 
+
+
+
+$$
+\mathbf{x_t = Bx_{t-1} + u_t + Cc_t + w_t, w_t \sim MVN(}0,\mathbf{Q)}
+$$ 
+
+where $c_t$ are the covariates affecting the states, $C$ are the effects of the covariates $c_t$ on $x_t$, $d_t$ are the covariates affecting the observations, $D$ are the effects of the covariates on the observation.$w_t$ and $v_t$ are the normally distributed errors. $R$ is the variance-covariance matrix of the observation errors and $Q$ is the variance-covariance matrix of the process errors. We assume that the observations and states are independent between years. Therefore $Z$ and $B$ are identity matrices in our model. We assume that the observation errors are the same for all years. Therefore, $R$ is a diagonal matrix with all diagonal elements set to be equal. We assume the process errors to be different among years. Therefore, $Q$ is a diagonal matrix with the diagonal elements unequal.
+
+$$\begin{multline}\begin{bmatrix}
+y_{2005} \\ \vdots\\ y_{2020} \end{bmatrix}_t = \begin{bmatrix} 1 & 0  & 0 & ... & 0\\ 0 & 1  & 0 & ... & 0\\ &  & \ddots & \\ 0 & 0  & 0 & .. & 1\\ \end{bmatrix} 
+\begin{bmatrix} x_{2005} \\ \vdots\\ x_{2020} \end{bmatrix}_t + \\
+\\
+
+\begin{bmatrix} d_1 & 0 & 0 & ... & 0\\ 0 & d_2 & 0 & ... & 0\\ & & \ddots & \\ 0 & 0 & 0 & .. & d_m\\ \end{bmatrix}
 \begin{bmatrix}
-y_{2005} \\
+flow_{2005} \\ \vdots\\ flow_{2020} \end{bmatrix}_t + \begin{bmatrix} a_{2005} \\ \vdots\\ a_{2020}\\ \end{bmatrix} + \begin{bmatrix} v_{2005} \\ \vdots\\ v_{2020}\\ \end{bmatrix}_t \end{multline}$$
 
-\vdots\\
-y_{2020}
 
-\end{bmatrix} = 
-$$
 
+where,
+
+$$\begin{bmatrix} v_{2005} \\ \vdots\\ v_{2020}\\ \end{bmatrix}_t \sim MVN(0, \begin{bmatrix}  r & 0 & 0 & ... \\ 0 & r & 0 & ... \\ 0 & 0 & 0 & \ddots \\ 0 & 0 & 0 & ...r \\ \end{bmatrix})$$.
+
+$$ \begin{multline}\begin{bmatrix}
+x_{2005} \\ \vdots\\ x_{2020} \end{bmatrix}_t = \begin{bmatrix} 1 & 0  & 0 & ... & 0\\ 0 & 1  & 0 & ... & 0\\ &  & \ddots & \\ 0 & 0  & 0 & .. & 1\\ \end{bmatrix} 
+\begin{bmatrix} x_{2005} \\ \vdots\\ x_{2020} \end{bmatrix}_{t-1} + \\ 
+\\
+\begin{bmatrix} c_{1,2005} & c_{2,2005} & c_{3,2005} & 0 & 0 & ... & 0\\ 0 & c_{1,2006} & c_{2,2006} & c_{3,2006} & 0 & ... & 0\\ & & \ddots & \\ 0 & 0 & 0 & 0 & 0 &.. & c_{n,2006}\\ \end{bmatrix}
+\begin{bmatrix}
+temp_{2005} \\ hatchery_{2005} \\ flow_{2005} \\ \vdots\\ flow_{2020} \end{bmatrix}_t + \begin{bmatrix} u_{2005} \\ \vdots\\ u_{2020}\\ \end{bmatrix} + \begin{bmatrix} w_{2005} \\ \vdots\\ w_{2020}\\ \end{bmatrix}_t \end{multline}$$
+
+
+where,
+
+$$\begin{bmatrix} w_{2005} \\ \vdots\\ w_{2020}\\ \end{bmatrix}_t \sim MVN(0, \begin{bmatrix}  q_{2005} & 0 & 0 & ... \\ 0 & q_{2006} & 0 & ... \\ 0 & 0 & 0 & \ddots \\ 0 & 0 & 0 & ...q_{2020} \\ \end{bmatrix})$$.
+
+### Model selection
+
+Akaike Information Criterion (AIC) is often used to select the best model among models with different combinations of covariates. However, with autocorreleated data, the sample size is much lower than what is accounted for by the small sample correction for AIC (AICc). Thus, we used AICpb which uses parametric bootstrapping and was designed for MARSS models to select the best model.
 
 
 ```{r packages, include=FALSE}
@@ -83,7 +122,30 @@ coho <- arrange(data,doy) %>%
 
 ```
 
+
+
+
+
+```{r mod_all_years, cache=TRUE}
+mod.list_all_years <- list(
+  U = "unequal",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal"
+)
+
+fit_all_years <- MARSS(coho, model = mod.list_all_years, method = "BFGS")
+
+
+```
+
+
+```{r, cache = FALSE, fig.width = 14, fig.height= 10}
+autoplot(fit_all_years)
+```
+
+
 Wrangling covariate data - I am interpolating hatchery data to fill in the missing values. I am making a dataframe with interpolated hatchery values and temperature values.
+
 
 ```{r covariates}
 data$coho1_hatchery_num_interpolate <- na.approx(data$coho1_hatchery_num)
@@ -97,7 +159,8 @@ covariates_coho_hatchery_temp_all_years <- arrange(data,doy) %>%
   t()
 ```
 
-```{r mod_list, cache = TRUE}
+
+```{r mod_list, cache=TRUE}
 mod.list.hatchery_temp_all_years <- list(
   U = "unequal",
   R = "diagonal and equal",
@@ -121,17 +184,20 @@ mod.list.hatchery_temp_all_years <- list(
   c = covariates_coho_hatchery_temp_all_years
 )
 
+
+
 fit_temp_hatchery_all_years <- MARSS(coho, model = mod.list.hatchery_temp_all_years, method = "BFGS")
 
 ```
 
 Plotting model diagnostics.
 
-```{r cache=TRUE, fig.width = 14, fig.height= 10}
+```{r cache=FALSE, fig.width = 14, fig.height= 10}
 autoplot(fit_temp_hatchery_all_years)
 
 
 ```
+
 
 Now, I will add flow as a covariate in the model.
 
@@ -147,7 +213,7 @@ covariates_coho_hatchery_temp_flow_all_years <- arrange(data,doy) %>%
 
 Specifying the model framework:
 
-```{r mod_flow, cache = TRUE}
+```{r mod_flow, cache=TRUE}
 mod.list.hatchery_temp_flow_all_years <- list(
   U = "unequal",
   R = "diagonal and equal",
@@ -173,5 +239,15 @@ mod.list.hatchery_temp_flow_all_years <- list(
 )
 
 fit_temp_hatchery_flow_all_years <- MARSS(coho, model = mod.list.hatchery_temp_flow_all_years, method = "BFGS")
+
+```
+
+
+
+Plotting model diagnostics.
+
+```{r cache=FALSE, fig.width = 14, fig.height= 10}
+autoplot(fit_temp_hatchery_flow_all_years)
+
 
 ```
