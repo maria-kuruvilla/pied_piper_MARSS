@@ -1,0 +1,646 @@
+---
+title: "Results"
+author: "Maria Kuruvilla"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Results
+
+### Coho
+
+```{r packages}
+#packages
+library(here)
+library(MARSS)
+library(tidyverse)
+library(ggplot2)
+library(zoo)
+
+
+```
+
+
+```{r data}
+
+
+data <- read.csv(here("data","dungeness_subset_covariates.csv"), header = TRUE)
+
+data$coho1_hatchery_num_interpolate <- na.approx(data$coho1_hatchery_num)
+
+
+
+```
+
+
+```{r wrangling_data}
+
+
+subset <- arrange(data,doy) %>%
+  filter(year != 2015 & doy > 100 & doy <= 185) %>%
+  mutate(log.value = ifelse(coho1_wild_num == 0, NA, log(coho1_wild_num))) %>%
+  select(log.value,year,doy) %>%
+  pivot_wider(names_from = year, values_from = log.value) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+#scale the values
+
+for(i in 1:dim(subset)[1]){
+  subset[i,] = scale(subset[i,])[,1]
+}
+
+covariates_all_years <- arrange(data,doy) %>%
+  filter(year != 2015 & doy >100 & doy <= 185) %>%
+  select(year,doy, temp, atu_april, photoperiod, flow, coho1_hatchery_num_interpolate) %>%
+  pivot_wider(names_from = year, values_from = c(
+    temp, atu_april, photoperiod, flow, coho1_hatchery_num_interpolate)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:(dim(covariates_all_years)[1]-15)){
+  covariates_all_years[i,] = scale(covariates_all_years[i,])[,1]
+}
+
+
+```
+
+
+```{r model_structure}
+
+mod.list0 <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = "zero"
+)
+
+mod.list <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = "diagonal and unequal"
+)
+
+#putting it into a loop
+
+c.models <- list( 
+  c1 = "zero", # No covariates
+  c2 = covariates_all_years[1:15,], # Temperature
+  c3 = covariates_all_years[16:30,], # ATU April
+  c4 = covariates_all_years[31:45,],  #Photoperiod
+  c5 = covariates_all_years[46:60,],  #Flow
+  c6 = covariates_all_years[61:75,]  #Hatchery
+)
+names(c.models) <- c("No covariates", "Temperature", "ATU", "Photoperiod", "Flow", "Hatchery")
+
+```
+
+```{r model_fit_loop, cache = TRUE}
+
+
+out.tab <- NULL
+fits <- list()
+for(i in 1:length(c.models)){
+  if(i == 1){
+    fit.model = c(list(c= c.models[[i]]), mod.list0)
+  }
+  else{
+    fit.model = c(list(c= c.models[[i]]), mod.list)
+  }
+  
+  fit <- MARSS(subset, model=fit.model, silent = TRUE,
+                   control=list(maxit=2000, allow.degen=TRUE))
+
+      
+      out=data.frame(c=names(c.models)[i], 
+                     logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                     num.iter=fit$numIter, converged=!fit$convergence,
+                     stringsAsFactors = FALSE)
+      out.tab=rbind(out.tab,out)
+      fits=c(fits,list(fit))
+      
+}
+
+ 
+
+min.AICc <- order(out.tab$AICc)
+out.tab.1 <- out.tab[min.AICc, ]
+out.tab.1
+
+
+
+```
+
+
+
+Trying combination of variables
+
+```{r model_structure_two_variables}
+
+mod.list <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = matrix(list("p2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"p2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"p2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2007",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"p2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2008",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"p2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2009",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"p2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2010",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"p2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2011",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"p2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2012",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"p2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2013",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"p2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2014",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"p2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2016",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"p2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2017",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"p2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2018",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"p2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2019",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2020"),
+             15,30, byrow = TRUE)
+)
+
+#putting it into a loop
+
+c.models <- list( 
+  c2 = covariates_all_years[c(1:15,46:60),], # Temperature
+  c3 = covariates_all_years[c(16:30,46:60),], # ATU April
+  c4 = covariates_all_years[c(31:45,46:60),],  #Photoperiod
+  c6 = covariates_all_years[c(61:75,46:60),]  #Hatchery
+)
+names(c.models) <- c("Temperature and Flow", "ATU and Flow", "Photoperiod and Flow", " Hatchery and Flow")
+
+
+
+```
+
+
+```{r model_fit_two_variables, cache = TRUE}
+
+
+
+out.tab2 <- NULL
+fits <- list()
+for(i in 1:length(c.models)){
+  fit.model = c(list(c= c.models[[i]]), mod.list)
+  fit <- MARSS(subset, model=fit.model, silent = TRUE,
+                   control=list(maxit=2000, allow.degen=TRUE))
+
+      
+      out=data.frame(c=names(c.models)[i], 
+                     logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                     num.iter=fit$numIter, converged=!fit$convergence,
+                     stringsAsFactors = FALSE)
+      out.tab2=rbind(out.tab2,out)
+      fits=c(fits,list(fit))
+      
+}
+
+ 
+
+min.AICc <- order(out.tab2$AICc)
+out.tab.2 <- out.tab2[min.AICc, ]
+out.tab.2
+
+
+
+
+```
+
+
+Adding flow to the observational covariate:
+
+```{r obs_cov}
+
+mod.list0.d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = "zero",
+  D = "diagonal and unequal",
+  d = covariates_all_years[46:60,]
+)
+
+
+mod.list.d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = "diagonal and unequal",
+  D = "diagonal and unequal",
+  d = covariates_all_years[46:60,]
+)
+
+c.models <- list( 
+  c1 = "zero", # No covariates
+  c2 = covariates_all_years[1:15,], # Temperature
+  c3 = covariates_all_years[16:30,], # ATU April
+  c4 = covariates_all_years[31:45,],  #Photoperiod
+  c5 = covariates_all_years[46:60,],  #Flow
+  c6 = covariates_all_years[61:75,]  #Hatchery
+)
+names(c.models) <- c("No covariates", "Temperature", "ATU", "Photoperiod", "Flow", "Hatchery")
+
+
+```
+
+
+```{r model_fit_obs_variables, cache = TRUE}
+
+
+
+out.tab3 <- NULL
+fits <- list()
+for(i in 1:length(c.models)){
+  if(i == 1){
+    fit.model = c(list(c= c.models[[i]]), mod.list0.d)
+  }
+  else{
+    fit.model = c(list(c= c.models[[i]]), mod.list.d)
+  }
+  
+  fit <- MARSS(subset, model=fit.model, silent = TRUE,
+                   control=list(maxit=2000, allow.degen=TRUE))
+
+      
+      out=data.frame(c=names(c.models)[i], d="Flow",
+                     logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                     num.iter=fit$numIter, converged=!fit$convergence,
+                     stringsAsFactors = FALSE)
+      out.tab3=rbind(out.tab3,out)
+      fits=c(fits,list(fit))
+      
+}
+
+ 
+
+min.AICc <- order(out.tab3$AICc)
+out.tab.3 <- out.tab3[min.AICc, ]
+out.tab.3
+
+
+
+
+```
+
+
+Adding flow to both observational and state covariates:
+
+
+```{r obs_state_cov}
+
+
+
+mod.list.d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = matrix(list("p2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"p2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"p2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2007",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"p2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2008",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"p2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2009",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"p2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2010",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"p2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2011",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"p2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2012",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"p2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2013",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"p2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2014",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"p2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2016",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"p2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2017",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"p2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2018",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"p2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2019",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2020"),
+             15,30, byrow = TRUE),
+  D = "diagonal and unequal",
+  d = covariates_all_years[46:60,]
+)
+
+c.models <- list( 
+  c2 = covariates_all_years[c(1:15,46:60),], # Temperature
+  c3 = covariates_all_years[c(16:30,46:60),], # ATU April
+  c4 = covariates_all_years[c(31:45,46:60),],  #Photoperiod
+  c5 = covariates_all_years[c(61:75,46:60),]  #Hatchery
+)
+names(c.models) <- c("Temperature and Flow", "ATU and Flow", "Photoperiod and Flow", "Hatchery and Flow")
+
+
+```
+
+
+
+
+```{r model_fit_obs_state_variables, cache = TRUE}
+
+
+
+out.tab4 <- NULL
+fits <- list()
+for(i in 1:length(c.models)){
+  fit.model = c(list(c= c.models[[i]]), mod.list.d)
+  fit <- MARSS(subset, model=fit.model, silent = TRUE,
+                   control=list(maxit=4000, allow.degen=TRUE))
+
+      
+      out=data.frame(c=names(c.models)[i], d="Flow",
+                     logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                     num.iter=fit$numIter, converged=!fit$convergence,
+                     stringsAsFactors = FALSE)
+      out.tab4=rbind(out.tab4,out)
+      fits=c(fits,list(fit))
+      
+}
+
+ 
+
+min.AICc <- order(out.tab4$AICc)
+out.tab.4 <- out.tab4[min.AICc, ]
+out.tab.4
+
+
+
+
+```
+
+
+Trying Photoperiod, Flow and Hatchery in the state covariates and  Flow in the observation covarates:
+
+
+
+```{r include_hatchery. cache = TRUE}
+mod.list.d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = matrix(list("p2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"p2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"p2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2007",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"p2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2008",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"p2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2009",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"p2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2010",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"p2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2011",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"p2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2012",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"p2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2013",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"p2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2014",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"p2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2016",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"p2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2017",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"p2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2018",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"p2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2019",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2020"),
+             15,45, byrow = TRUE),
+  D = "diagonal and unequal",
+  d = covariates_all_years[46:60,]
+)
+
+c.models <- list( 
+  c2 = covariates_all_years[c(31:45,61:75,46:60),] # photoperiod, hatchery. flow
+
+)
+names(c.models) <- c("Photoperiod, Hatchery, and Flow")
+
+
+```
+
+
+
+```{r model_fit_hatchery, cache = TRUE}
+
+
+
+out.tab5 <- NULL
+fits5 <- list()
+for(i in 1:length(c.models)){
+  fit5.model = c(list(c= c.models[[i]]), mod.list.d)
+  fit5 <- MARSS(subset, model=fit5.model, silent = TRUE,
+                   control=list(maxit=4000, allow.degen=TRUE))
+
+      
+      out=data.frame(c=names(c.models)[i], d="Flow",
+                     logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                     num.iter=fit$numIter, converged=!fit$convergence,
+                     stringsAsFactors = FALSE)
+      out.tab5=rbind(out.tab5,out)
+      fits5=c(fits5,list(fit5))
+      
+}
+
+ 
+
+min.AICc <- order(out.tab5$AICc)
+out.tab.5 <- out.tab5[min.AICc, ]
+out.tab.5
+
+
+
+
+```
+
+
+```{r}
+autoplot(fits[[3]])
+```
+
+
+Let's try photoperiod, flow in the state covariates, flow in the observational covariates, and the same process error for all years
+
+
+```{r same_process_error}
+
+
+
+mod.list.d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("p2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"p2006",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"p2007",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2007",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"p2008",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2008",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"p2009",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2009",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"p2010",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2010",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"p2011",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2011",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"p2012",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2012",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"p2013",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2013",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"p2014",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2014",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"p2016",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2016",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"p2017",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2017",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"p2018",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2018",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"p2019",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2019",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p2020",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f2020"),
+             15,30, byrow = TRUE),
+  D = "diagonal and unequal",
+  d = covariates_all_years[46:60,]
+)
+
+c.models <- list( 
+  
+  c4 = covariates_all_years[c(31:45,46:60),] #Photoperiod
+  
+)
+names(c.models) <- c("Photoperiod and Flow")
+
+
+```
+
+
+```{r model_fit_same_process_error, cache = TRUE}
+
+
+
+out.tab6 <- NULL
+fits6 <- list()
+for(i in 1:length(c.models)){
+  fit.model = c(list(c= c.models[[i]]), mod.list.d)
+  fit6 <- MARSS(subset, model=fit.model, silent = TRUE,
+                   control=list(maxit=4000, allow.degen=TRUE))
+
+      
+      out=data.frame(c=names(c.models)[i], d="Flow",
+                     logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                     num.iter=fit$numIter, converged=!fit$convergence,
+                     stringsAsFactors = FALSE)
+      out.tab6=rbind(out.tab6,out)
+      fits6=c(fits6,list(fit6))
+      
+}
+
+ 
+
+min.AICc <- order(out.tab6$AICc)
+out.tab.6 <- out.tab6[min.AICc, ]
+out.tab.6
+
+
+
+
+```
+
+
+```{r}
+autoplot(fits6[[1]])
+```
+
+```{r, cache = TRUE}
+kem.with.CIs.from.hessian <- MARSSparamCIs(fits6[[1]], nboot = 1000)
+```
+
+
+
+
+
+```{r}
+library(broom)
+ci <- tidy(fits6[[1]])
+
+
+```
+
+
+```{r}
+
+# Plot parameter estimates and confidence intervals
+ggplot(ci[33:62,], aes(x = term, y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Parameter", y = "Estimate") +
+  ggtitle("Parameter Estimates with Confidence Intervals")
+
+```
+
+
+
+Trying model with just hatchery variables
+
+```{r}
+mod.list.h <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = "diagonal and unequal",
+  c = covariates_all_years[61:75,]
+)
+fit.h <- MARSS(subset, model=mod.list.h, silent = TRUE,
+                   control=list(maxit=2000, allow.degen=TRUE))
+
+
+```
+
+
+
+```{r}
+fit.h$AICc
+autoplot(fit.h)
+```
+
+
+```{r}
+ci <- tidy(fit.h)
+
+```
+
+
+```{r}
+ggplot(ci[18:32,], aes(x = term, y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Parameter", y = "Estimate") +
+  ggtitle("Parameter Estimates with Confidence Intervals")
+
+
+```
+
+Now adding other covariates
+
+
+```{r}
+mod.list_all <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2007",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2008",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2009",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2010",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2011",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2012",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2013",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2014",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2016",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2017",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2018",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2019",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"f",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2020"),
+             15,45, byrow = TRUE),
+  c = covariates_all_years[c(31:45,46:75),],
+  D = "diagonal and unequal",
+  d = covariates_all_years[46:60,]
+)
+fit_all <- MARSS(subset, model=mod.list_all, silent = TRUE,
+                   control=list(maxit=2000, allow.degen=TRUE))
+```
+
+```{r}
+fit_all$AICc
+
+```
+
+```{r}
+ci_all <- tidy(fit_all)
+```
+
+```{r}
+ggplot(ci_all[35:49,], aes(x = term, y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Parameter", y = "Estimate") +
+  ggtitle("Parameter Estimates with Confidence Intervals")
+
+
+```

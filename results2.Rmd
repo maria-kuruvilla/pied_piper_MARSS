@@ -1,0 +1,546 @@
+---
+title: "Results"
+author: "Maria Kuruvilla"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Results
+
+### Coho
+
+```{r packages}
+#packages
+library(here)
+library(MARSS)
+library(tidyverse)
+library(ggplot2)
+library(zoo)
+library(broom)
+library(ggfortify)
+
+```
+
+
+```{r data}
+
+
+data <- read.csv(here("data","dungeness_subset_covariates.csv"), header = TRUE)
+
+data$coho1_hatchery_num_interpolate <- na.approx(data$coho1_hatchery_num)
+
+
+
+```
+
+
+```{r wrangling_data}
+
+
+subset <- arrange(data,doy) %>%
+  filter(year != 2015 & doy > 100 & doy <= 185) %>%
+  mutate(log.value = ifelse(coho1_wild_num == 0, NA, log(coho1_wild_num))) %>%
+  select(log.value,year,doy) %>%
+  pivot_wider(names_from = year, values_from = log.value) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+#scale the values
+
+for(i in 1:dim(subset)[1]){
+  subset[i,] = scale(subset[i,])[,1]
+}
+
+covariates_all_years <- arrange(data,doy) %>%
+  filter(year != 2015 & doy >100 & doy <= 185) %>%
+  select(year,doy, temp, atu_april, photoperiod, flow, lunar_phase, coho1_hatchery_num_interpolate) %>%
+  pivot_wider(names_from = year, values_from = c(
+    temp, atu_april, photoperiod, flow, lunar_phase, coho1_hatchery_num_interpolate)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:(dim(covariates_all_years)[1]-15)){
+  covariates_all_years[i,] = scale(covariates_all_years[i,])[,1]
+}
+
+
+```
+
+
+```{r model_structure}
+
+mod.list_base <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal"
+)
+
+mod.list_d_base <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  D = "diagonal and equal",
+  d = covariates_all_years[46:60,] 
+)
+
+
+mod.list_equal <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = "diagonal and equal"
+)
+
+mod.list_d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = "diagonal and equal",
+  D = "diagonal and equal",
+  d = covariates_all_years[46:60,] 
+)
+
+
+#putting it into a loop
+
+c.models <- list( 
+  c1 = "zero", # No covariates
+  c2 = covariates_all_years[1:15,], # Temperature
+  c3 = covariates_all_years[16:30,], # ATU April
+  c4 = covariates_all_years[31:45,],  #Photoperiod
+  c5 = covariates_all_years[46:60,],  #Flow
+  c6 = covariates_all_years[61:75,],  #Lunar phase
+  c7 = covariates_all_years[76:90,]  #Hatchery
+)
+names(c.models) <- c("No covariates", "Temperature", "ATU", "Photoperiod", "Flow", "Lunar Phase", "Hatchery")
+
+
+
+```
+
+
+```{r model_fit_loop, cache = TRUE}
+
+
+out.tab <- NULL
+fits <- list()
+for(i in 1:length(c.models)){
+  
+    
+    if(names(c.models)[i] == "No covariates"){
+      
+      fit.model = mod.list_base
+    }
+      
+    else{
+      fit.model = c(list(c= c.models[[i]]), mod.list_equal)
+        
+    }
+    
+
+    fit <- MARSS(subset, model=fit.model, silent = TRUE, method = "BFGS",
+                 control=list(maxit=2000))
+
+
+    out=data.frame(c=names(c.models)[i], d="No covariates",
+                   logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                   num.iter=fit$numIter, converged=!fit$convergence,
+                   stringsAsFactors = FALSE)
+    out.tab=rbind(out.tab,out)
+    fits=c(fits,list(fit))
+  
+      
+}
+
+
+
+min.AICc <- order(out.tab$AICc)
+out.tab.1 <- out.tab[min.AICc, ]
+out.tab.1
+
+
+
+```
+
+Since the model with photoperiod has lower AIC than the model with ATU and the model with temperature, I will only keep photoperiod in the subsequent models. 
+
+
+
+```{r mult_models, cache = TRUE}
+
+c.models <- list( 
+  
+  
+  c2 = covariates_all_years[c(46:60,31:45),],  #Flow and photoperiod
+  c3 = covariates_all_years[c(61:75,31:45),],  #Lunar phase and photoperiod
+  c4 = covariates_all_years[c(46:60,61:75,31:45),]  #flow, Lunar phase and photoperiod
+)
+names(c.models) <- c("Flow, Photoperiod", "Lunar Phase, Photoperiod", "Flow, Lunar Phase, Photoperiod")
+
+mod.list_equal <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p"),
+             15,30, byrow = TRUE)
+)
+
+
+mod.list_equal3 <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,"p"),
+             15,45, byrow = TRUE)
+)
+
+
+
+
+```
+
+
+```{r model_fit_loop3, cache = TRUE}
+
+
+out.tab3 <- NULL
+fits3 <- list()
+for(i in 1:length(c.models)){
+  
+    
+    if(names(c.models)[i] == "Flow, Lunar Phase, Photoperiod"){
+      
+      fit.model = c(list(c= c.models[[i]]), mod.list_equal3)
+    }
+      
+    else{
+      fit.model = c(list(c= c.models[[i]]), mod.list_equal)
+        
+    }
+    
+
+    fit <- MARSS(subset, model=fit.model, silent = TRUE, method = "BFGS",
+                 control=list(maxit=2000))
+
+
+    out=data.frame(c=names(c.models)[i], d="No covariates",
+                   logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                   num.iter=fit$numIter, converged=!fit$convergence,
+                   stringsAsFactors = FALSE)
+    out.tab3=rbind(out.tab3,out)
+    fits3=c(fits3,list(fit))
+  
+      
+}
+
+
+
+min.AICc <- order(out.tab3$AICc)
+out.tab.3 <- out.tab3[min.AICc, ]
+out.tab.3
+
+
+
+```
+
+
+Now adding flow to the d covariates
+
+```{r}
+
+
+c.models <- list( 
+  
+  
+  c2 = covariates_all_years[c(46:60,31:45),],  #Flow and photoperiod
+  c3 = covariates_all_years[c(61:75,31:45),],  #Lunar phase and photoperiod
+  c4 = covariates_all_years[c(46:60,61:75,31:45),]  #flow, Lunar phase and photoperiod
+)
+names(c.models) <- c("Flow, Photoperiod", "Lunar Phase, Photoperiod", "Flow, Lunar Phase, Photoperiod")
+
+mod.list_equal1_d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = "diagonal and equal",
+  D = "diagonal and equal",
+  d = covariates_all_years[46:60,]
+)
+
+mod.list_equal_d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p"),
+             15,30, byrow = TRUE),
+  D = "diagonal and equal",
+  d = covariates_all_years[46:60,]
+)
+
+
+mod.list_equal3_d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,"p"),
+             15,45, byrow = TRUE),
+  D = "diagonal and equal",
+  d = covariates_all_years[46:60,]
+)
+
+
+
+
+
+
+```
+
+
+
+
+```{r model_fit_loop3_d, cache = TRUE}
+
+
+out.tab3_d <- NULL
+fits3_d <- list()
+for(i in 1:length(c.models)){
+  if(names(c.models)[i] == "Photoperiod"){
+    
+    print(i)
+    fit.model = c(list(c= c.models[[i]]), mod.list_equal1_d)
+    }
+  if(names(c.models)[i] == "Flow, Lunar Phase, Photoperiod"){
+    
+      
+    fit.model = c(list(c= c.models[[i]]), mod.list_equal3_d)
+    }
+  else{
+    fit.model = c(list(c= c.models[[i]]), mod.list_equal_d)
+        
+    }
+  fit <- MARSS(subset, model=fit.model, silent = TRUE, method = "BFGS",
+                 control=list(maxit=2000))
+
+
+  out=data.frame(c=names(c.models)[i], d="Flow",
+                   logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                   num.iter=fit$numIter, converged=!fit$convergence,
+                   stringsAsFactors = FALSE)
+  out.tab3_d=rbind(out.tab3_d,out)
+  fits3_d=c(fits3_d,list(fit))
+  
+      
+}
+
+
+
+min.AICc <- order(out.tab3_d$AICc)
+out.tab.3_d <- out.tab3_d[min.AICc, ]
+out.tab.3_d
+
+
+
+```
+
+
+Model with Flow, Lunar phase and Photoperiod in the process covariates has the lowest AICc. Now I am adding unequal hatchery for every year.
+
+
+```{r unequal_hatchery, cache = TRUE}
+
+c.models <- list( 
+  
+  
+  c4 = covariates_all_years[c(46:60,31:45,61:75,76:90),]  #flow, photoperiod, lunar phase and hatchery
+)
+names(c.models) <- c("Flow, Photoperiod, Lunar Phase, Hatchery")
+
+
+
+mod.list_unequal_h <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2005",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2006",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2007",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2008",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2009",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2010",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2011",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2012",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2013",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2014",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2016",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2017",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2018",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2019",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"h2020"),
+             15,60, byrow = TRUE)
+)
+
+
+
+
+```
+
+
+
+
+```{r model_fit_loop3_d, cache = TRUE}
+
+
+out.tabh_d <- NULL
+fitsh_d <- list()
+for(i in 1:length(c.models)){
+  
+    
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_unequal_h)
+        
+    
+    
+
+    fit <- MARSS(subset, model=fit.model, silent = TRUE, method = "BFGS",
+                 control=list(maxit=2000))
+
+
+    out=data.frame(c=names(c.models)[i], d="No covariates",
+                   logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                   num.iter=fit$numIter, converged=!fit$convergence,
+                   stringsAsFactors = FALSE)
+    out.tabh_d=rbind(out.tabh_d,out)
+    fitsh_d=c(fitsh_d,list(fit))
+  
+      
+}
+
+
+
+min.AICc <- order(out.tabh_d$AICc)
+out.tab.h_d <- out.tabh_d[min.AICc, ]
+out.tab.h_d
+
+
+
+```
+
+```{r}
+ci <- tidy(fitsh_d[[1]])
+year = 2005
+for(i in 21:35){
+  if(year == 2015){
+    year = year + 1
+  }
+  ci[i,1] = toString(year)
+  
+  year = year + 1
+}
+print(ci)
+```
+
+Plotting environmental covariates
+
+```{r}
+ggplot(ci[18:20,], aes(x = c("Flow","Photoperiod", "Lunar phase"), y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of environmental effect") +
+  ggtitle("Environmental effects") + 
+    theme(plot.title = element_text(size = 20))+
+  theme(axis.text.x=element_text(size=14),axis.title.y=element_text(size=14))
+
+ggsave(here("output","environmental_effect.jpeg"), width = 10, height = 8)
+```
+
+
+
+```{r}
+ggplot(ci[21:35,], aes(x = term, y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Year", y = "Estimate of Hatchery effect") +
+  ggtitle("Effect of hatchery Coho") + 
+    theme(plot.title = element_text(size = 20))+
+  theme(axis.title.x=element_text(size=14),axis.title.y=element_text(size=14))
+  
+ggsave(here("output","hatchery_effect.jpeg"), width = 10, height = 8)
+```
+```{r}
+out.tab.final <- as.data.frame(rbind(out.tab.1,rbind(out.tab.3, out.tab.3_d)))
+out.tab.final$DeltaAICc = out.tab.final$AICc - min(out.tab.final$AICc)
+out.tab.final <- out.tab.final[order(out.tab.final$AICc),]
+row.names(out.tab.final) <- NULL
+write.csv(out.tab.final,file = here("output","coho_tab.csv"))
+print(out.tab.final)
+```
+
+```{r}
+autoplot(fitsh_d[[1]], plot.type = "fitted.ytT")
+ggsave(here("output","fitted_y_coho.jpeg"), width = 10, height = 8)
+
+
+```
+

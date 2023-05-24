@@ -1,0 +1,48 @@
+---
+title: "Results and Discussion"
+author: "Maria Kuruvilla"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+```
+
+# Results
+
+## Coho
+
+
+
+The model with the lowest AICc had photoperiod, flow and lunar phase as environmental covariates. The effect of lunar phase was not significant. However, the effect of flow and photoperiod were significant and negative. The effect of hatchery coho was significant only in 2005. 
+
+
+```{r, fitted, fig.cap=""}
+knitr::include_graphics(here("output","fitted_y_coho.jpeg"))
+```
+
+
+```{r, env, fig.cap=""}
+knitr::include_graphics(here("output","environmental_effect.jpeg"))
+```
+
+
+```{r, hatchery, fig.cap="Estimate of the effect of different environemntal covariates on the number of Coho"}
+knitr::include_graphics(here("output","hatchery_effect.jpeg"))
+```
+
+## Chinook subyearlines - spring migrants
+
+
+
+## Chinook subyearlings - summer migrants
+
+
+
+## Chinook yearlings
+
+
+
+## Steelhead
