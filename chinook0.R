@@ -8,7 +8,9 @@ library(MARSS)
 library(tidyverse)
 library(ggplot2)
 library(zoo)
-
+library(MASS)
+library(modelr)
+library(broom)
 
 #readng the data
 
@@ -484,4 +486,565 @@ mod.list_flow_hatchery_2009 <- list(
 
 fit_flow_hatchery_2009 <- MARSS(subset_chinook_summer_2009, model = mod.list_flow_hatchery_2009, method = "BFGS")
 fit_flow_hatchery_2009$AICc #178
+
+
+
+#I am going to try fish per hour for the whole migration period
+# if the residuals look bad, I will try fish per hour for spring and summer separately.
+
+#hatchery is only between 135 and 175
+
+#subset
+subset_chinook_summer_perhour <- arrange(data,doy) %>%
+  filter(year != 2015 & doy > 130 & doy <= 200) %>%
+  mutate(log.value = log(chinook0_wild_perhour + 1)) %>%
+  dplyr::select(log.value,year,doy) %>%
+  pivot_wider(names_from = year, values_from = log.value) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+
+for(i in 1:dim(subset_chinook_summer_perhour)[1]){
+  subset_chinook_summer_perhour[i,] = scale(subset_chinook_summer_perhour[i,])[,1]
+}
+
+
+
+
+#base model with no covariates
+
+mod.list_base <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal"
+)
+
+
+fit_chinook_summer <- MARSS(subset_chinook_summer_perhour, model=mod.list_base, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+
+
+fit_chinook_summer$AICc #2273
+
+autoplot(fit_chinook_summer)
+
+
+data$chinook0_hatchery_perhour_interpolate <- na.approx(data$chinook0_hatchery_perhour)
+
+lm_temp <- lm(temp ~ 1+photoperiod, data)
+
+
+data <- data %>% add_residuals(lm_temp)
+
+
+covariates_all_years_chinook0 <- arrange(data,doy) %>%
+  filter(year != 2015 & doy >130 & doy <= 200) %>%
+  dplyr::select(year,doy, temp, atu_april, photoperiod, lunar_phase, resid, flow, chinook0_hatchery_perhour_interpolate) %>%
+  pivot_wider(names_from = year, values_from = c(
+    temp, atu_april, photoperiod, lunar_phase, resid, flow, chinook0_hatchery_perhour_interpolate)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:(dim(covariates_all_years_chinook0)[1]-45)){
+  covariates_all_years_chinook0[i,] = scale(covariates_all_years_chinook0[i,])[,1]
+}
+
+
+for(i in 76:90){
+  covariates_all_years_chinook0[i,] = scale(covariates_all_years_chinook0[i,])[,1]
+}
+
+for(i in 92:105){ #beacuse 2005 does not have hatchery
+  covariates_all_years_chinook0[i,] = scale(covariates_all_years_chinook0[i,], center = FALSE, scale= TRUE)[,1]
+}
+
+
+mod.list_base <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  D = "diagonal and unequal",
+  d = covariates_all_years_chinook0[91:105,] 
+)
+
+
+fit_chinook_summer_d <- MARSS(subset_chinook_summer_perhour, model=mod.list_base, silent = TRUE, method = "BFGS",
+                            control=list(maxit=2000))
+
+
+fit_chinook_summer_d$AICc #2091
+
+autoplot(fit_chinook_summer_d)
+
+ci_chinook_d <- tidy(fit_chinook_summer_d)
+
+ci_chinook_d <- MARSSparamCIs(fit_chinook_summer_d)
+
+
+
+mod.list_h_d <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = "diagonal and equal",
+  D = "diagonal and unequal",
+  d = covariates_all_years_chinook0[91:105,] 
+)
+
+
+#putting it into a loop
+
+c.models <- list( 
+  c1 = "zero", # No covariates
+  c2 = covariates_all_years_chinook0[1:15,], # Temperature
+  c3 = covariates_all_years_chinook0[16:30,], # ATU April
+  c4 = covariates_all_years_chinook0[31:45,]  #Photoperiod
+  
+)
+names(c.models) <- c("No covariates", 
+                     "Temperature", 
+                     "ATU", 
+                     "Photoperiod")
+
+out.tab_chinook0 <- NULL
+fits_chinook0 <- list()
+for(i in 1:length(c.models)){
+  
+  print(names(c.models)[i])
+  if(names(c.models)[i] == "No covariates"){
+    
+    fit.model = mod.list_base
+  }
+  
+  else{
+    fit.model = c(list(c= c.models[[i]]), mod.list_h_d)
+    
+  }
+  
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d="Hatchery",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab_chinook0=rbind(out.tab_chinook0,out)
+  fits_chinook0=c(fits_chinook0,list(fit))
+  
+  
+}
+  
+  
+
+min.AICc <- order(out.tab_chinook0$AICc)
+out.tab.chinook0 <- out.tab_chinook0[min.AICc, ]
+out.tab.chinook0$DeltaAICc <- out.tab.chinook0$AICc - min(out.tab.chinook0$AICc)
+out.tab.chinook0
+
+
+
+
+c.models <- list( 
+  
+  
+  c1 = covariates_all_years_chinook0[c(46:60,16:30),],  #Lunar phase and ATU
+  c2 = covariates_all_years_chinook0[c(61:75,16:30),],  #Resid and ATU
+  c3 = covariates_all_years_chinook0[c(76:90,16:30),]  #Flow and ATU
+)
+
+names(c.models) <- c("Lunar Phase, ATU", "Temperature residuals, ATU", 
+                     "Flow, ATU")
+
+mod.list_h_d_two <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b"),
+             15,30, byrow = TRUE),
+  D = "diagonal and unequal",
+  d = covariates_all_years_chinook0[91:105,] 
+)
+
+
+
+
+
+
+
+out.tab2_chinook0 <- NULL
+fits2_chinook0 <- list()
+for(i in 1:length(c.models)){
+  
+  fit.model = c(list(c= c.models[[i]]), mod.list_h_d_two)
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d="Hatchery",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab2_chinook0=rbind(out.tab2_chinook0,out)
+  fits2_chinook0=c(fits2_chinook0,list(fit))
+  
+  
+}
+
+
+
+min.AICc <- order(out.tab2_chinook0$AICc)
+out.tab.2_chinook0 <- out.tab2_chinook0[min.AICc, ]
+out.tab.2_chinook0$DeltaAICc <- out.tab.2_chinook0$AICc - min(out.tab.2_chinook0$AICc)
+out.tab.2_chinook0
+
+autoplot(fits_chinook0[[3]])
+
+
+ci_chinook0_final <- tidy(fits_chinook0[[3]])
+ci_chinook0_final
+
+
+#adding flow to observation
+mod.list_h_d_two_C <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  D = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b"),
+             15,30, byrow = TRUE),
+  C = "diagonal and equal",
+  c = covariates_all_years_chinook0[16:30,],
+  d = covariates_all_years_chinook0[76:105,] 
+)
+
+fit_chinook_summer_d_c <- MARSS(subset_chinook_summer_perhour, model=mod.list_h_d_two_C, silent = TRUE, method = "BFGS",
+                              control=list(maxit=2000))
+
+
+fit_chinook_summer_d_c$AICc #2131
+
+#adding temp resid to observation
+#adding flow to observation
+mod.list_h_d_two_C <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  D = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b"),
+             15,30, byrow = TRUE),
+  C = "diagonal and equal",
+  c = covariates_all_years_chinook0[16:30,],
+  d = covariates_all_years_chinook0[76:105,] 
+)
+
+fit_chinook_summer_d_c <- MARSS(subset_chinook_summer_perhour, model=mod.list_h_d_two_C, silent = TRUE, method = "BFGS",
+                                control=list(maxit=2000))
+
+
+fit_chinook_summer_d_c$AICc #2131
+
+
+#adding flow to observation
+mod.list_h_d_two_C <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  D = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b"),
+             15,30, byrow = TRUE),
+  C = "diagonal and equal",
+  c = covariates_all_years_chinook0[16:30,],
+  d = covariates_all_years_chinook0[c(61:75,91:105),] 
+)
+
+fit_chinook_summer_d_c <- MARSS(subset_chinook_summer_perhour, model=mod.list_h_d_two_C, silent = TRUE, method = "BFGS",
+                                control=list(maxit=2000))
+
+
+fit_chinook_summer_d_c$AICc #2093
+
+
+#trying different errors structures for chinook0
+
+
+mod.list_h_d_two <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and unequal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b"),
+             15,30, byrow = TRUE),
+  D = "diagonal and unequal",
+  d = covariates_all_years_chinook0[91:105,],
+  c = covariates_all_years_chinook0[c(76:90,16:30),] #flow and atu
+)
+
+fit <- MARSS(subset_chinook_summer_perhour, model=mod.list_h_d_two, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+
+
+autoplot(fit)
+
+ci_unequal_q <- tidy(fit)
+
+fit$AICc #2062
+         
+
+
+mod.list_h_d_two <- list(
+  U = "zero",
+  R = "diagonal and unequal",
+  Q = "diagonal and unequal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b"),
+             15,30, byrow = TRUE),
+  D = "diagonal and unequal",
+  d = covariates_all_years_chinook0[91:105,],
+  c = covariates_all_years_chinook0[c(76:90,16:30),] #flow and atu
+)
+
+fit <- MARSS(subset_chinook_summer_perhour, model=mod.list_h_d_two, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+
+
+autoplot(fit)
+
+ci_unequal_q_r <- tidy(fit)
+
+fit$AICc #2050
+
+
+
+
+## poly 
+
+covariates_all_years_new_chinook <- matrix(NA,135,70)
+
+
+for(i in 1:15){
+  covariates_all_years_new_chinook[i,] <- t(poly(covariates_all_years_chinook0[i,],2)[,1])
+  
+  covariates_all_years_new_chinook[15+i,] <- t(poly(covariates_all_years_chinook0[i,],2)[,2])
+  print(rownames(covariates_all_years_chinook0)[i])
+  
+  if(i==1){
+    list1 <- rownames(covariates_all_years_chinook0)[i]
+    list2 <- paste0(rownames(covariates_all_years_chinook0)[i], "_square")
+  }
+  else{
+    list1 <- c(list1, rownames(covariates_all_years_chinook0)[i])
+    list2 <- c(list2, paste0(rownames(covariates_all_years_chinook0)[i], "_square"))
+  }
+}
+
+
+for(i in 31:45){
+  covariates_all_years_new_chinook[i,] <- t(poly(covariates_all_years_chinook0[i,],2)[,1])
+  
+  covariates_all_years_new_chinook[15+i,] <- t(poly(covariates_all_years_chinook0[i,],2)[,2])
+  print(rownames(covariates_all_years_chinook0)[i])
+  
+  if(i==31){
+    list3 <- rownames(covariates_all_years_chinook0)[i]
+    list4 <- paste0(rownames(covariates_all_years_chinook0)[i], "_square")
+  }
+  else{
+    list3 <- c(list3, rownames(covariates_all_years_chinook0)[i])
+    list4 <- c(list4, paste0(rownames(covariates_all_years_chinook0)[i], "_square"))
+  }
+}
+
+
+for(i in 76:90){
+  covariates_all_years_new_chinook[i-15,] <- t(poly(covariates_all_years_chinook0[i,],2)[,1])
+  
+  covariates_all_years_new_chinook[i,] <- t(poly(covariates_all_years_chinook0[i,],2)[,2])
+  print(rownames(covariates_all_years_chinook0)[i])
+  
+  if(i==76){
+    list5 <- rownames(covariates_all_years_chinook0)[i]
+    list6 <- paste0(rownames(covariates_all_years_chinook0)[i], "_square")
+  }
+  else{
+    list5 <- c(list5, rownames(covariates_all_years_chinook0)[i])
+    list6 <- c(list6, paste0(rownames(covariates_all_years_chinook0)[i], "_square"))
+  }
+}
+
+
+
+covariates_all_years_new_chinook[91:105,]<- covariates_all_years_chinook0[16:30,]
+covariates_all_years_new_chinook[106:120,]<- covariates_all_years_chinook0[61:75,]
+covariates_all_years_new_chinook[121:135,]<- covariates_all_years_chinook0[91:105,]
+
+
+rownames(covariates_all_years_new_chinook) <- c(list1,list2, list3, list4, list5, list6,
+                                        rownames(covariates_all_years_chinook0)[16:30],
+                                        rownames(covariates_all_years_chinook0)[61:75],
+                                        rownames(covariates_all_years_chinook0)[91:105])
+
+
+colnames(covariates_all_years_new_chinook) <- colnames(covariates_all_years_chinook0)
+
+
+
+mod.list_h_d_poly <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"p"),
+             15,30, byrow = TRUE),
+  D = "diagonal and unequal",
+  d = covariates_all_years_new_chinook[121:135,] 
+)
+
+#putting it into a loop
+
+c.models <- list(
+  c2 = covariates_all_years_new_chinook[1:30,], # Temperature
+  c3 = covariates_all_years_new_chinook[31:60,], # photoperiod
+  c4 = covariates_all_years_new_chinook[61:90,]  #flow
+  
+)
+names(c.models) <- c("Temperature square", 
+                     "Photoperiod square", 
+                     "Flow square")
+
+
+
+out.tab_poly_chinook <- NULL
+fits_poly_chinook <- list()
+for(i in 1:length(c.models)){
+  
+  print(names(c.models)[i])
+  if(names(c.models)[i] == "No covariates"){
+    
+    fit.model = mod.list_base
+  }
+  
+  else{
+    fit.model = c(list(c= c.models[[i]]), mod.list_h_d_poly)
+    
+  }
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d="Hatchery",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab_poly_chinook=rbind(out.tab_poly_chinook,out)
+  fits_poly_chinook=c(fits_poly_chinook,list(fit))
+  
+  
+}
+
+
+min.AICc <- order(out.tab_poly_chinook$AICc)
+out.tab.poly_chinook <- out.tab_poly_chinook[min.AICc, ]
+out.tab.poly_chinook$DeltaAICc <- out.tab.poly_chinook$AICc - min(out.tab.poly_chinook$AICc)
+out.tab.poly_chinook
+
+ci_poly_photo_chinook <- tidy(fits_poly_chinook[[1]])
+ci_poly_photo_chinook
 

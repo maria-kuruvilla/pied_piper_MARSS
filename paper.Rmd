@@ -1,0 +1,134 @@
+---
+title: "Pied Piper Effect: The influence of hatchery salmon on wild salmon migration"
+author: "Maria Kuruvilla"
+date: "`r Sys.Date()`"
+output: word_document
+bibliography: marss.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+# Abstract
+
+\newpage
+
+# Introduction
+
+Pacific salmon are an ecologically, economically, and culturally important in Washington state. Salmon has been used consistently by the indigenous people for at least 7500 years [@campbell_archaeological_2010]. However, salmon numbers started declining in Western US a century and a half ago. Nehlsen et al. identified 41 naturally spawning Pacific salmon and steelhead stocks in Washington coast and Puget Sound that are facing high or moderate risk of extinction, or are of special concern [@nehlsen_pacific_1991]. In response to the continued loss of habitat and decrease in salmon numbers, many salmon and trout hatcheries were developed in Washington with goals to either increase abundance for fishing or to promote conservation of imperiled populations. Hatcheries provide many cultural and economic benefits without which Washington’s salmon fishery would not exist at the scale that it does today.
+
+
+Salmon hatcheries artificially spawn and rear salmon in controlled environments and then typically release the juvenile salmon into freshwater, where they migrate downstream to rear in natural marine habitats. At this stage, hatchery salmon and wild salmon are potentially directly (socially) or indirectly (through their environment) interacting with each other. The social effects of hatchery salmon on wild salmon have not been studied even though salmon are known to be social at various stages of their life cycle - outmigrating to the ocean in schools [@groot1965orientation], grouping in the open ocean [@polyakov2022group], and potentially using collective navigation techniques while homing in freshwater [@berdahl2016collective]. Additionally, social interactions between migrating salmon have been shown to affect migration timing [@berdahl_social_2017]. The process of seaward migration strongly influence rates of mortality in salmon [@thorstad_critical_2012]. Reaching the ocean during unfavourable ocean conditions can drastically decrease marine survival [@bilton_influence_1982, @scheuerell_relating_2009]. Hence, understanding the factors that affect migration timing of wild salmon smolts is critical for their conservation. However, the effect of the migration of hatchery salmon on wild salmon migration timing has not been considered. 
+
+
+Hatchery salmon are released in large numbers over a small period of time whereas wild smolts have a more protracted outmigration period. These large pulses of salmon smolts migrating downstream could motivate wild salmon to migrate with them potentially causing them to migrate earlier than they normally would and over a shorter period of time [@kennedy1984experiments, @hansen_downstream_1985]. This is also known as the “pied piper hypothesis”. The pied piper effect could influence wild salmon migration at the seasonal time scale. Wild salmon that are being influenced by hatchery salmon might encounter less than optimal foraging conditions and could encounter more predators thereby experiencing higher mortality at sea [@scheuerell_relating_2009]. On the other hand, these wild salmon outmigrating with the hatchery salmon might benefit from predator swamping [@furey2021swamping]. The role of social influence on migration timing is becoming more and more recognized across taxa [@oestreich_influence_2022]. Despite anecdotal evidence for the pied piper hypothesis from those running salmon smolt traps, there is a knowledge gap on whether the presence of hatchery salmon influences the behavior of wild salmon during outmigration. 
+
+
+
+In this paper, we test the ‘pied piper hypothesis’ by analyzing the time series data of the number of wild salmon migrating downstream and the number of hatchery salmon migrating downstream after accounting for the environmental effects. The primary objective of this research is to shed light on the fundamentals of salmon behavior and whether salmon smolts use social information during outmigration. We find that the number of hatchery salmon in the rivers has a strong positive effect on the number of wild salmon in the river during seaward migration. We find that the effect is variable between years and species. We discuss the potential reasons for this variability and the potential strategies for hatchery reform in Washington state.
+
+<!-- Additionally, this project will also yield usable information to guide hatchery management.  -->
+
+<!-- If the pied piper hypothesis is rejected, an important aspect of salmon behavior during their seaward migration would be revealed. On the other hand, if the pied piper hypothesis holds and the timing of wild fish migration is influenced by the hatchery fish releases, then hatchery releases can be modified to spread out the number of fish released over a longer period of time. For instance, hatcheries could use volitional release instead of forced release strategy. There is a need for the assessment of hatchery reform in Washington state [@anderson2020reform] and the results of this project can aid in assessing wild smolt survival under different hatchery release scenarios. -->
+
+
+# Methods
+
+## River
+
+The Dungeness River is a 28 mile river located in northwest part of Washington State. It originates in the Olympic mountains and drains into the Strait of Juan de Fuca. The Dungeness river is fed through melting snowpack from the Olympics as well as the rain. The lowest flows are in August-September whereas the highest temperature is around 15 degree Celsius in July-August. The Dungeness River supports five species of salmonids - Chinook, Coho, Chum, Pink, and Steelhead. There are multiple hatcheries that release Chinook, Coho and Steelhead salmon into the river at various stages. The Dungeness River hatchery, Gray Wolf, Hurd Creek, and Upper Dungeness hatchery are the main hatcheries on the Dungeness River.
+
+
+## Data
+
+### Smolt trap data
+
+<!-- Rotatory screw traps, WDFW, dungeness,  -->
+
+Rotatry screw traps along with a variety of other techniques are used to monitor salmon smolts that migrate from their natal sites to the ocean. The smolts that are caught in the trap and enumerated and and recorded twice a day. In this paper, I have used data collected using a rotatory screw trap monitored by the Washington Department of Fish and Wildlife (WDFW) in the Dungeness river. To test the 'pied piper hypothesis' or the influence of hatchery salmon on the migration timing of wild salmon, we used a subset of the data of species with a hatchery program in the Dungeness river. Namely, we collated data representing Coho yearlings, Chinook subyearlings, and Steelhead smolts. The hatchery origin fish are identified by the code wire tag, the adipose fin clipped or by their size when the fish are unmarked and unclipped (\<5% for coho and steelhead and \<12% for chinook). Since the salmon smolts caught in the trap are counted at a different time everyday and since the number of hours for which the trap is operating in the river varies everyday, we took the sum of the all the salmon smolts migrating on a given day and divided by the number of hours that the trap was operating that day to give the number of fish per hour for each species and origin. While the trap usually operates from February to September for each year, for the analysis we only considered the time period of migration for each species. For coho and steelhead, we used data from day of year $= 120$ to day of year $= 160$. While chinook subyearlings have multiple migration strategies with some fish migrating in spring and some migrating in early summer, the hatchery chinook releases overlap with the summer migration. Therefore, we used only the data corresponding to the summer migration from day of year $= 130$ to day of year $= 200$. For each species, we log transformed the data (after adding 1 to each data point to avoid infinite values) since we found that the data was log normally distributed. Since the number of wild fish migrating varies widely from year to year, we scaled and centered the data to be able to compare between the years. Since we wanted the hatchery fish numbers to remain $0$ when no hatchery fish are caught in the trap, we only scaled the hatchery fish data.
+
+
+### Environmental data
+
+To account for the effect of environmental variables that affect the migration of wild salmon, we collated environmental data from various websites.
+
+#### Temperature
+
+We collected temperature data for years 2005-2014 from the Washington Department of Ecology website <https://ecology.wa.gov/>. For the years 2016-2020, we used temperature data collected by a logger near the trap. However, data from 2015 was missing. Therefore, we did not consider the data from year 2015 for the initial model selection. However, if temperature (or releated covariates) was not a covariate in the most parsimonious model, we included data from 2015 in the final model.
+
+#### Flow
+
+We collected flow data in cubic feet per second for the years 2005-2020 from the Washington Department of Ecology.
+
+#### Accumulated thermal units
+
+We calculated 'accumulated thermal units april' as the cumulative sum of the temperature experienced since April 1st.
+
+#### Photoperiod
+
+We calculated day light hours for a given day using <https://api.sunrise-sunset.org> for latitude 48.11591 and longitude -123.14318, a point on the Dungeness River between the hatchery and the trap.
+
+
+
+## Analysis
+
+We used the multivariate auto regressive state-space (MARSS) model to estimate the influence of the number of hatchery salmon in the river, and the different environmental variables on the number of wild salmon migrating [@hinrichsen_using_2009]. MARSS models have been used to analyse time series data that are auto correlated. In the MARSS framework, $y_t$ is used to describe the log (observed number of wild salmon at time t + 1) and $x_t$ represents the true number of wild salmon at time t. They are related by the following equations:
+
+$$
+\mathbf{y_t = Zx_t + a_t + Dd_t + v_t, v_t \sim MVN(}0,\mathbf{R)}
+$$ 
+
+
+
+$$
+\mathbf{x_t = Bx_{t-1} + u_t + Cc_t + w_t, w_t \sim MVN(}0,\mathbf{Q)}
+$$ 
+
+where $c_t$ are the covariates affecting the states, $C$ are the effects of the covariates $c_t$ on $x_t$, $d_t$ are the covariates affecting the observations, $D$ are the effects of the covariates on the observation.$w_t$ and $v_t$ are the normally distributed errors. $R$ is the variance-covariance matrix of the observation errors and $Q$ is the variance-covariance matrix of the process errors. We assume that the observations and states are independent between years. Therefore $Z$ and $B$ are identity matrices in our model. We assume that the observation errors are the same for all years. Therefore, $R$ is a diagonal matrix with all diagonal elements set to be equal. We assume the process errors to be different among years. Therefore, $Q$ is a diagonal matrix with the diagonal elements unequal.
+
+$$\begin{multline}\begin{bmatrix}
+y_{2005} \\ \vdots\\ y_{2020} \end{bmatrix}_t = \begin{bmatrix} 1 & 0  & 0 & ... & 0\\ 0 & 1  & 0 & ... & 0\\ &  & \ddots & \\ 0 & 0  & 0 & .. & 1\\ \end{bmatrix} 
+\begin{bmatrix} x_{2005} \\ \vdots\\ x_{2020} \end{bmatrix}_t + \\
+\\
+
+\begin{bmatrix} d_1 & 0 & 0 & ... & 0\\ 0 & d_2 & 0 & ... & 0\\ & & \ddots & \\ 0 & 0 & 0 & .. & d_m\\ \end{bmatrix}
+\begin{bmatrix}
+flow_{2005} \\ \vdots\\ flow_{2020} \end{bmatrix}_t + \begin{bmatrix} a_{2005} \\ \vdots\\ a_{2020}\\ \end{bmatrix} + \begin{bmatrix} v_{2005} \\ \vdots\\ v_{2020}\\ \end{bmatrix}_t \end{multline}$$
+
+
+
+where,
+
+$$\begin{bmatrix} v_{2005} \\ \vdots\\ v_{2020}\\ \end{bmatrix}_t \sim MVN(0, \begin{bmatrix}  r & 0 & 0 & ... \\ 0 & r & 0 & ... \\ 0 & 0 & 0 & \ddots \\ 0 & 0 & 0 & ...r \\ \end{bmatrix})$$.
+
+$$ \begin{multline}\begin{bmatrix}
+x_{2005} \\ \vdots\\ x_{2020} \end{bmatrix}_t = \begin{bmatrix} 1 & 0  & 0 & ... & 0\\ 0 & 1  & 0 & ... & 0\\ &  & \ddots & \\ 0 & 0  & 0 & .. & 1\\ \end{bmatrix} 
+\begin{bmatrix} x_{2005} \\ \vdots\\ x_{2020} \end{bmatrix}_{t-1} + \\ 
+\\
+\begin{bmatrix} c_{1,2005} & c_{2,2005} & c_{3,2005} & 0 & 0 & ... & 0\\ 0 & c_{1,2006} & c_{2,2006} & c_{3,2006} & 0 & ... & 0\\ & & \ddots & \\ 0 & 0 & 0 & 0 & 0 &.. & c_{n,2006}\\ \end{bmatrix}
+\begin{bmatrix}
+temp_{2005} \\ hatchery_{2005} \\ flow_{2005} \\ \vdots\\ flow_{2020} \end{bmatrix}_t + \begin{bmatrix} u_{2005} \\ \vdots\\ u_{2020}\\ \end{bmatrix} + \begin{bmatrix} w_{2005} \\ \vdots\\ w_{2020}\\ \end{bmatrix}_t \end{multline}$$
+
+
+where,
+
+$$\begin{bmatrix} w_{2005} \\ \vdots\\ w_{2020}\\ \end{bmatrix}_t \sim MVN(0, \begin{bmatrix}  q_{2005} & 0 & 0 & ... \\ 0 & q_{2006} & 0 & ... \\ 0 & 0 & 0 & \ddots \\ 0 & 0 & 0 & ...q_{2020} \\ \end{bmatrix})$$.
+
+### Model selection
+
+Akaike Information Criterion (AIC) is often used to select the best model among models with different combinations of covariates. However, with autocorreleated data, the sample size is much lower than the number of data points we have. Thus, we used AICc, which is AIC with a correction factor for small sample size, to compare models.
+
+
+
+# Results
+
+# Discussion
+
+# Authors' contributions
+
+# Acknowledgements
+
+# Figures and Tables
