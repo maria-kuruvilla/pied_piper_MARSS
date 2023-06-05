@@ -40,7 +40,7 @@ for(i in 1:dim(subset_perhour)[1]){
 
 covariates_all_years <- arrange(data,doy) %>%
   filter(year != 2015 & doy >120 & doy <= 160) %>%
-  select(year,doy, temp, atu_april, photoperiod, lunar_phase, flow, coho1_hatchery_perhour_interpolate) %>%
+  dplyr::select(year,doy, temp, atu_april, photoperiod, lunar_phase, flow, coho1_hatchery_perhour_interpolate) %>%
   pivot_wider(names_from = year, values_from = c(
     temp, atu_april, photoperiod, lunar_phase, flow, coho1_hatchery_perhour_interpolate)) %>%
   column_to_rownames(var = "doy") %>%
@@ -444,7 +444,7 @@ autoplot(final)
 
 
 autoplot(final, plot.type = "fitted.ytT")
-ggsave(here("output","fitted_y_coho.jpeg"), width = 10, height = 8)
+ggsave(here("output","fitted_y_coho.jpeg"), width = 16, height = 10)
 
 ggplot(ci_final[35:36,], aes(x = c("Photoperiod", "Flow"), y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange() +
@@ -454,7 +454,7 @@ ggplot(ci_final[35:36,], aes(x = c("Photoperiod", "Flow"), y = estimate, ymin = 
   theme(plot.title = element_text(size = 20))+
   theme(axis.text.x=element_text(size=14),axis.title.y=element_text(size=14))
 
-ggsave(here("output","coho_environmental_effect.jpeg"), width = 10, height = 8)
+ggsave(here("output","coho_environmental_effect.jpeg"), width = 7500, height = 7000, units = "px")
 
 
 #adding flow to observation covariate

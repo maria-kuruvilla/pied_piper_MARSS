@@ -11,6 +11,7 @@ library(zoo)
 library(MASS)
 library(modelr)
 library(broom)
+library(ggfortify)
 
 #readng the data
 
@@ -1047,4 +1048,33 @@ out.tab.poly_chinook
 
 ci_poly_photo_chinook <- tidy(fits_poly_chinook[[1]])
 ci_poly_photo_chinook
+
+ci_chinook0 <- MARSSparamCIs(fits_chinook0[[3]], method = "parametric", alpha = 0.05, nboot =
+                1000, silent = TRUE) #, hessian.fun = "optim")
+
+ci_chinook0_tidy <- tidy(ci_chinook0)
+ggplot(ci_chinook0_tidy[18:32,], aes(x = c(2005:2014, 2016:2020), y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Year", y = "Estimate of Hatchery effect") +
+  ggtitle("Effect of hatchery Chinook subyearlings") + 
+  theme(plot.title = element_text(size = 20))+
+  theme(axis.title.x=element_text(size=14),axis.title.y=element_text(size=14))
+
+ggsave(here("output","chinook0_hatchery_effect.jpeg"), width = 10, height = 8)
+
+
+
+ggplot(ci_chinook0_tidy[33,], aes(x = c("ATU"), y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of environmental effect") +
+  ggtitle("Environmental effects on Chinook subyearlings") + 
+  theme(plot.title = element_text(size = 20))+
+  theme(axis.text.x=element_text(size=14),axis.title.y=element_text(size=14))
+
+ggsave(here("output","chinook0_environmental_effect.jpeg"), width = 10, height = 8)
+
+autoplot(fits_chinook0[[3]], plot.type = "fitted.ytT")
+ggsave(here("output","fitted_y_chinook.jpeg"), width = 10, height = 8)
 
