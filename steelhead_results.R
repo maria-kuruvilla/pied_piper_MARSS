@@ -500,3 +500,204 @@ autoplot(fits_steelhead1[[7]])
 
 autoplot(fits_steelhead1[[7]], plot.type = "fitted.ytT")
 ggsave(here("output","fitted_y_steelhead.jpeg"), width = 10, height = 8)
+
+
+#since it is only photoperiod, I am adding 2015 back in
+
+
+
+data <- read.csv(here("data","dungeness_subset_covariates.csv"), header = TRUE)
+
+data$steelheadsmolt_hatchery_perhour_interpolate <- na.approx(data$steelheadsmolt_hatchery_perhour)
+
+lm_temp <- lm(temp ~ 1+photoperiod, data)
+
+
+data <- data %>% add_residuals(lm_temp)
+
+plot(data$doy[data$doy >120 & data$doy < 160], 
+     data$steelheadsmolt_wild_perhour[data$doy >120 & data$doy < 160])
+
+plot(data$doy[data$doy >120 & data$doy < 160], 
+     data$steelheadsmolt_hatchery_perhour[data$doy >120 & data$doy < 160])
+
+
+subset_perhour_steelhead <- arrange(data,doy) %>%
+  filter(doy > 120 & doy <= 160) %>%
+  mutate(log.value = log(steelheadsmolt_wild_perhour + 1)) %>%
+  dplyr::select(log.value,year,doy) %>%
+  pivot_wider(names_from = year, values_from = log.value) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+#scale the values
+
+for(i in 1:dim(subset_perhour_steelhead)[1]){
+  subset_perhour_steelhead[i,] = scale(subset_perhour_steelhead[i,])[,1]
+}
+
+
+
+covariates_all_years_steelhead <- arrange(data,doy) %>%
+  filter(doy >120 & doy <= 160) %>%
+  dplyr::select(year,doy, temp, atu_april, photoperiod, lunar_phase, resid, flow, steelheadsmolt_hatchery_perhour_interpolate) %>%
+  pivot_wider(names_from = year, values_from = c(
+    temp, atu_april, photoperiod, lunar_phase, resid, flow, steelheadsmolt_hatchery_perhour_interpolate)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+
+for(i in 1:(dim(covariates_all_years_steelhead)[1]-48)){
+  covariates_all_years[i,] = scale(covariates_all_years[i,])[,1]
+}
+
+
+for(i in 81:96){
+  covariates_all_years_steelhead[i,] = scale(covariates_all_years_steelhead[i,])[,1]
+}
+
+for(i in 97:109){
+  covariates_all_years_steelhead[i,] = scale(covariates_all_years_steelhead[i,], center = FALSE, scale= TRUE)[,1]
+}
+
+
+for(i in 111:112){
+  covariates_all_years_steelhead[i,] = scale(covariates_all_years_steelhead[i,], center = FALSE, scale= TRUE)[,1]
+}
+
+#change numbers in this
+make_poly_columns <- function(covariates_all_years){
+  
+  covariates_all_years_new <- matrix(NA,160,40)
+  
+  for(i in 1:16){
+    if(i==11){
+      covariates_all_years_new[i,] <- covariates_all_years[11,]
+      covariates_all_years_new[16+i,] <- covariates_all_years[11,]
+      list1 <- c(list1, rownames(covariates_all_years)[i])
+      list2 <- c(list2, paste0(rownames(covariates_all_years)[i], "_square"))
+    }
+    else{
+      covariates_all_years_new[i,] <- t(poly(covariates_all_years[i,],2)[,1])
+      
+      covariates_all_years_new[16+i,] <- t(poly(covariates_all_years[i,],2)[,2])
+      print(rownames(covariates_all_years)[i])
+      
+      if(i==1){
+        list1 <- rownames(covariates_all_years)[i]
+        list2 <- paste0(rownames(covariates_all_years)[i], "_square")
+      }
+      else{
+        list1 <- c(list1, rownames(covariates_all_years)[i])
+        list2 <- c(list2, paste0(rownames(covariates_all_years)[i], "_square"))
+      }
+    }
+    }
+    
+    
+    
+  
+  
+  for(i in 33:48){
+    covariates_all_years_new[i,] <- t(poly(covariates_all_years[i,],2)[,1])
+    
+    covariates_all_years_new[16+i,] <- t(poly(covariates_all_years[i,],2)[,2])
+    print(rownames(covariates_all_years)[i])
+    
+    if(i==33){
+      list3 <- rownames(covariates_all_years)[i]
+      list4 <- paste0(rownames(covariates_all_years)[i], "_square")
+    }
+    else{
+      list3 <- c(list3, rownames(covariates_all_years)[i])
+      list4 <- c(list4, paste0(rownames(covariates_all_years)[i], "_square"))
+    }
+  }
+  
+  for(i in 81:96){
+    covariates_all_years_new[i-15,] <- t(poly(covariates_all_years[i,],2)[,1])
+    
+    covariates_all_years_new[i,] <- t(poly(covariates_all_years[i,],2)[,2])
+    print(rownames(covariates_all_years)[i])
+    
+    if(i==81){
+      list5 <- rownames(covariates_all_years)[i]
+      list6 <- paste0(rownames(covariates_all_years)[i], "_square")
+    }
+    else{
+      list5 <- c(list5, rownames(covariates_all_years)[i])
+      list6 <- c(list6, paste0(rownames(covariates_all_years)[i], "_square"))
+    }
+  }
+  
+  
+  
+  colnames(covariates_all_years_new) <- colnames(covariates_all_years)
+  
+  
+  
+  covariates_all_years_new[97:112,]<- covariates_all_years[17:32,]
+  covariates_all_years_new[145:160,]<- covariates_all_years[49:64,]
+  covariates_all_years_new[113:128,]<- covariates_all_years[65:80,]
+  covariates_all_years_new[129:144,]<- covariates_all_years[97:112,]
+  
+  
+  rownames(covariates_all_years_new) <- c(list1,list2, list3, list4, list5, list6,
+                                          rownames(covariates_all_years)[17:32],
+                                          rownames(covariates_all_years)[65:80],
+                                          rownames(covariates_all_years)[97:112],
+                                          rownames(covariates_all_years)[49:64])
+  
+  
+  return(covariates_all_years_new)
+  
+}
+
+
+covariates_all_years_steelhead_new <- make_poly_columns(covariates_all_years_steelhead)
+
+
+#final steelhead
+
+
+mod.list_2_1 <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"photoperiod^2"),
+             16,32, byrow = TRUE),
+  c = covariates_all_years_steelhead_new[33:64,],
+  D = "diagonal and unequal",
+  d = covariates_all_years_steelhead_new[129:144,] 
+)
+
+fit_final_steelhead <- MARSS(subset_perhour_steelhead, model=mod.list_2_1, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+autoplot(fit_final_steelhead)
+
+autoplot(fit_final_steelhead, plot.type = "fitted.ytT")
+ggsave(here("output","fitted_y_steelhead.jpeg"), width = 10, height = 8)
+
+
+ci_steelhead_final <- MARSSparamCIs(fit_final_steelhead, method = "parametric", alpha = 0.05, 
+                                    nboot = 500, silent = FALSE) #, hessian.fun = "optim")
+
+
+ci_steelhead_final_tab <- tidy(ci_steelhead_final)
