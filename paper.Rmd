@@ -140,7 +140,7 @@ We found that model with the lowest AICc had ATU (accumulated thermal units) as 
 
 ## Steelhead smolts
 
-We found that the model with the lowest AICc had photoperiod and photoperiod$^2$ as process covariates and hatchery as an observation covariate. The effect of photoperiod was negative and the effect of photoperiod$^2$ was positive. The effect of hatchery steelhead smolts on the number of wild steelhead smolts varied from year to year. We found that hatchery steelhead smolts had a significant positive effect on wild steelhead smolts in years 2005, 2007, 2008, 2009, and 2010.
+We found that the model with the lowest AICc had photoperiod and photoperiod$^2$ as process covariates and hatchery as an observation covariate. The effect of photoperiod was negative and the effect of photoperiod$^2$ was positive. The effect of hatchery steelhead smolts on the number of wild steelhead smolts varied from year to year. We found that hatchery steelhead smolts had a significant positive effect on wild steelhead smolts in years 2005, 2007, 2008, 2009, 2010, and 2015.
 
 # Discussion
 

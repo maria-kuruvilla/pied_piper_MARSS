@@ -701,3 +701,26 @@ ci_steelhead_final <- MARSSparamCIs(fit_final_steelhead, method = "parametric", 
 
 
 ci_steelhead_final_tab <- tidy(ci_steelhead_final)
+
+
+ggplot(ci_steelhead_final_tab[19:34,], aes(x = c(2005:2020), y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Year", y = "Estimate of Hatchery effect") +
+  ggtitle("Effect of hatchery Steelhead smolts") + 
+  theme(plot.title = element_text(size = 20))+
+  theme(axis.title.x=element_text(size=14),axis.title.y=element_text(size=14))
+
+ggsave(here("output","steelheadsmolts_hatchery_effect.jpeg"), width = 10, height = 8)
+
+
+ggplot(ci_steelhead_final_tab[35:36,], aes(x = c("Photoperiod", "Photoperiod squared"), y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of environmental effect") +
+  ggtitle("Environmental effects on Steelhead smolts") + 
+  theme(plot.title = element_text(size = 20))+
+  theme(axis.text.x=element_text(size=14),axis.title.y=element_text(size=14))
+
+ggsave(here("output","steelheadsmolts_environmental_effect.jpeg"), width = 10, height = 8)
+
