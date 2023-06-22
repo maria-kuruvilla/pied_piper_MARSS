@@ -14,6 +14,7 @@ library(MASS)
 library(modelr)
 library(broom)
 library(ggfortify)
+library(qpcR)
 
 #wrangling data
 
@@ -1682,14 +1683,14 @@ mod.list_1_0_h <- list(
   U = "zero",
   R = "diagonal and equal",
   Q = "diagonal and equal",
-  C = "diagnomal and unequal"
+  C = "diagonal and unequal"
 )
 
 mod.list_1_0 <- list(
   U = "zero",
   R = "diagonal and equal",
   Q = "diagonal and equal",
-  C = "diagnomal and equal"
+  C = "diagonal and equal"
 )
 
 mod.list_0_0 <- list(
@@ -2152,9 +2153,6 @@ c.models <- list(
   c10 = covariates_all_years_chinook0[c(121:135,61:75),] # photodiff, lp,  
   
   
-  
-  
-  
 )
 names(c.models) <- c("Temperature,  Lunar phase,   Hatchery",
                      "Photoperiod,  Lunar phase,   Hatchery",
@@ -2214,5 +2212,368 @@ out.tab_chinook_new_6 <- rbind(out.tab_chinook_new_6,out.tab_chinook_new_5)
 min.AICc <- order(out.tab_chinook_new_6$AICc)
 out.tab.chinook_new_6 <- out.tab_chinook_new_6[min.AICc, ]
 out.tab.chinook_new_6
+
+
+
+#leaving out temp diff and temp/atu/...
+
+
+
+c.models <- list(
+  c1 = covariates_all_years_chinook0[c(16:30,61:75, 136:150),], #flow, lp,   hatchery 
+  c2 = covariates_all_years_chinook0[c(16:30,61:75),] #flow, lp
+
+  
+)
+
+names(c.models) <- c("Flow,  Lunar phase,   Hatchery",
+                     "Flow,  Lunar phase"
+                     
+)
+
+
+
+
+c_num = c(3,2)
+h_num = c(1,0)
+
+out.tab_chinook_new_7 <- NULL
+fits_chinook_new_7 <- list()
+for(i in 1:length(c.models)){
+  
+  print(names(c.models)[i])
+  if(c_num[i] == 3 & h_num[i] == 1){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_3_0_h)
+  }
+  
+  else if(c_num[i] == 2 & h_num[i] == 0){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_2_0)
+  }
+  
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab_chinook_new_7=rbind(out.tab_chinook_new_7,out)
+  fits_chinook_new_7=c(fits_chinook_new_7,list(fit))
+  
+  
+}
+
+
+
+out.tab_chinook_new_7 <- rbind(out.tab_chinook_new_7,out.tab_chinook_new_6)
+min.AICc <- order(out.tab_chinook_new_7$AICc)
+out.tab.chinook_new_7 <- out.tab_chinook_new_7[min.AICc, ]
+out.tab.chinook_new_7
+
+
+#leaving out temp/atu ... and lp
+#leaving out temp/atu... and flow
+
+
+
+
+c.models <- list(
+  c1 = covariates_all_years_chinook0[c(16:30,91:105, 136:150),], #flow, temp diff,   hatchery 
+  c2 = covariates_all_years_chinook0[c(16:30,91:105),], #flow, temp diff
+  c3 = covariates_all_years_chinook0[c(61:75,91:105, 136:150),], #lp,  temp diff. hatchery 
+  c4 = covariates_all_years_chinook0[c(61:75,91:105),] #lp, temp diff
+  
+  
+)
+
+names(c.models) <- c("Flow,  Temperature difference,   Hatchery",
+                     "Flow,  Temperature difference",
+                     "Lunar phase,  Temperature difference,   Hatchery",
+                     "Lunar phase,  Temperature difference"
+                     
+)
+
+
+
+
+c_num = c(3,2,3,2)
+h_num = c(1,0,1,0)
+
+out.tab_chinook_new_8 <- NULL
+fits_chinook_new_8 <- list()
+for(i in 1:length(c.models)){
+  
+  print(names(c.models)[i])
+  if(c_num[i] == 3 & h_num[i] == 1){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_3_0_h)
+  }
+  
+  else if(c_num[i] == 2 & h_num[i] == 0){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_2_0)
+  }
+  
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab_chinook_new_8=rbind(out.tab_chinook_new_8,out)
+  fits_chinook_new_8=c(fits_chinook_new_8,list(fit))
+  
+  
+}
+
+
+
+out.tab_chinook_new_8 <- rbind(out.tab_chinook_new_8,out.tab_chinook_new_7)
+min.AICc <- order(out.tab_chinook_new_8$AICc)
+out.tab.chinook_new_8 <- out.tab_chinook_new_8[min.AICc, ]
+out.tab.chinook_new_8
+
+
+#leaving out temp diff and lp
+
+
+c.models <- list(
+  c1 = covariates_all_years_chinook0[c(1:15,16:30, 136:150),], #temp, flow,   hatchery 
+  c2 = covariates_all_years_chinook0[c(31:45,16:30, 136:150),], #photoperiod, flow,   hatchery
+  c3 = covariates_all_years_chinook0[c(46:60,16:30, 136:150),], # atu, flow,   hatchery
+  c4 = covariates_all_years_chinook0[c(76:90,16:30, 136:150),], #resid, flow,   hatchery
+  c5 = covariates_all_years_chinook0[c(121:135,16:30, 136:150),], # photodiff, flow,   hatchery
+  c6 = covariates_all_years_chinook0[c(1:15,16:30),], #temp, flow,   
+  c7 = covariates_all_years_chinook0[c(31:45,16:30),], #photoperiod, flow,  
+  c8 = covariates_all_years_chinook0[c(46:60,16:30),], # atu, flow,   
+  c9 = covariates_all_years_chinook0[c(76:90,16:30),], #resid, flow,   
+  c10 = covariates_all_years_chinook0[c(121:135,16:30),] # photodiff, flow,  
+  
+  
+)
+
+names(c.models) <- c("Temperature, Flow,   Hatchery",
+                     "Photoperiod, Flow,   Hatchery",
+                     "ATU, Flow,   Hatchery",
+                     "Temperature residuals, Flow,   Hatchery",
+                     "Photoperiod difference, Flow,   Hatchery",
+                     
+                     "Temperature, Flow ",
+                     "Photoperiod, Flow ",
+                     "ATU, Flow ",
+                     "Temperature residuals, Flow ",
+                     "Photoperiod difference, Flow "
+                     
+)
+
+
+
+c_num = c(3,3,3,3,3,2,2,2,2,2)
+h_num = c(1,1,1,1,1,0,0,0,0,0)
+
+
+out.tab_chinook_new_9 <- NULL
+fits_chinook_new_9 <- list()
+for(i in 1:length(c.models)){
+  
+  print(names(c.models)[i])
+  if(c_num[i] == 3 & h_num[i] == 1){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_3_0_h)
+  }
+  
+  else if(c_num[i] == 2 & h_num[i] == 0){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_2_0)
+  }
+  
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab_chinook_new_9=rbind(out.tab_chinook_new_9,out)
+  fits_chinook_new_9=c(fits_chinook_new_9,list(fit))
+  
+  
+}
+
+
+
+out.tab_chinook_new_9 <- rbind(out.tab_chinook_new_9,out.tab_chinook_new_8)
+min.AICc <- order(out.tab_chinook_new_9$AICc)
+out.tab.chinook_new_9 <- out.tab_chinook_new_9[min.AICc, ]
+out.tab.chinook_new_9
+
+
+#only having temp/atu/.. 
+
+c.models <- list(
+  c1 = covariates_all_years_chinook0[c(1:15, 136:150),], #temp   hatchery 
+  c2 = covariates_all_years_chinook0[c(31:45, 136:150),], #photoperiod   hatchery
+  c3 = covariates_all_years_chinook0[c(46:60, 136:150),], # atu   hatchery
+  c4 = covariates_all_years_chinook0[c(76:90, 136:150),], #resid   hatchery
+  c5 = covariates_all_years_chinook0[c(121:135, 136:150),], # photodiff   hatchery
+  c6 = covariates_all_years_chinook0[c(1:15),], #temp   
+  c7 = covariates_all_years_chinook0[c(31:45),], #photoperiod  
+  c8 = covariates_all_years_chinook0[c(46:60),], # atu   
+  c9 = covariates_all_years_chinook0[c(76:90),], #resid   
+  c10 = covariates_all_years_chinook0[c(121:135),] # photodiff  
+  
+  
+)
+
+names(c.models) <- c("Temperature,   Hatchery",
+                     "Photoperiod,   Hatchery",
+                     "ATU,   Hatchery",
+                     "Temperature residuals,   Hatchery",
+                     "Photoperiod difference,   Hatchery",
+                     
+                     "Temperature ",
+                     "Photoperiod ",
+                     "ATU ",
+                     "Temperature residuals ",
+                     "Photoperiod difference "
+                     
+)
+
+
+c_num = c(2,2,2,2,2,1,1,1,1,1)
+h_num = c(1,1,1,1,1,0,0,0,0,0)
+
+
+out.tab_chinook_new_10 <- NULL
+fits_chinook_new_10 <- list()
+for(i in 1:length(c.models)){
+  
+  print(names(c.models)[i])
+  if(c_num[i] == 2 & h_num[i] == 1){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_2_0_h)
+  }
+  
+  else if(c_num[i] == 1 & h_num[i] == 0){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_1_0)
+  }
+  
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab_chinook_new_10=rbind(out.tab_chinook_new_10,out)
+  fits_chinook_new_10=c(fits_chinook_new_10,list(fit))
+  
+  
+}
+
+
+
+out.tab_chinook_new_10 <- rbind(out.tab_chinook_new_10,out.tab_chinook_new_9)
+min.AICc <- order(out.tab_chinook_new_10$AICc)
+out.tab.chinook_new_10 <- out.tab_chinook_new_10[min.AICc, ]
+out.tab.chinook_new_10
+
+
+#only have temp diff
+#only have flow
+#only have lp
+
+c.models <- list(
+  c1 = covariates_all_years_chinook0[c(91:105, 136:150),], #temp diff,   hatchery 
+  c2 = covariates_all_years_chinook0[c(16:30, 136:150),], #flow,  hatchery
+  c3 = covariates_all_years_chinook0[c(61:75, 136:150),], #lp  hatchery
+  c4 = covariates_all_years_chinook0[c(136:150),], #hatchery
+  c5 = covariates_all_years_chinook0[c(91:105),], #temp diff 
+  c6 = covariates_all_years_chinook0[c(16:30),], #flow
+  c7 = covariates_all_years_chinook0[c(61:75),], #lp
+  c8 = "zero"
+  
+  
+)
+
+names(c.models) <- c("Temperature difference,   Hatchery",
+                     "Flow,   Hatchery",
+                     "Lunar phase,   Hatchery",
+                     "Hatchery",
+                     "Temperature difference",
+                     "Flow",
+                     "Lunar phase",
+                     "None"
+                     
+)
+
+
+c_num = c(2,2,2,1,1,1,1,0)
+h_num = c(1,1,1,1,0,0,0,0)
+
+
+
+out.tab_chinook_new_11 <- NULL
+fits_chinook_new_11 <- list()
+for(i in 1:length(c.models)){
+  
+  print(names(c.models)[i])
+  if(c_num[i] == 2 & h_num[i] == 1){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_2_0_h)
+  }
+  
+  else if(c_num[i] == 1 & h_num[i] == 0){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_1_0)
+  }
+  
+  else if(c_num[i] == 1 & h_num[i] == 1){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_1_0_h)
+  }
+  else if(c_num[i] == 0 & h_num[i] == 0){
+    
+    fit.model = c(list(c= c.models[[i]]), mod.list_0_0)
+  }
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=names(c.models)[i], d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab_chinook_new_11=rbind(out.tab_chinook_new_11,out)
+  fits_chinook_new_11=c(fits_chinook_new_11,list(fit))
+  
+  
+}
+
+
+
+out.tab_chinook_new_11 <- rbind(out.tab_chinook_new_11,out.tab_chinook_new_10)
+min.AICc <- order(out.tab_chinook_new_11$AICc)
+out.tab.chinook_new_11 <- out.tab_chinook_new_11[min.AICc, ]
+out.tab.chinook_new_11
+
+weights <- akaike.weights(out.tab.chinook_new_11$AICc)
+
+out.tab.chinook_new_11$deltaAICc <- weights$deltaAIC
+out.tab.chinook_new_11$rel.LL <- weights$rel.LL
+out.tab.chinook_new_11$weights <- weights$weights
 
 
