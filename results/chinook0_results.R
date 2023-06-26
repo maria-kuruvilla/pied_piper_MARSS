@@ -1437,6 +1437,43 @@ mod.list_5_0_h <- list(
 )
 
 
+mod.list_5_0 <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  "d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e",0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"d",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"e"),
+             15,75, byrow = TRUE)
+)
+
 
 
 
@@ -2576,4 +2613,300 @@ out.tab.chinook_new_11$deltaAICc <- weights$deltaAIC
 out.tab.chinook_new_11$rel.LL <- weights$rel.LL
 out.tab.chinook_new_11$weights <- weights$weights
 
+searchString <- function(search_string) {
+  matching_rows <- grep(search_string, out.tab.chinook_new_11$c, ignore.case = FALSE)
+  return(out.tab.chinook_new_11[matching_rows, ])
+}
 
+rows <- searchString("ATU")
+dim(rows)[1]
+
+relative_importance <- data.frame(variable = c("Temperature difference", "Flow", "Lunar phase", "Hatchery"), 
+                                               relative_importance_weight = c(
+                                                 sum(searchString("Temperature difference")$weights),
+                                  sum(searchString("Flow")$weights),
+                                  sum(searchString("Lunar phase")$weights),
+                                  sum(searchString("Hatchery")$weights))
+                                  )
+
+write.csv(out.tab.chinook_new_11, here("output","chinook_model_selection.csv"))
+
+
+# trying diagonal and equal for hatchery
+
+
+mod.list_3_0_trial <- list(
+  U = "zero",
+  R = "diagonal and equal",
+  Q = "diagonal and equal",
+  C = matrix(list("a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  
+                  0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  
+                  0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,0,
+                  
+                  0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,0,
+                  
+                  0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,0,
+                  
+                  0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,0,
+                  
+                  0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,0,
+                  
+                  0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,0,
+                  
+                  0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,0,
+                  
+                  0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,0,
+                  
+                  0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,0,
+                  
+                  0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,0,
+                  
+                  0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,0,
+                  
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c",0,
+                  
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,"a",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"b",0,0,0,0,0,0,0,0,0,0,0,0,0,0,"c"),
+             15,45, byrow = TRUE),
+  c = covariates_all_years_chinook0[c(121:135, 91:105,136:150),]# photodiff,  temp diff,  hatchery
+)
+
+fit_trial <- MARSS(subset_chinook_summer_perhour, model=mod.list_3_0_trial, 
+                   silent = TRUE, method = "BFGS",
+                   control=list(maxit=2000))
+
+
+#maybe we should try all the models but with same effect for hatchery for all years
+
+
+get_covariate_combinations <- function(covariates) {
+  n <- length(covariates)
+  combinations <- lapply(1:n, function(x) combn(covariates, x, simplify = FALSE))
+  unlist(combinations, recursive = FALSE)
+}
+
+
+list_combinations <- get_covariate_combinations(1:5)
+out.tab<- NULL
+fits <- list()
+for(i in 1:length(list_combinations)){
+  
+  covariate_number <- length(list_combinations[[i]])
+  covariates <- list_combinations[[i]]
+  print(covariates)
+  c = NULL
+  name = NULL
+  for(j in covariates){
+    if(j == 1){
+      k = 1
+    }
+    else if(j==2){
+      k = 7
+    }
+    else if(j==3){
+      k = 2
+    }
+    else if(j==4){
+      k = 5
+    }
+    else if(j==5){
+      k = 10
+    }
+    
+    c = rbind(c,covariates_all_years_chinook0[((1+(k-1)*15):(k*15)),])
+    name_long = rownames(covariates_all_years_chinook0)[1+(k-1)*15]
+    name = paste(name, substr(name_long,1,nchar(name_long)-5))
+    
+  }
+  # print(c)
+  print(name)
+  c_num <- length(covariates)
+  if(c_num == 1){
+    
+    fit.model = c(list(c= c), mod.list_1_0)
+  }
+  
+  else if(c_num == 2){
+    
+    fit.model = c(list(c= c), mod.list_2_0)
+  }
+  else if(c_num == 3){
+    
+    fit.model = c(list(c= c), mod.list_3_0)
+  }
+  else if(c_num == 4){
+    
+    fit.model = c(list(c= c), mod.list_4_0)
+  }
+  else if(c_num == 5){
+    
+    fit.model = c(list(c= c), mod.list_5_0)
+  }
+  
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  
+  
+  out=data.frame(c=name, d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab=rbind(out.tab,out)
+  fits=c(fits,list(fit))
+
+}
+out.tab
+
+#trying with multiple temperature type variables
+
+
+#######
+
+
+list_combinations <- get_covariate_combinations(1:5)
+out.tab<- NULL
+fits <- list()
+for(i in 1:length(list_combinations)){
+  
+  covariate_number <- length(list_combinations[[i]])
+  covariates <- list_combinations[[i]]
+  print(covariates)
+  c = NULL
+  name = NULL
+  if(covariates[1] == 1){
+    
+    for(kk in c(1,3,4,6,9)){
+      c = NULL
+      name = NULL
+      for(j in covariates){
+        if(j == 1){
+          k = kk
+        }
+        else if(j==2){
+          k = 7
+        }
+        else if(j==3){
+          k = 2
+        }
+        else if(j==4){
+          k = 5
+        }
+        else if(j==5){
+          k = 10
+        }
+        
+        c = rbind(c,covariates_all_years_chinook0[((1+(k-1)*15):(k*15)),])
+        name_long = rownames(covariates_all_years_chinook0)[1+(k-1)*15]
+        name = paste(name, substr(name_long,1,nchar(name_long)-5))
+        
+      }
+      # print(c)
+      print(name)
+      c_num <- length(covariates)
+      if(c_num == 1){
+        
+        fit.model = c(list(c= c), mod.list_1_0)
+      }
+      
+      else if(c_num == 2){
+        
+        fit.model = c(list(c= c), mod.list_2_0)
+      }
+      else if(c_num == 3){
+        
+        fit.model = c(list(c= c), mod.list_3_0)
+      }
+      else if(c_num == 4){
+        
+        fit.model = c(list(c= c), mod.list_4_0)
+      }
+      else if(c_num == 5){
+        
+        fit.model = c(list(c= c), mod.list_5_0)
+      }
+      
+      fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+                   control=list(maxit=2000))
+      
+      
+      out=data.frame(c=name, d = "None",
+                     logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                     num.iter=fit$numIter, converged=!fit$convergence,
+                     stringsAsFactors = FALSE)
+      out.tab=rbind(out.tab,out)
+      fits=c(fits,list(fit))
+    }
+    
+  }
+  else{
+    for(j in covariates){
+      if(j == 1){
+        k = 1
+      }
+      else if(j==2){
+        k = 7
+      }
+      else if(j==3){
+        k = 2
+      }
+      else if(j==4){
+        k = 5
+      }
+      else if(j==5){
+        k = 10
+      }
+      
+      c = rbind(c,covariates_all_years_chinook0[((1+(k-1)*15):(k*15)),])
+      name_long = rownames(covariates_all_years_chinook0)[1+(k-1)*15]
+      name = paste(name, substr(name_long,1,nchar(name_long)-5))
+      
+    }
+    # print(c)
+    print(name)
+    c_num <- length(covariates)
+    if(c_num == 1){
+      
+      fit.model = c(list(c= c), mod.list_1_0)
+    }
+    
+    else if(c_num == 2){
+      
+      fit.model = c(list(c= c), mod.list_2_0)
+    }
+    else if(c_num == 3){
+      
+      fit.model = c(list(c= c), mod.list_3_0)
+    }
+    else if(c_num == 4){
+      
+      fit.model = c(list(c= c), mod.list_4_0)
+    }
+    else if(c_num == 5){
+      
+      fit.model = c(list(c= c), mod.list_5_0)
+    }
+    
+    fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+                 control=list(maxit=2000))
+    
+    
+    out=data.frame(c=name, d = "None",
+                   logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                   num.iter=fit$numIter, converged=!fit$convergence,
+                   stringsAsFactors = FALSE)
+    out.tab=rbind(out.tab,out)
+    fits=c(fits,list(fit))
+    
+  }
+  
+ 
+}
+out.tab$deltaAICc <- out.tab$AICc - min(out.tab$AICc)
+min.AICc <- order(out.tab$AICc)
+out.tab.ordered <- out.tab[min.AICc, ]
+out.tab.ordered
+
+
+
+#####
