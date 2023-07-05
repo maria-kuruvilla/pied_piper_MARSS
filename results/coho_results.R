@@ -548,4 +548,4 @@ out.tab_coho$deltaAICc <- out.tab_coho$AICc - min(out.tab_coho$AICc)
 min.AICc <- order(out.tab_coho$AICc)
 out.tab_coho.ordered <- out.tab_coho[min.AICc, ]
 out.tab_coho.ordered
-
+write.csv(out.tab_coho.ordered, here("output","coho_model_selection.csv"))

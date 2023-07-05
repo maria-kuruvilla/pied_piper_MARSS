@@ -1,0 +1,96 @@
+"","c","d","logLik","AICc","num.param","num.iter","converged","deltaAICc"
+"function49"," photo_diff temp_diff chinook0_hatchery_perhour_interpolate","None",-1082.95608752715,2206.77283079201,20,76,TRUE,0
+"function83"," photo_diff temp_diff lunar_phase chinook0_hatchery_perhour_interpolate","None",-1082.67712067341,2208.30193365451,21,73,TRUE,1.52910286249426
+"function13"," photo_diff temp_diff","None",-1084.87443981017,2208.52677112494,19,61,TRUE,1.75394033293014
+"function78"," photo_diff temp_diff flow chinook0_hatchery_perhour_interpolate","None",-1082.91936526323,2208.78642283416,21,80,TRUE,2.0135920421485
+"function44"," photo_diff temp_diff lunar_phase","None",-1084.72915138412,2210.31895850594,20,79,TRUE,3.54612771392567
+"function94"," photo_diff temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1082.64530300704,2210.32962038781,22,88,TRUE,3.556789595792
+"function39"," photo_diff temp_diff flow","None",-1084.87439391462,2210.60944356694,20,67,TRUE,3.83661277492183
+"function73"," photo_diff temp_diff flow lunar_phase","None",-1084.7287593748,2212.4052110573,21,77,TRUE,5.63238026528552
+"function47"," atu_april temp_diff chinook0_hatchery_perhour_interpolate","None",-1086.39037939619,2213.64141453009,20,69,TRUE,6.86858373807172
+"function75"," photoperiod temp_diff flow chinook0_hatchery_perhour_interpolate","None",-1085.92076058116,2214.78921347001,21,77,TRUE,8.01638267799353
+"function81"," atu_april temp_diff lunar_phase chinook0_hatchery_perhour_interpolate","None",-1086.05526747975,2215.0582272672,21,72,TRUE,8.28539647518346
+"function46"," photoperiod temp_diff chinook0_hatchery_perhour_interpolate","None",-1087.10567576567,2215.07200726905,20,61,TRUE,8.2991764770386
+"function76"," atu_april temp_diff flow chinook0_hatchery_perhour_interpolate","None",-1086.39003229419,2215.72775689608,21,68,TRUE,8.95492610406291
+"function91"," photoperiod temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1085.55547063936,2216.14995565244,22,93,TRUE,9.3771248604271
+"function80"," photoperiod temp_diff lunar_phase chinook0_hatchery_perhour_interpolate","None",-1086.76695208413,2216.48159647594,21,67,TRUE,9.70876568393123
+"function92"," atu_april temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1086.05447002747,2217.14795442865,22,80,TRUE,10.3751236366379
+"function11"," atu_april temp_diff","None",-1090.16008397621,2219.09805945703,19,63,TRUE,12.3252286650204
+"function37"," atu_april temp_diff flow","None",-1089.95676975351,2220.77419524472,20,73,TRUE,14.0013644527089
+"function42"," atu_april temp_diff lunar_phase","None",-1090.02106937613,2220.90279448997,20,73,TRUE,14.1299636979566
+"function45"," temp temp_diff chinook0_hatchery_perhour_interpolate","None",-1090.78897150596,2222.43859874963,20,77,TRUE,15.6657679576124
+"function71"," atu_april temp_diff flow lunar_phase","None",-1089.80373277544,2222.55515785858,21,84,TRUE,15.7823270665649
+"function12"," resid temp_diff","None",-1092.34372252782,2223.46533656024,19,71,TRUE,16.6925057682297
+"function48"," resid temp_diff chinook0_hatchery_perhour_interpolate","None",-1091.34961332054,2223.55988237878,20,75,TRUE,16.7870515867685
+"function74"," temp temp_diff flow chinook0_hatchery_perhour_interpolate","None",-1090.34302055605,2223.63373341979,21,71,TRUE,16.8609026277763
+"function79"," temp temp_diff lunar_phase chinook0_hatchery_perhour_interpolate","None",-1090.60346691831,2224.15462614431,21,81,TRUE,17.381795352298
+"function38"," resid temp_diff flow","None",-1091.67841068606,2224.21747710983,20,74,TRUE,17.444646317821
+"function77"," resid temp_diff flow chinook0_hatchery_perhour_interpolate","None",-1090.71283497444,2224.37336225658,21,85,TRUE,17.6005314645649
+"function36"," photoperiod temp_diff flow","None",-1091.99941424976,2224.85948423722,20,69,TRUE,18.0866534452102
+"function82"," resid temp_diff lunar_phase chinook0_hatchery_perhour_interpolate","None",-1091.15044097523,2225.24857425816,21,72,TRUE,18.4757434661446
+"function90"," temp temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1090.12639961442,2225.29181360255,22,90,TRUE,18.518982810539
+"function43"," resid temp_diff lunar_phase","None",-1092.23639870738,2225.33345315247,20,59,TRUE,18.5606223604614
+"function66"," temp_diff flow chinook0_hatchery_perhour_interpolate","None",-1092.47829857648,2225.81725289066,20,70,TRUE,19.0444220986515
+"function93"," resid temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1090.47930037904,2225.99761513179,22,89,TRUE,19.2247843397777
+"function72"," resid temp_diff flow lunar_phase","None",-1091.54425153379,2226.03619537527,21,83,TRUE,19.2633645832525
+"function9"," temp temp_diff","None",-1093.86054655461,2226.49898461382,19,68,TRUE,19.7261538218072
+"function70"," photoperiod temp_diff flow lunar_phase","None",-1091.86624102092,2226.68017434953,21,78,TRUE,19.9073435575206
+"function35"," temp temp_diff flow","None",-1092.93726146701,2226.73517867173,20,78,TRUE,19.9623478797193
+"function89"," temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1092.14981451946,2227.24732134661,21,85,TRUE,20.4744905545981
+"function31"," temp_diff chinook0_hatchery_perhour_interpolate","None",-1094.50896179801,2227.79581510063,19,57,TRUE,21.0229843086158
+"function10"," photoperiod temp_diff","None",-1094.76261971228,2228.30313092916,19,66,TRUE,21.5303001371503
+"function40"," temp temp_diff lunar_phase","None",-1093.80307697538,2228.46680968846,20,76,TRUE,21.6939788964419
+"function69"," temp temp_diff flow lunar_phase","None",-1092.84343372067,2228.63455974904,21,73,TRUE,21.8617289570225
+"function29"," temp_diff flow","None",-1095.0573036661,2228.89249883681,19,68,TRUE,22.1196680447983
+"function67"," temp_diff lunar_phase chinook0_hatchery_perhour_interpolate","None",-1094.21606102121,2229.29277778013,20,64,TRUE,22.5199469881163
+"function41"," photoperiod temp_diff lunar_phase","None",-1094.67536792323,2230.21139158417,20,78,TRUE,23.4385607921581
+"function65"," temp_diff flow lunar_phase","None",-1094.88495017942,2230.63055609655,20,73,TRUE,23.8577253045364
+"function5"," temp_diff","None",-1098.14488006678,2232.98914663664,18,52,TRUE,26.2163158446224
+"function30"," temp_diff lunar_phase","None",-1098.02665972134,2234.83121094729,19,56,TRUE,28.0583801552752
+"function56"," photoperiod flow chinook0_hatchery_perhour_interpolate","None",-1103.3538790959,2247.56841392951,20,81,TRUE,40.7955831374948
+"function18"," photo_diff flow","None",-1104.57417650015,2247.92624450491,19,61,TRUE,41.1534137129001
+"function4"," photo_diff","None",-1106.04352226267,2248.78643102841,18,60,TRUE,42.0136002363965
+"function85"," photoperiod flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1102.96570420542,2248.87910071853,21,85,TRUE,42.1062699265153
+"function59"," photo_diff flow chinook0_hatchery_perhour_interpolate","None",-1104.02886335644,2248.91838245059,20,63,TRUE,42.1455516585743
+"function28"," photo_diff chinook0_hatchery_perhour_interpolate","None",-1105.29716229492,2249.37221609445,19,67,TRUE,42.5993853024406
+"function54"," photo_diff flow lunar_phase","None",-1104.34977450446,2249.56020474663,20,77,TRUE,42.7873739546185
+"function88"," photo_diff flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1103.72720957404,2250.40211145578,21,72,TRUE,43.629280663768
+"function23"," photo_diff lunar_phase","None",-1105.85617025783,2250.49023202027,19,67,TRUE,43.717401228253
+"function64"," photo_diff lunar_phase chinook0_hatchery_perhour_interpolate","None",-1105.02355340508,2250.90776254786,20,62,TRUE,44.1349317558447
+"function57"," atu_april flow chinook0_hatchery_perhour_interpolate","None",-1105.38097417055,2251.62260407881,20,64,TRUE,44.8497732867995
+"function26"," atu_april chinook0_hatchery_perhour_interpolate","None",-1106.61212564298,2252.00214279058,19,57,TRUE,45.2293119985625
+"function16"," atu_april flow","None",-1106.87858427294,2252.53506005049,19,66,TRUE,45.7622292584747
+"function86"," atu_april flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1105.02292497948,2252.99354226664,21,83,TRUE,46.2207114746298
+"function15"," photoperiod flow","None",-1107.15954187251,2253.09697524963,19,61,TRUE,46.3241444576129
+"function62"," atu_april lunar_phase chinook0_hatchery_perhour_interpolate","None",-1106.27170719893,2253.40407013557,20,56,TRUE,46.6312393435528
+"function52"," atu_april flow lunar_phase","None",-1106.65261289295,2254.16588152361,20,71,TRUE,47.3930507316013
+"function2"," atu_april","None",-1108.78877450232,2254.27693550772,18,51,TRUE,47.5041047157042
+"function51"," photoperiod flow lunar_phase","None",-1106.97294790742,2254.80655155255,20,65,TRUE,48.0337207605398
+"function25"," photoperiod chinook0_hatchery_perhour_interpolate","None",-1108.10298688278,2254.98386527016,19,68,TRUE,48.2110344781454
+"function14"," temp flow","None",-1108.42435559722,2255.62660269905,19,55,TRUE,48.8537719070378
+"function55"," temp flow chinook0_hatchery_perhour_interpolate","None",-1107.40537852607,2255.67141278985,20,78,TRUE,48.8985819978352
+"function21"," atu_april lunar_phase","None",-1108.60556155716,2255.98901461893,19,69,TRUE,49.2161838269185
+"function61"," photoperiod lunar_phase chinook0_hatchery_perhour_interpolate","None",-1107.76325008116,2256.38715590003,20,63,TRUE,49.6143251080189
+"function84"," temp flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1107.1924156747,2257.33252365709,21,81,TRUE,50.5596928650807
+"function50"," temp flow lunar_phase","None",-1108.29403556848,2257.44872687467,20,74,TRUE,50.6758960826592
+"function17"," resid flow","None",-1109.44582078508,2257.66953307476,19,67,TRUE,50.8967022827505
+"function24"," temp chinook0_hatchery_perhour_interpolate","None",-1109.6982936928,2258.17447889021,19,63,TRUE,51.4016480981936
+"function58"," resid flow chinook0_hatchery_perhour_interpolate","None",-1109.20187154038,2259.26439881847,20,79,TRUE,52.4915680264539
+"function"," temp","None",-1111.28419529769,2259.26777709844,18,52,TRUE,52.4949463064281
+"function53"," resid flow lunar_phase","None",-1109.23929959193,2259.33925492157,20,68,TRUE,52.5664241295522
+"function6"," flow","None",-1111.39102150261,2259.48142950829,18,53,TRUE,52.708598716275
+"function33"," flow chinook0_hatchery_perhour_interpolate","None",-1110.37689337944,2259.53167826349,19,67,TRUE,52.7588474714803
+"function60"," temp lunar_phase chinook0_hatchery_perhour_interpolate","None",-1109.55127102221,2259.96319778213,20,74,TRUE,53.1903669901144
+"function87"," resid flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1108.9363626878,2260.8204176833,21,82,TRUE,54.0475868912881
+"function68"," flow lunar_phase chinook0_hatchery_perhour_interpolate","None",-1110.02974098139,2260.92013770048,20,71,TRUE,54.147306908465
+"function32"," flow lunar_phase","None",-1111.15163581014,2261.08116312488,19,57,TRUE,54.3083323328642
+"function19"," temp lunar_phase","None",-1111.22281923455,2261.22352997371,19,60,TRUE,54.4506991817007
+"function3"," resid","None",-1113.18531124687,2263.0700089968,18,49,TRUE,56.2971782047871
+"function27"," resid chinook0_hatchery_perhour_interpolate","None",-1112.95469425361,2264.68728001182,19,63,TRUE,57.9144492198084
+"function22"," resid lunar_phase","None",-1113.04855872557,2264.87500895575,19,57,TRUE,58.1021781637337
+"function1"," photoperiod","None",-1114.10411930702,2264.9076251171,18,52,TRUE,58.1347943250908
+"function63"," resid lunar_phase chinook0_hatchery_perhour_interpolate","None",-1112.77168150758,2266.40401875287,20,70,TRUE,59.6311879608588
+"function20"," photoperiod lunar_phase","None",-1113.99532447649,2266.76854045758,19,58,TRUE,59.9957096655685
+"function8"," chinook0_hatchery_perhour_interpolate","None",-1116.9733188584,2270.64602421987,18,45,TRUE,63.8731934278585
+"function34"," lunar_phase chinook0_hatchery_perhour_interpolate","None",-1116.68660638618,2272.15110427696,19,52,TRUE,65.378273484951
+"function7"," lunar_phase","None",-1118.97963548174,2274.65865746654,18,55,TRUE,67.8858266745247
