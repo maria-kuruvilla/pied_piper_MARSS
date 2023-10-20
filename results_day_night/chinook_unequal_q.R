@@ -1109,10 +1109,8 @@ ggplot(ci_best_photo_diff[c(34:37,39),],
   geom_pointrange() +
   geom_hline(yintercept = 0, linetype = "dashed") +
   labs(x = "", y = "Estimate of effect") +
-  ggtitle("Chinook subyearlings") + 
-  theme(plot.title = element_text(size = 24))+
-  theme(axis.text.x=element_text(size=24),axis.title.y=element_text(size=24))
+  theme(axis.text.x=element_text(size=22),axis.title.y=element_text(size=24))
 
-ggsave(here("output","chinook0_day_night_effect_final_photo_diff.jpeg"), width = 14, height = 12)
+ggsave(here("output","chinook0_day_night_effect_final_photo_diff.jpeg"), width = 10, height = 8)
 
 write.csv(riv_photo_diff, here("output","riv_photo_diff_chinook0_day_night.csv"))
