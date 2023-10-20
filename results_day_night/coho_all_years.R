@@ -1198,7 +1198,7 @@ ggplot(ci_best_photo[c(33:37,39),],
 ggsave(here("output","coho1_day_night_effect_final_photo.jpeg"), width = 10, height = 8)
 
 autoplot(fits_photo[[59]], plot.type = "fitted.ytT")
-
+ggsave(here("output","fitted_y_coho_best_model_day_night.jpeg"), width = 10, height = 8)
 
 
 
