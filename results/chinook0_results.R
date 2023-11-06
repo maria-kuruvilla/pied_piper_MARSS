@@ -3733,18 +3733,18 @@ out.tab_photo_diff.ordered
 ci_best_photo_diff <- tidy(fits_photo_diff[[18]])
 
 ggplot(ci_best_photo_diff[c(18,19,20),], 
-       aes(x = c("Photoperiod difference", "Temperature difference", "Hatchery"),
+       aes(x = c("Photoperiod\n difference", "Temperature\n difference", "Hatchery"),
            y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange() +
   geom_hline(yintercept = 0, linetype = "dashed") +
   labs(x = "", y = "Estimate of effect") +
   ggtitle("Chinook subyearlings") + 
-  theme(plot.title = element_text(size = 20))+
-  theme(axis.text.x=element_text(size=14),axis.title.y=element_text(size=14))
+  theme(plot.title = element_text(size = 24))+
+  theme(axis.text.x=element_text(size=24),axis.title.y=element_text(size=24))
 
-ggsave(here("output","chinook0_effect_final_photo_diff.jpeg"), width = 10, height = 8)
+ggsave(here("output","chinook0_effect_final_photo_diff.jpeg"), width = 8, height = 8)
 autoplot(fits_photo_diff[[18]], plot.type = "fitted.ytT")
 
-ggsave(here("output","fitted_y_chinook_best_model.jpeg"), width = 10, height = 8)
+ggsave(here("output","fitted_y_chinook_best_model.jpeg"), width = 8, height = 8)
 
 
