@@ -936,11 +936,11 @@ for(i in 1:length(list_combinations)){
       k = 5
       lunar_phase = 1
     }
-    else if(j==6){
+    else if(j==5){
       k = 8
       flow_difference = 1
     }
-    else if(j==5){
+    else if(j==6){
       k = 10
       hatchery = 1
     }
@@ -1102,7 +1102,7 @@ ggsave(here("output","fitted_y_chinook_best_model_day_night.jpeg"), width = 10, 
 
 ci_best_photo_diff <- tidy(fits_photo_diff[[47]])
 
-ggplot(ci_best_photo_diff[c(34:37,39),], 
+ggplot(ci_best_photo_diff[c(33:36,38),], 
        aes(x = c("Photoperiod\n difference", "Temperature\n difference", "Flow\n difference",
                  "Hatchery,\n day", "Hatchery,\n night"),
            y = estimate, ymin = conf.low, ymax = conf.up)) +
