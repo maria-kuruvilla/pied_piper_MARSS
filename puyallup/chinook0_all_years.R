@@ -357,3 +357,9 @@ ggplot(ci_best_model[c(39:43),],
   geom_hline(yintercept = 0, linetype = "dashed") +
   labs(x = "", y = "Estimate of effect") +
   theme(axis.text.x=element_text(size=20),axis.title.y=element_text(size=24))
+
+#save this file
+ggsave(here("puyallup","output","chinook_all_years_effects_estimate.png"), width = 10, height = 8, units = "in", dpi = 300)
+
+autoplot(fits.hatchery.all.years[[28]], plot.type = "fitted.ytT")
+ggsave(here("puyallup","output","chinook_all_years_fitted.png"), width = 10, height = 8, units = "in", dpi = 300)
