@@ -7,7 +7,7 @@
 
 #Function -
 
-Cmat <- function(nyears,ncov,hatchery=0){
+Cmat <- function(nyears,ncov,hatchery=0, day_on_night = FALSE){
   vars = c("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s")
   
   if(hatchery == 1){
@@ -24,11 +24,13 @@ Cmat <- function(nyears,ncov,hatchery=0){
             if(k==ncov){
               if(i<=nyears/2){
                 C[i,j] <- "day"
+                C[i+nyears/2,j] <- "day_on_night"
               }
               else{
                 C[i,j] <- "night"
               }
             }
+            
             else{
               C[i,j] <- vars[k]
             }
@@ -66,7 +68,7 @@ Cmat <- function(nyears,ncov,hatchery=0){
   return(C)
 }
 
-C = Cmat(30,1,1)
+C = Cmat(4,2,1, TRUE)
 
 
 
