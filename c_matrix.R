@@ -24,7 +24,10 @@ Cmat <- function(nyears,ncov,hatchery=0, day_on_night = FALSE){
             if(k==ncov){
               if(i<=nyears/2){
                 C[i,j] <- "day"
-                C[i+nyears/2,j] <- "day_on_night"
+                if(day_on_night){
+                  C[i+nyears/2,j] <- "day_on_night"
+                }
+                
               }
               else{
                 C[i,j] <- "night"
@@ -70,5 +73,24 @@ Cmat <- function(nyears,ncov,hatchery=0, day_on_night = FALSE){
 
 C = Cmat(4,2,1, TRUE)
 
+#making a function to return q matrix if errors are different for day and night
 
+Qmat <- function(nyears){
+  Q <- matrix(list(0),nrow = nyears,ncol = nyears, byrow = TRUE)
+  for(i in 1:nyears){
+    for(j in 1:nyears){
+      if(i==j){
+        if(i <= nyears/2){
+          Q[i,j] <- "q_d"
+        }
+        else{
+          Q[i,j] <- "q_n"
+        }
+      }
+    }
+  }
+  return(Q)
+}
+
+Q = Qmat(4)
 

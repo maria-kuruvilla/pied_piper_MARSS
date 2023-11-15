@@ -138,7 +138,7 @@ for(i in 1:dim(subset_chinook_summer_perhour)[1]){
 #######
 
 
-Cmat <- function(nyears,ncov,hatchery=0){
+Cmat <- function(nyears,ncov,hatchery=0, day_on_night = FALSE){
   vars = c("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s")
   
   if(hatchery == 1){
@@ -155,11 +155,16 @@ Cmat <- function(nyears,ncov,hatchery=0){
             if(k==ncov){
               if(i<=nyears/2){
                 C[i,j] <- "day"
+                if(day_on_night){
+                  C[i+nyears/2,j] <- "day_on_night"
+                }
+                
               }
               else{
                 C[i,j] <- "night"
               }
             }
+            
             else{
               C[i,j] <- vars[k]
             }
@@ -200,11 +205,43 @@ Cmat <- function(nyears,ncov,hatchery=0){
 
 #######
 
+#function for Q matrix
+#######
+
+
+Qmat <- function(nyears){
+  Q <- matrix(list(0),nrow = nyears,ncol = nyears, byrow = TRUE)
+  for(i in 1:nyears){
+    for(j in 1:nyears){
+      if(i==j){
+        if(i <= nyears/2){
+          Q[i,j] <- "q_d"
+        }
+        else{
+          Q[i,j] <- "q_n"
+        }
+      }
+    }
+  }
+  return(Q)
+}
+
+
+#######
+
 #function for mod list
 
 ######
 
-mod_list <- function(nyears,ncov,hatchery=0){
+mod_list <- function(nyears,ncov,hatchery=0, day_on_night = FALSE, unequal_q = FALSE){
+  
+  if(unequal_q){
+    Q = Qmat(nyears)
+    
+  }
+  else{
+    Q = "diagonal and equal"
+  }
   
   if(ncov == 0){
     mod.list = list(
@@ -213,7 +250,7 @@ mod_list <- function(nyears,ncov,hatchery=0){
       Z = "identity",
       A = "zero",
       R = "diagonal and equal",
-      Q = "diagonal and equal"
+      Q = Q
     )
   }
   else{
@@ -221,7 +258,7 @@ mod_list <- function(nyears,ncov,hatchery=0){
       C = "diagonal and equal"
     }
     else{
-      C = Cmat(nyears,ncov,hatchery)
+      C = Cmat(nyears,ncov,hatchery, day_on_night)
     }
     mod.list = list(
       B = "identity",
@@ -229,7 +266,7 @@ mod_list <- function(nyears,ncov,hatchery=0){
       Z = "identity",
       A = "zero",
       R = "diagonal and equal",
-      Q = "diagonal and equal",
+      Q = Q,
       C = C
     )
   }
@@ -343,7 +380,7 @@ out.tab.hatchery.ordered
 
 
 
-fits.hatchery.all.years[[28]]
+fits.hatchery.all.years[[28]] #5252
 ci_best_model <- tidy(fits.hatchery.all.years[[28]])
 
 
@@ -363,3 +400,89 @@ ggsave(here("puyallup","output","chinook_all_years_effects_estimate.png"), width
 
 autoplot(fits.hatchery.all.years[[28]], plot.type = "fitted.ytT")
 ggsave(here("puyallup","output","chinook_all_years_fitted.png"), width = 10, height = 8, units = "in", dpi = 300)
+
+
+#checking whether unequal q's are needed
+
+#fitting model with no covariates
+#Equal q
+fit.model_equal_q = mod_list(nyears,0,hatchery = 0, unequal_q = FALSE)
+fit_equal_q <- MARSS(subset_chinook_summer_perhour, model=fit.model_equal_q, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+fit_equal_q$convergence
+fit_equal_q$AICc #5584
+
+#unequal q for day and night
+fit.model_unequal_q = mod_list(nyears,0,hatchery = 0, unequal_q = TRUE)
+fit_unequal_q <- MARSS(subset_chinook_summer_perhour, model=fit.model_unequal_q, 
+                       silent = TRUE, method = "BFGS", control=list(maxit=2000))
+fit_unequal_q$convergence
+fit_unequal_q$AICc #5585
+
+#should have equal q
+
+#now let's test day on night effect
+
+c = NULL
+name = NULL
+fits.hatchery.all.years2 <- list()
+out.tab.hatchery.all.years2 <- NULL
+for(k in c(6,1,5,7)){
+  c = rbind(c,covariates_chinook0[((1+(k-1)*num_rows):(k*num_rows)),])
+  name_long = rownames(covariates_chinook0)[1+(k-1)*num_rows]
+  name = paste(name, substr(name_long,1,nchar(name_long)-5))
+}
+c_num = 4
+has_hatchery = 1
+fit.model = c(list(c= c), mod_list(nyears,c_num,has_hatchery,day_on_night = TRUE, unequal_q = FALSE))
+fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+
+fit$convergence
+fit$AICc #5246
+ci <- tidy(fit)
+
+ggplot(ci[c(39:44),], 
+       aes(x = c("Photoperiod\ndifference", "Flow", "Flow\n difference",
+                 "Hatchery,\n day", "Hatchery,\n day on night", "Hatchery,\n night"),
+           y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of effect") +
+  theme(axis.text.x=element_text(size=20),axis.title.y=element_text(size=24))
+ggsave(here("puyallup","output","chinook_all_years_effects_estimate_day_on_night.png"), width = 10, height = 8, units = "in", dpi = 300)
+
+
+#from data, plot the fraction of wild hatchery during day
+
+data_subset <- data %>% 
+  select(chinook0_wild_day_fraction,chinook0_hatchery_day_fraction)
+
+data_subset_long <- data_subset %>% 
+  pivot_longer(cols = c(chinook0_wild_day_fraction,chinook0_hatchery_day_fraction),
+               names_to = c("species","origin"),
+               names_pattern = "(.*)_(.*)_day_fraction",
+               values_to = "proportion_day") %>%
+  mutate(proportion_night = 1 - proportion_day) %>%
+  pivot_longer(cols = c(proportion_day,proportion_night),
+               names_to = "daytime_category",
+               names_pattern = "proportion_(.*)",
+               values_to = "proportion")
+
+data_long_subset_avg <-   data_subset_long %>% 
+  filter(!is.na(proportion)) %>%
+  group_by(species,daytime_category, origin) %>%
+  summarize(average_prop = mean(proportion, na.rm = T), n = n(), se = sd(proportion, na.rm = T)/sqrt(n))
+
+ggplot(data = data_long_subset_avg, aes(y = average_prop, x = daytime_category, fill = origin)) +
+  geom_col(position = "dodge")+
+  facet_wrap(~species)+
+  geom_errorbar(aes(ymin = average_prop-se, ymax = average_prop+se), 
+                position = "dodge", alpha = 0.5)+
+  theme(axis.text.x=element_text(size=24),axis.title.y=element_text(size=24))+
+  labs(x = "",
+       y = "Average proportion of \nfish caught per hour", 
+       fill = "Origin")+
+  scale_fill_manual(values = c("cadetblue","salmon"))
+
+ggsave(here("puyallup","output","chinook_all_years_day_night_proportion.png"), width = 10, height = 8, units = "in", dpi = 300)
