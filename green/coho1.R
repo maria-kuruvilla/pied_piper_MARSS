@@ -1,4 +1,4 @@
-#goal - to try MARSS analysis for chinook0 green river data
+#goal - to try MARSS analysis for coho1 green river data
 
 #load libraries
 
@@ -44,91 +44,70 @@ data_night <- data_night %>% add_residuals(lm_temp_night)
 
 #need to go back to the python code and add atu to the dataframe - done
 
-#adding chinook0_hatchery_perhour=0 at the end of the data from
-data_day$chinook0_hatchery_perhour[dim(data_day)[1]] <- 0
-data_night$chinook0_hatchery_perhour[dim(data_night)[1]] <- 0
+#adding coho1_hatchery_perhour=0 at the end of the data from
+data_day$coho1_hatchery_perhour[dim(data_day)[1]] <- 0
+data_night$coho1_hatchery_perhour[dim(data_night)[1]] <- 0
 
-#adding column for interpolated values of chinook0_hatchery_perhour to data_day
+#adding column for interpolated values of coho1_hatchery_perhour to data_day
 
-data_day$chinook0_hatchery_perhour_inp <- na.approx(data_day$chinook0_hatchery_perhour,na.rm = FALSE)
+data_day$coho1_hatchery_perhour_inp <- na.approx(data_day$coho1_hatchery_perhour,na.rm = FALSE)
 
 #doing same for night
 
-data_night$chinook0_hatchery_perhour_inp <- na.approx(data_night$chinook0_hatchery_perhour,na.rm = FALSE)
+data_night$coho1_hatchery_perhour_inp <- na.approx(data_night$coho1_hatchery_perhour,na.rm = FALSE)
 
 
 data_day_night <- rbind(data_day,data_night)
 
-#plot chinook0_wild_perhour as a function of doy
+#plot coho1_wild_perhour as a function of doy
 
-ggplot(data_day_night, aes(x = doy, y = chinook0_wild_perhour)) + 
+ggplot(data_day_night, aes(x = doy, y = coho1_wild_perhour)) + 
   geom_point() + 
-  facet_wrap(~daytime_category)
+  facet_wrap(~year, scales = "free_y")
 
-#do same for chinook hatchery
+#do same for coho hatchery
 
-ggplot(data_day_night, aes(x = doy, y = chinook0_hatchery_perhour)) + 
+ggplot(data_day_night, aes(x = doy, y = coho1_hatchery_perhour)) + 
   geom_point() + 
-  facet_wrap(~daytime_category)
+  facet_wrap(~year, scales = "free_y")
 
-#all the dates are messed up in data_night - fixed in python code
+ggplot(data_day_night, aes(x = doy, y = coho1_mixed_perhour)) + 
+  geom_point() + 
+  facet_wrap(~year, scales = "free_y")
 
 
-covariates_chinook0_green <- arrange(data_day_night,doy) %>%
-  filter(doy >130 & doy <= 200) %>%
+covariates_coho1_green <- arrange(data_day_night,doy) %>%
+  filter((year == 2014 | year == 2017) & doy >70 & doy <= 150) %>%
   dplyr::select(year,doy, daytime_category, temp_inp, flow_inp, photoperiod, atu_solstice,
                 lunar_phase, resid, temp_diff, flow_diff, photo_diff,
-                chinook0_hatchery_perhour_inp) %>%
+                coho1_hatchery_perhour_inp) %>%
   pivot_wider(names_from = c(year, daytime_category), values_from = c(
     temp_inp, flow_inp, photoperiod, atu_solstice, lunar_phase,
-    resid, temp_diff, flow_diff, photo_diff, chinook0_hatchery_perhour_inp)) %>%
+    resid, temp_diff, flow_diff, photo_diff, coho1_hatchery_perhour_inp)) %>%
   column_to_rownames(var = "doy") %>%
   as.matrix() %>%
   t()
 
-#need to add days upto doy = 200 to all years - done
-
-# looking at correlated covariates
-
-data_day_night %>%
-  dplyr::select(flow_inp,photoperiod, lunar_phase, temp_inp, temp_diff, atu_solstice, resid, 
-                photo_diff,flow_diff) %>%
-  GGally::ggpairs(upper=list(continuous='points'),
-                  lower=list(continuous='cor'))
-
-#flow_inp, temp_inp, atu_solstice are highly correlated
-#photoperiod, temp, atu_solstice are highly correlated
-#temp_inp, atu_solstice, resid are highly correlated
-#temp_diff and photo diff are highly correlated
-
-
-#one group of covariates - temp_inp, atu_solstice, resid, photoperiod, flow_inp (1,2,3,4,6)
-#second group - temp_diff, photo_diff (7,9)
-#third group - lunar_phase
-#fourth group - flow_diff
-#fifth group - hatchery
-
-ggsave(here("green", "output", "covariates_correlation_green.png"), width = 10, height = 10)
 
 
 #scaling the variables
 
-num_years = 7
+num_years = 2
 num_rows = num_years*2
 num_covariates = 10
-total_covariates = dim(covariates_chinook0_green)[1]
+total_covariates = dim(covariates_coho1_green)[1]
 
 
 for(i in 1:(total_covariates/2)){ # everything except diffs and hatchery
-  covariates_chinook0_green[i,] = scale(covariates_chinook0_green[i,])[,1]
+  covariates_coho1_green[i,] = scale(covariates_coho1_green[i,])[,1]
 }
 
 #just scale
 #need to skip rows which are just zeros - 2017,2018,2021 day and 2018, 2021 night
 
 for(i in (total_covariates/2 + 1):(total_covariates)){
-  if(sum(covariates_chinook0_green[i,]) != 0){
-    covariates_chinook0_green[i,] = scale(covariates_chinook0_green[i,], center = FALSE, scale= TRUE)[,1]
+  if(sum(covariates_coho1_green[i,]) != 0){
+    covariates_coho1_green[i,] = scale(covariates_coho1_green[i,], center = FALSE, scale= TRUE)[,1]
   }
 }
 
@@ -136,19 +115,18 @@ for(i in (total_covariates/2 + 1):(total_covariates)){
 
 
 #subset response variable
-subset_chinook_summer_perhour <- arrange(data_day_night,doy) %>%
-  filter(doy > 130 & doy <= 200) %>%
-  mutate(log.value = log(chinook0_wild_perhour + 1)) %>%
+subset_coho_summer_perhour <- arrange(data_day_night,doy) %>%
+  filter((year == 2014 | year == 2017) & doy >70 & doy <= 150) %>%
+  mutate(log.value = log(coho1_wild_perhour + 1)) %>%
   dplyr::select(log.value,year,doy,daytime_category) %>%
   pivot_wider(names_from = c(year, daytime_category), values_from = log.value) %>%
   column_to_rownames(var = "doy") %>%
   as.matrix() %>%
   t()
 
-for(i in 1:dim(subset_chinook_summer_perhour)[1]){
-  subset_chinook_summer_perhour[i,] = scale(subset_chinook_summer_perhour[i,])[,1]
+for(i in 1:dim(subset_coho_summer_perhour)[1]){
+  subset_coho_summer_perhour[i,] = scale(subset_coho_summer_perhour[i,])[,1]
 }
-
 
 
 #function for C matrix
@@ -309,12 +287,12 @@ out.tab.all.years <- NULL
 fits.all.years <- NULL
 nyears = num_years*2
 for(kk in c(1,2,3,4,6)){
-  c = covariates_chinook0_green[((1+(kk-1)*num_rows):(kk*num_rows)),]
-  name_long = rownames(covariates_chinook0_green)[1+(kk-1)*num_rows]
+  c = covariates_coho1_green[((1+(kk-1)*num_rows):(kk*num_rows)),]
+  name_long = rownames(covariates_coho1_green)[1+(kk-1)*num_rows]
   name_individual = substr(name_long,1,nchar(name_long)-9)
   print(name_individual)
   fit.model = c(list(c= c), mod_list(nyears,1,0))
-  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+  fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
                control=list(maxit=2000))
   out=data.frame(c=name_individual, d = "None",
                  logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
@@ -325,19 +303,19 @@ for(kk in c(1,2,3,4,6)){
 }
 
 out.tab.all.years
-#all have equal support but flow has least aicc
+#atu solstice has least aicc - 4
 
 
 out.tab.all.years2 <- NULL
 fits.all.years2 <- NULL
 nyears = num_years*2
 for(kk in c(7,9)){
-  c = covariates_chinook0_green[((1+(kk-1)*num_rows):(kk*num_rows)),]
-  name_long = rownames(covariates_chinook0_green)[1+(kk-1)*num_rows]
+  c = covariates_coho1_green[((1+(kk-1)*num_rows):(kk*num_rows)),]
+  name_long = rownames(covariates_coho1_green)[1+(kk-1)*num_rows]
   name_individual = substr(name_long,1,nchar(name_long)-9)
   print(name_individual)
   fit.model = c(list(c= c), mod_list(nyears,1,0))
-  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+  fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
                control=list(maxit=2000))
   out=data.frame(c=name_individual, d = "None",
                  logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
@@ -364,7 +342,7 @@ for(i in 1:length(list_combinations)){
   name = NULL
   for(j in covariates){
     if(j == 1){
-      k = 2
+      k = 4
     }
     else if(j==2){
       k = 7
@@ -379,8 +357,8 @@ for(i in 1:length(list_combinations)){
       k = 10
     }
     
-    c = rbind(c,covariates_chinook0_green[((1+(k-1)*num_rows):(k*num_rows)),])
-    name_long = rownames(covariates_chinook0_green)[1+(k-1)*num_rows]
+    c = rbind(c,covariates_coho1_green[((1+(k-1)*num_rows):(k*num_rows)),])
+    name_long = rownames(covariates_coho1_green)[1+(k-1)*num_rows]
     name = paste(name, substr(name_long,1,nchar(name_long)-5))
     
   }
@@ -397,7 +375,7 @@ for(i in 1:length(list_combinations)){
     c_num <- length(covariates)
     fit.model = c(list(c= c), mod_list(nyears,c_num,has_hatchery))
   }
-  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+  fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
                control=list(maxit=2000))
   
   
@@ -415,85 +393,21 @@ min.AICc <- order(out.tab.hatchery.all.years$AICc)
 out.tab.hatchery.ordered <- out.tab.hatchery.all.years[min.AICc, ]
 out.tab.hatchery.ordered
 
-ci_best <- tidy(fits.hatchery.all.years[[26]])
-ci_good <- tidy(fits.hatchery.all.years[[31]])
-ci_good
+ci_best <- tidy(fits.hatchery.all.years[[20]])
 
-
-ggplot(ci_best[c(17:20),], 
-       aes(x = c("Flow", "Temperature\n difference", "Lunar phase",
-                 "Flow\n difference"),
+ggplot(ci_best[c(7:10),], 
+       aes(x = c("ATU", "Lunar phase","Hatchery\n day", "Hatchery\n night"),
            y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange() +
   geom_hline(yintercept = 0, linetype = "dashed") +
   labs(x = "", y = "Estimate of effect") +
   theme(axis.text.x=element_text(size=20),axis.title.y=element_text(size=24))
 
-#save this file
-ggsave(here("green","output","chinook_all_years_effects_estimate_best_model.png"), width = 10, height = 8, units = "in", dpi = 300)
-
-autoplot(fits.hatchery.all.years[[26]], plot.type = "fitted.ytT")
-ggsave(here("green","output","chinook_all_years_fitted_best_model.png"), width = 10, height = 8, units = "in", dpi = 300)
 
 
-ggplot(ci_good[c(17:22),], 
-       aes(x = c("Flow", "Temperature\n difference", "Lunar phase",
-                 "Flow\n difference", "Hatchery\n day", "Hatchery\n night"),
-           y = estimate, ymin = conf.low, ymax = conf.up)) +
-  geom_pointrange() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "", y = "Estimate of effect") +
-  theme(axis.text.x=element_text(size=20),axis.title.y=element_text(size=24))
-
-ggsave(here("green","output","chinook_all_years_effects_estimate_good_model.png"), width = 10, height = 8, units = "in", dpi = 300)
-
-
-#using tidyverse, calculate fraction of chinook0_wild_perhour that migrate during the day
-#using data_day_night
-
-#make a column called chinook0_wild_perhour_day if daytime_category == "day" 
-#and chinook0_wild_perhour_night if daytime_category == "night"
-#use pivot wider and take name from daytime_category and value from chinook0_wild_perhour
+ggsave(here("green","output","coho_all_years_effects_estimate_best_model.png"), width = 10, height = 8, units = "in", dpi = 300)
 
 
 
-data_long <- data_day_night %>% 
-  dplyr::select(chinook0_hatchery_perhour, 
-                chinook0_wild_perhour, 
-                coho1_hatchery_perhour, 
-                coho1_wild_perhour, daytime_category, doy, year) %>%
-  pivot_longer(cols = c(chinook0_hatchery_perhour, 
-                        chinook0_wild_perhour, 
-                        coho1_hatchery_perhour, 
-                        coho1_wild_perhour),
-               names_to = c("species","origin"),
-               names_pattern = "(.*)_(.*)_perhour",
-               values_to = "perhour") %>% 
-  group_by(doy,year, species, origin) %>%
-  mutate(proportion = perhour/sum(perhour))
+#maybe include turbidity??
 
-data_long_subset <-   data_long %>% 
-  filter(!is.na(proportion)) %>%
-  group_by(species,daytime_category, origin) %>%
-  summarize(average_prop = mean(proportion))
-
-data_long_subset <-   data_long %>% 
-  filter(!is.na(proportion)) %>%
-  group_by(species,daytime_category, origin) %>%
-  summarize(average_prop = mean(proportion, na.rm = T), n = n(), se = sd(proportion, na.rm = T)/sqrt(n))
-
-ggplot(data = data_long_subset, aes(y = average_prop, x = daytime_category, fill = origin)) +
-  geom_col(position = "dodge")+
-  facet_wrap(~species)+
-  geom_errorbar(aes(ymin = average_prop-se, ymax = average_prop+se), 
-                position = "dodge", alpha = 0.5)+
-  theme(axis.text.x=element_text(size=24),axis.title.y=element_text(size=24))+
-  labs(x = "",
-       y = "Average proportion of \nfish caught per hour", 
-       fill = "Origin")+
-  scale_fill_manual(values = c("cadetblue","salmon"))
-
-ggsave(here("green","output","avg_prop_day_night_bar.jpeg"), width = 10, height = 8)
-
-
-#need to test for unequal q
