@@ -15,14 +15,14 @@ library(tidyverse)
 
 #load data
 
-data_day_night <- read.csv(here("skagit", "data", "skagit_2010-2019_w_covariates.csv"))
+data_day_night <- read.csv(here("skagit", "data", "skagit_2010-2022_w_covariates.csv"))
 
 #using ggplot plot chinook0_wild_perhour as a function of doy, facet wrap for years
 #add a x limit from 150 to 200
 
 ggplot(data_day_night, aes(x = doy, y = chinook0_wild_perhour)) +
   geom_point() +
-  xlim(150,200)+
+  # xlim(150,200)+
   facet_wrap(~year, ncol = 2, scales = "free_y")
   
 
@@ -30,10 +30,10 @@ ggplot(data_day_night, aes(x = doy, y = chinook0_wild_perhour)) +
 
 ggplot(data_day_night, aes(x = doy, y = chinook0_hatchery_perhour)) +
   geom_point() +
-  xlim(150,200)+
+  # xlim(150,200)+
   facet_wrap(~year, ncol = 2, scales = "free_y")
 
-#doy limits should be 150 to 190
+#doy limits should be 150 to 189
 
 #making new columns for chinook0_wild_perhour and chinook0_hatchery_perhour and
 #coho1_wild_perhour and coho1_hatchery_perhour and chinook1_wild_perhour and
@@ -89,7 +89,7 @@ data_day_night <- data_day_night %>% add_residuals(lm_temp_day)
 
 
 covariates_chinook0_skagit <- arrange(data_day_night,doy) %>%
-  filter(doy >150 & doy <= 190) %>%
+  filter(doy >150 & doy < 190) %>%
   dplyr::select(year,doy, daytime_category, temp, flow, photoperiod, atu_solstice,
                 lunar_phase, resid, temp_diff, flow_diff, photo_diff,
                 chinook0_hatchery_perhour_inp, trap) %>%
@@ -113,19 +113,23 @@ ggsave(here("skagit", "output", "covariates_correlation_skagit.png"), width = 10
 
 #scaling the variables
 
-num_years = 2019-2010
+num_years = 2022-2010
 num_rows = num_years*2
 num_covariates = 10
 total_covariates = dim(covariates_chinook0_skagit)[1]
 
-
+#scaling and centering
 for(i in 1:(total_covariates/2)){ # everything except diffs and hatchery
   covariates_chinook0_skagit[i,] = scale(covariates_chinook0_skagit[i,])[,1]
 }
 
+
+#checking
+for(i in 1:(total_covariates)){
+  print(sum(covariates_chinook0_skagit[i,]))
+}
+
 #just scale
-
-
 for(i in (total_covariates/2 + 1):(total_covariates)){
   if(sum(covariates_chinook0_skagit[i,]) != 0){
     covariates_chinook0_skagit[i,] = scale(covariates_chinook0_skagit[i,], center = FALSE, scale= TRUE)[,1]
@@ -137,7 +141,7 @@ for(i in (total_covariates/2 + 1):(total_covariates)){
 
 #subset response variable
 subset_chinook_summer_perhour <- arrange(data_day_night,doy) %>%
-  filter(doy > 150 & doy <= 190) %>%
+  filter(doy > 150 & doy < 190) %>%
   mutate(log.value = log(chinook0_wild_perhour + 1)) %>%
   dplyr::select(log.value,year,doy,daytime_category,trap) %>%
   pivot_wider(names_from = c(year, daytime_category, trap), values_from = log.value) %>%
@@ -558,3 +562,24 @@ out.tab.hatchery.ordered
 
 ci_best <- fits.hatchery.all.years[[9]]
 autoplot(fits.hatchery.all.years[[9]])
+
+#need to try different q for day and night
+
+fit.model_equal_q = mod_list(nyears,0,0, day_on_night = FALSE, unequal_q = FALSE)
+
+fit_equal_q <- MARSS(subset_chinook_summer_perhour, model=fit.model_equal_q, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+
+fit_equal_q$AICc
+
+fit.model_unequal_q = mod_list(nyears,0,0, day_on_night = FALSE, unequal_q = TRUE)
+
+fit_unequal_q <- MARSS(subset_chinook_summer_perhour, 
+                       model=fit.model_unequal_q, silent = TRUE, method = "BFGS",
+                        control=list(maxit=2000))
+
+fit_unequal_q$AICc
+
+#maybe try model selection with unequal q
+
+
