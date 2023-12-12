@@ -3,7 +3,7 @@
 #load libraries
 
 library(MARSS)
-
+library(broom)
 library(here)
 library(zoo)
 library(MASS)
@@ -12,6 +12,7 @@ library(qpcR)
 library(GGally)
 library(ggplot2)
 library(tidyverse)
+
 
 if(.Platform$OS.type == "unix") {
   data_string = here("..","..","data","pied_piper","dungeness")
@@ -224,8 +225,27 @@ mod_list <- function(nyears,ncov,hatchery=0, day_on_night = FALSE, unequal_q = F
 
 #######
 
+#check whether there is support for different errors for day and night
 
+num_years = 15 
+num_rows = num_years*2
 
+fit.model_equal_q = mod_list(num_rows,0,0,FALSE,FALSE)
+fit.model_unequal_q = mod_list(num_rows,0,0,FALSE,TRUE)
+
+fit_equal_q <- MARSS(subset_chinook_summer_perhour, 
+                           model=fit.model_equal_q, silent = TRUE, 
+                           method = "BFGS",
+                           control=list(maxit=2000))
+
+fit_equal_q$AICc #4216.2
+
+fit_unequal_q <- MARSS(subset_chinook_summer_perhour, 
+                      model=fit.model_unequal_q, silent = TRUE, 
+                      method = "BFGS",
+                      control=list(maxit=2000))
+
+fit_unequal_q$AICc #4197.75
 
 num_years = 15 
 num_rows = num_years*2
@@ -322,6 +342,45 @@ ggplot(ci_best[c(33:37),],
 #lowest aicc = 4061
 
 
+
+#look at correlated covaraites
+
+out.tab.all.years.unequalq <- NULL
+fits.all.years.unequalq <- NULL
+nyears = num_years*2
+for(kk in c(1,3,4,6,9)){
+  c = covariates_chinook0[((1+(kk-1)*nyears):(kk*nyears)),]
+  name_long = rownames(covariates_chinook0)[1+(kk-1)*nyears]
+  name_individual = substr(name_long,1,nchar(name_long)-9)
+  print(name_individual)
+  fit.model = c(list(c= c), mod_list(nyears,1,0,FALSE,TRUE))
+  fit <- MARSS(subset_chinook_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  out=data.frame(c=name_individual, d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab.all.years.unequalq=rbind(out.tab.all.years.unequalq,out)
+  fits.all.years.unequalq=c(fits.all.years.unequalq,list(fit))
+}
+
+out.tab.all.years.unequalq
+#photodiff has the least AICC
+
+#make a column for delta AICC
+
+out.tab.all.years.unequalq$deltaAICc <- out.tab.all.years.unequalq$AICc - min(out.tab.all.years.unequalq$AICc)
+
+out.tab.all.years.unequalq.ordered <- out.tab.all.years.unequalq[order(out.tab.all.years.unequalq$AICc), ]
+
+#save the table
+
+write.csv(out.tab.all.years.unequalq, 
+          file = here("output","chinook_model_selection_correlated_covariates.csv"))
+
+
+
+
 #repeat analysis with different errors for day and night
 
 
@@ -393,7 +452,10 @@ for(i in 1:length(list_combinations)){
                control=list(maxit=2000))
   
   
-  out=data.frame(c=name, d = "None",
+  out=data.frame(c=name,photoperiod_difference = photoperiod_difference,
+                 temperature_difference = temperature_difference, flow = flow,
+                 flow_difference = flow_difference,
+                 lunar_phase = lunar_phase, hatchery = hatchery,
                  logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
                  num.iter=fit$numIter, converged=!fit$convergence,
                  stringsAsFactors = FALSE)
@@ -418,10 +480,16 @@ ggplot(ci_best2[c(34:38),],
            y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange() +
   geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "", y = "Estimate of effect") +
-  theme(axis.text.x=element_text(size=20),axis.title.y=element_text(size=24))
+  labs(x = "", y = "Estimate of effect",
+       title = "Dungeness River, Chinook sub yearlings"
+       )+
+  theme_bw()+
+  theme(axis.text.x=element_text(size=18),axis.title.y=element_text(size=18),
+        title = element_text(size = 18))
 #lowest aicc = 4051
 
+ggsave(here("output","best_model_chinook0_corrected.jpeg"),
+       width = 10, height = 8, units = "in", dpi = 300)
 
 #check for acf of hatchery
 
@@ -440,6 +508,93 @@ data_acf <- data_day_night %>%
 
 acf(data_acf$chinook0_hatchery_perhour_interpolate, lag.max = 24*7*2, plot = TRUE)
 
+#calculate the relative variable importance
+
+mod.list_0_0 <- mod_list(num_rows,0,0, FALSE, TRUE)
+fit <- MARSS(subset_chinook_summer_perhour, model=mod.list_0_0, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+photoperiod_difference = 0
+temperature_difference = 0
+flow = 0
+lunar_phase = 0
+hatchery = 0
+flow_difference = 0
+name = "none"
+out=data.frame(c=name,photoperiod_difference = photoperiod_difference,
+               temperature_difference = temperature_difference, flow = flow,
+               flow_difference = flow_difference,
+               lunar_phase = lunar_phase, hatchery = hatchery,
+               logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+               num.iter=fit$numIter, converged=!fit$convergence,
+               stringsAsFactors = FALSE)
+
+#remove deltaAICc column from out.tab_photo_diff2
+out.tab_photo_diff2$deltaAICc <- NULL
+out.tab_photo_diff2=rbind(out.tab_photo_diff2,out)
+fits_photo_diff2=c(fits_photo_diff2,list(fit))
+
+out.tab_photo_diff2$deltaAICc <- NULL
+out.tab_photo_diff2$rel.LL <- NULL
+out.tab_photo_diff2$weights <- NULL
 
 
+weights <- akaike.weights(out.tab_photo_diff2$AICc)
+
+out.tab_photo_diff2$deltaAICc <- weights$deltaAIC
+out.tab_photo_diff2$rel.LL <- weights$rel.LL
+out.tab_photo_diff2$weights <- weights$weights
+
+
+min.AICc <- order(out.tab_photo_diff2$AICc)
+out.tab_photo_diff2.ordered <- out.tab_photo_diff2[min.AICc, ]
+out.tab_photo_diff2.ordered
+
+out.tab_photo_diff2.ordered$cumulative_weights <- cumsum(out.tab_photo_diff2.ordered$weights)
+
+relative_importance_photo_diff <- sum(out.tab_photo_diff2$weights[out.tab_photo_diff2$photoperiod_difference==1])
+relative_importance_temperature_difference <- sum(out.tab_photo_diff2$weights[out.tab_photo_diff2$temperature_difference==1])
+relative_importance_flow <- sum(out.tab_photo_diff2$weights[out.tab_photo_diff2$flow==1])
+relative_importance_lunar_phase <- sum(out.tab_photo_diff2$weights[out.tab_photo_diff2$lunar_phase==1])
+relative_importance_hatchery <- sum(out.tab_photo_diff2$weights[out.tab_photo_diff2$hatchery==1])
+relative_importance_flow_diff <- sum(out.tab_photo_diff2$weights[out.tab_photo_diff2$flow_difference==1])
+
+riv_photo_diff <- data.frame(variable = c("photoperiod difference",
+                                          "temperature difference",
+                                          "flow",
+                                          "lunar phase",
+                                          "flow difference",
+                                          "hatchery"),
+                             relative_importance = c(relative_importance_photo_diff,
+                                                     relative_importance_temperature_difference,
+                                                     relative_importance_flow,
+                                                     relative_importance_lunar_phase,
+                                                     relative_importance_flow_diff,
+                                                     relative_importance_hatchery))
+
+
+#sort according to relative importance
+riv_photo_diff[order(riv_photo_diff$relative_importance, decreasing = TRUE),]
+
+riv_photo_diff <- riv_photo_diff[order(riv_photo_diff$relative_importance, decreasing = TRUE),]
+riv_photo_diff$relative_importance <- round(riv_photo_diff$relative_importance,1)
+
+riv_photo_diff
   
+#save the relative importance table
+write.csv(riv_photo_diff, here("output","riv_photo_diff_chinook0_corrected.csv"), row.names = FALSE)
+
+out.tab_photo_diff2.ordered
+#clean up table by reducing number of digits to 2 and by only keeping
+#the variables of interest
+
+out.tab_photo_diff2.ordered$deltaAICc <- round(
+  out.tab_photo_diff2.ordered$deltaAICc,2)
+out.tab_photo_diff2.ordered$rel.LL <- round(
+  out.tab_photo_diff2.ordered$rel.LL,2)
+out.tab_photo_diff2.ordered$weights <- round(
+  out.tab_photo_diff2.ordered$weights,2)
+out.tab_photo_diff2.ordered$cumulative_weights <- round(
+  out.tab_photo_diff2.ordered$cumulative_weights,2)
+
+#save the table
+write.csv(out.tab_photo_diff2.ordered, here("output","chinook0_corrected_model_selection.csv"), row.names = FALSE)

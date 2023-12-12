@@ -229,8 +229,62 @@ get_covariate_combinations <- function(covariates) {
 }
 #####
 
+#try model with equal errors and unequal errors
+
+fit.model_equal_q = mod_list(num_rows,0,0,FALSE,FALSE)
+fit.model_unequal_q = mod_list(num_rows,0,0,FALSE,TRUE)
+
+fit_equal_q_coho <- MARSS(subset_coho_summer_perhour, 
+                     model=fit.model_equal_q, silent = TRUE, 
+                     method = "BFGS",
+                     control=list(maxit=2000))
+
+fit_equal_q_coho$AICc #2792.9
+
+fit_unequal_q_coho <- MARSS(subset_coho_summer_perhour, 
+                       model=fit.model_unequal_q, silent = TRUE, 
+                       method = "BFGS",
+                       control=list(maxit=2000))
+
+fit_unequal_q_coho$AICc #2794
 
 
+out.tab.all.years.equalq <- NULL
+fits.all.years.equalq <- NULL
+nyears = num_years*2
+for(kk in c(1,3,4,6,9)){
+  c = covariates_coho1[((1+(kk-1)*nyears):(kk*nyears)),]
+  name_long = rownames(covariates_coho1)[1+(kk-1)*nyears]
+  name_individual = substr(name_long,1,nchar(name_long)-9)
+  print(name_individual)
+  fit.model = c(list(c= c), mod_list(nyears,1,0,FALSE,FALSE))
+  fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+               control=list(maxit=2000))
+  out=data.frame(c=name_individual, d = "None",
+                 logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+                 num.iter=fit$numIter, converged=!fit$convergence,
+                 stringsAsFactors = FALSE)
+  out.tab.all.years.equalq=rbind(out.tab.all.years.equalq,out)
+  fits.all.years.equalq=c(fits.all.years.equalq,list(fit))
+}
+
+out.tab.all.years.equalq
+#photoperiod has the least aicc
+
+#make new column for delta aicc
+
+out.tab.all.years.equalq$delta_aicc <- out.tab.all.years.equalq$AICc - min(out.tab.all.years.equalq$AICc)
+
+#order the table by delta aicc
+
+out.tab.all.years.equalq <- out.tab.all.years.equalq[order(out.tab.all.years.equalq$delta_aicc),]
+
+out.tab.all.years.equalq
+
+#save the table
+
+write.csv(out.tab.all.years.equalq, 
+          file = here("output","coho_model_selection_correlated_covariates.csv"))
 
 num_years = 15 
 num_rows = num_years*2
@@ -299,7 +353,10 @@ for(i in 1:length(list_combinations)){
                control=list(maxit=2000))
   
   
-  out=data.frame(c=name, d = "None",
+  out=data.frame(c=name, photoperiod = photoperiod,
+                 temperature_difference = temperature_difference, flow = flow,
+                 flow_difference = flow_difference,
+                 lunar_phase = lunar_phase, hatchery = hatchery,
                  logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
                  num.iter=fit$numIter, converged=!fit$convergence,
                  stringsAsFactors = FALSE)
@@ -314,6 +371,46 @@ min.AICc <- order(out.tab_photo$AICc)
 out.tab_photo.ordered <- out.tab_photo[min.AICc, ]
 out.tab_photo.ordered
 
+#make column for delta aicc
+
+out.tab_photo.ordered$delta_aicc <- out.tab_photo.ordered$AICc - min(out.tab_photo.ordered$AICc)
+
+out.tab_photo.ordered
+
+#save the table
+
+write.csv(out.tab_photo.ordered, 
+          file = here("output",
+                      "coho_corrected_model_selection.csv"))
+
+mod.list_0_0 <- mod_list(num_rows,0,0, FALSE, FALSE)
+fit <- MARSS(subset_coho_summer_perhour, model=mod.list_0_0, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+photoperiod = 0
+temperature_difference = 0
+flow = 0
+lunar_phase = 0
+hatchery = 0
+flow_difference = 0
+name = "none"
+out=data.frame(c=name, photoperiod = photoperiod,
+               temperature_difference = temperature_difference, flow = flow,
+               flow_difference = flow_difference,
+               lunar_phase = lunar_phase, hatchery = hatchery,
+               logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+               num.iter=fit$numIter, converged=!fit$convergence,
+               stringsAsFactors = FALSE)
+
+out.tab_photo$deltaAICc <- NULL
+out_all <- rbind(out.tab_photo, out)
+colnames(out.tab_photo)
+colnames(out)
+
+out_all$delta_aicc <- out_all$AICc - min(out_all$AICc)
+out_all <- out_all[order(out_all$delta_aicc),]
+
+out_all
+
 ci_best_coho <- tidy(fits_photo[[43]])
 ci_good_coho <- tidy(fits_photo[[59]])
 
@@ -321,19 +418,112 @@ ggplot(ci_best_coho[c(33:36),],
        aes(x = c("Photoperiod", "Temperature\n difference", "Flow", "Flow\n difference"),
            y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "", y = "Estimate of effect") +
-  theme(axis.text.x=element_text(size=20),axis.title.y=element_text(size=24))
+  geom_hline(yintercept = 0, linetype = "dashed")  +
+  labs(x = "", y = "Estimate of effect",
+       title = "Dungeness River, Coho yearlings"
+  )+
+  theme_bw()+
+  theme(axis.text.x=element_text(size=18),axis.title.y=element_text(size=18),
+        title = element_text(size = 18))
 #lowest aicc = 2737
-ggsave(here("output","coho_day_night_effect_wo_night_on_day_best_model.jpeg"), width = 10, height = 10, units = "in")
-
+ggsave(here("output","best_model_coho1_corrected.jpeg"),
+       width = 10, height = 8, units = "in", dpi = 300)
 
 ggplot(ci_good_coho[c(33:38),], 
        aes(x = c("Photoperiod", "Temperature\n difference", "Flow", "Flow\n difference",
                  "Hatchery,\n day", "Hatchery,\n night"),
            y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "", y = "Estimate of effect") +
-  theme(axis.text.x=element_text(size=20),axis.title.y=element_text(size=24))
-ggsave(here("output","coho_day_night_effect_wo_night_on_day.jpeg"), width = 10, height = 10, units = "in")
+  geom_hline(yintercept = 0, linetype = "dashed")  +
+  labs(x = "", y = "Estimate of effect",
+       title = "Dungeness River, Coho yearlings"
+  )+
+  theme_bw()+
+  theme(axis.text.x=element_text(size=18),axis.title.y=element_text(size=18),
+        title = element_text(size = 18))
+
+
+ggsave(here("output","coho_model_w_hatchery_corrected.jpeg"), width = 10, height = 10, units = "in")
+
+
+#save the table ci_best_model and ci_good_model
+
+write.csv(ci_best_coho, 
+          file = here("output",
+                      "coho_best_model_ci.csv"))
+
+write.csv(ci_good_coho,
+          file = here("output",
+                      "coho_good_model_ci.csv"))
+
+#rvi
+
+# out.tab_photo_diff2$deltaAICc <- NULL
+# out.tab_photo_diff2=rbind(out.tab_photo_diff2,out)
+# fits_photo_diff2=c(fits_photo_diff2,list(fit))
+
+out_all$deltaAICc <- NULL
+out_all$rel.LL <- NULL
+out_all$weights <- NULL
+
+
+weights <- akaike.weights(out_all$AICc)
+
+out_all$deltaAICc <- weights$deltaAIC
+out_all$rel.LL <- weights$rel.LL
+out_all$weights <- weights$weights
+
+
+min.AICc <- order(out_all$AICc)
+out_all.ordered <- out_all[min.AICc, ]
+out_all.ordered
+
+out_all.ordered$cumulative_weights <- cumsum(out_all.ordered$weights)
+
+relative_importance_photo_diff <- sum(out_all$weights[out_all$photoperiod==1])
+relative_importance_temperature_difference <- sum(out_all$weights[out_all$temperature_difference==1])
+relative_importance_flow <- sum(out_all$weights[out_all$flow==1])
+relative_importance_lunar_phase <- sum(out_all$weights[out_all$lunar_phase==1])
+relative_importance_hatchery <- sum(out_all$weights[out_all$hatchery==1])
+relative_importance_flow_diff <- sum(out_all$weights[out_all$flow_difference==1])
+
+riv_photo_diff <- data.frame(variable = c("photoperiod",
+                                          "temperature difference",
+                                          "flow",
+                                          "lunar phase",
+                                          "flow difference",
+                                          "hatchery"),
+                             relative_importance = c(relative_importance_photo_diff,
+                                                     relative_importance_temperature_difference,
+                                                     relative_importance_flow,
+                                                     relative_importance_lunar_phase,
+                                                     relative_importance_flow_diff,
+                                                     relative_importance_hatchery))
+
+
+#sort according to relative importance
+riv_photo_diff[order(riv_photo_diff$relative_importance, decreasing = TRUE),]
+
+riv_photo_diff <- riv_photo_diff[order(riv_photo_diff$relative_importance, decreasing = TRUE),]
+riv_photo_diff$relative_importance <- round(riv_photo_diff$relative_importance,1)
+
+riv_photo_diff
+
+#save the relative importance table
+write.csv(riv_photo_diff, here("output","riv_photo_coho1_corrected.csv"), row.names = FALSE)
+
+out_all.ordered
+#clean up table by reducing number of digits to 2 and by only keeping
+#the variables of interest
+
+out_all.ordered$delta_aicc<- round(
+  out_all.ordered$delta_aicc,2)
+out_all.ordered$rel.LL <- round(
+  out_all.ordered$rel.LL,2)
+out_all.ordered$weights <- round(
+  out_all.ordered$weights,2)
+out_all.ordered$cumulative_weights <- round(
+  out_all.ordered$cumulative_weights,2)
+
+#save the table
+write.csv(out_all.ordered, here("output","coho1_corrected_model_selection.csv"), row.names = FALSE)

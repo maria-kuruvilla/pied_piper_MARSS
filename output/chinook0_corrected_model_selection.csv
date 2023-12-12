@@ -1,0 +1,65 @@
+"c","photoperiod_difference","temperature_difference","flow","flow_difference","lunar_phase","hatchery","logLik","AICc","num.param","num.iter","converged","deltaAICc","rel.LL","weights","cumulative_weights"
+" photo_diff temp_diff flow_diff chinook0_hatchery_perhour_interpolate",1,1,0,1,0,1,-1986.76801567103,4051.25928715601,38,123,TRUE,0,1,0.41,0.41
+" photo_diff temp_diff lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",1,1,0,1,1,1,-1985.93115732139,4051.67732336879,39,117,TRUE,0.42,0.81,0.33,0.74
+" photo_diff temp_diff flow flow_diff chinook0_hatchery_perhour_interpolate",1,1,1,1,0,1,-1986.76874265893,4053.35249404386,39,122,TRUE,2.09,0.35,0.14,0.88
+" photo_diff temp_diff flow lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",1,1,1,1,1,1,-1985.93085305237,4053.77090284514,40,123,TRUE,2.51,0.28,0.12,1
+" photo_diff temp_diff flow_diff",1,1,0,1,0,0,-1994.38637767263,4062.31979367279,36,96,TRUE,11.06,0,0,1
+" photo_diff temp_diff lunar_phase flow_diff",1,1,0,1,1,0,-1994.03381789902,4063.70156955747,37,114,TRUE,12.44,0,0,1
+" photo_diff temp_diff flow flow_diff",1,1,1,1,0,0,-1994.21554141288,4064.06501658521,37,113,TRUE,12.81,0,0,1
+" photo_diff temp_diff flow lunar_phase flow_diff",1,1,1,1,1,0,-1993.84538800602,4065.414031826,38,129,TRUE,14.15,0,0,1
+" temp_diff flow flow_diff chinook0_hatchery_perhour_interpolate",0,1,1,1,0,1,-1996.05525307094,4069.83376195583,38,107,TRUE,18.57,0,0,1
+" temp_diff flow lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",0,1,1,1,1,1,-1995.178952195,4070.17291311601,39,118,TRUE,18.91,0,0,1
+" temp_diff flow_diff chinook0_hatchery_perhour_interpolate",0,1,0,1,0,1,-1998.3739538288,4072.38184141704,37,103,TRUE,21.12,0,0,1
+" temp_diff lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",0,1,0,1,1,1,-1997.54773600718,4072.81872782832,38,104,TRUE,21.56,0,0,1
+" photo_diff temp_diff chinook0_hatchery_perhour_interpolate",1,1,0,0,0,1,-2002.04052779292,4079.71498934529,37,103,TRUE,28.46,0,0,1
+" photo_diff temp_diff lunar_phase chinook0_hatchery_perhour_interpolate",1,1,0,0,1,1,-2001.48198563756,4080.68722708907,38,117,TRUE,29.43,0,0,1
+" photo_diff temp_diff flow chinook0_hatchery_perhour_interpolate",1,1,1,0,0,1,-2001.77050240644,4081.26426062683,38,126,TRUE,30,0,0,1
+" temp_diff flow flow_diff",0,1,1,1,0,0,-2003.9621357882,4081.47130990393,36,109,TRUE,30.21,0,0,1
+" photo_diff temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate",1,1,1,0,1,1,-2001.19506721531,4082.20514315663,39,121,TRUE,30.95,0,0,1
+" temp_diff flow lunar_phase flow_diff",0,1,1,1,1,0,-2003.56968067292,4082.77329510528,37,109,TRUE,31.51,0,0,1
+" photo_diff temp_diff",1,1,0,0,0,0,-2008.17619702814,4087.81495934938,35,85,TRUE,36.56,0,0,1
+" temp_diff flow_diff",0,1,0,1,0,0,-2008.40202901288,4088.26662331885,35,80,TRUE,37.01,0,0,1
+" photo_diff temp_diff flow",1,1,1,0,0,0,-2007.40668610118,4088.36041052989,36,92,TRUE,37.1,0,0,1
+" photo_diff temp_diff lunar_phase",1,1,0,0,1,0,-2007.95241588511,4089.45187009775,36,95,TRUE,38.19,0,0,1
+" temp_diff lunar_phase flow_diff",0,1,0,1,1,0,-2008.10521009521,4089.75745851795,36,80,TRUE,38.5,0,0,1
+" photo_diff temp_diff flow lunar_phase",1,1,1,0,1,0,-2007.1463426059,4089.92661897124,37,102,TRUE,38.67,0,0,1
+" temp_diff flow chinook0_hatchery_perhour_interpolate",0,1,1,0,0,1,-2011.95516373211,4099.54426122366,37,105,TRUE,48.28,0,0,1
+" temp_diff flow lunar_phase chinook0_hatchery_perhour_interpolate",0,1,1,0,1,1,-2011.33567340186,4100.39460261767,38,103,TRUE,49.14,0,0,1
+" temp_diff chinook0_hatchery_perhour_interpolate",0,1,0,0,0,1,-2016.96676547759,4107.48056928271,36,82,TRUE,56.22,0,0,1
+" temp_diff flow",0,1,1,0,0,0,-2018.05009771894,4107.56276073096,35,86,TRUE,56.3,0,0,1
+" temp_diff lunar_phase chinook0_hatchery_perhour_interpolate",0,1,0,0,1,1,-2016.4246723212,4108.48327840184,37,98,TRUE,57.22,0,0,1
+" temp_diff flow lunar_phase",0,1,1,0,1,0,-2017.76900246096,4109.08504324944,36,91,TRUE,57.83,0,0,1
+" temp_diff",0,1,0,0,0,0,-2025.50365378757,4120.38781801598,34,71,TRUE,69.13,0,0,1
+" temp_diff lunar_phase",0,1,0,0,1,0,-2025.3279494813,4122.1184642557,35,85,TRUE,70.86,0,0,1
+" photo_diff flow flow_diff chinook0_hatchery_perhour_interpolate",1,0,1,1,0,1,-2030.08495240005,4137.89316061405,38,108,TRUE,86.63,0,0,1
+" photo_diff flow lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",1,0,1,1,1,1,-2029.12792860379,4138.07086593359,39,111,TRUE,86.81,0,0,1
+" photo_diff flow_diff chinook0_hatchery_perhour_interpolate",1,0,0,1,0,1,-2032.39710528493,4140.42814432931,37,106,TRUE,89.17,0,0,1
+" photo_diff lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",1,0,0,1,1,1,-2031.48107459066,4140.68540499527,38,117,TRUE,89.43,0,0,1
+" photo_diff flow flow_diff",1,0,1,1,0,0,-2033.78959216358,4141.12622265468,36,97,TRUE,89.87,0,0,1
+" photo_diff flow lunar_phase flow_diff",1,0,1,1,1,0,-2033.19672028755,4142.02737433454,37,111,TRUE,90.77,0,0,1
+" photo_diff flow_diff",1,0,0,1,0,0,-2037.08178479263,4145.62613487836,35,84,TRUE,94.37,0,0,1
+" flow flow_diff chinook0_hatchery_perhour_interpolate",0,0,1,1,0,1,-2035.18544676869,4146.00482729683,37,104,TRUE,94.75,0,0,1
+" flow lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",0,0,1,1,1,1,-2034.19054102635,4146.10433786666,38,99,TRUE,94.85,0,0,1
+" photo_diff lunar_phase flow_diff",1,0,0,1,1,0,-2036.56479630845,4146.67663094443,36,103,TRUE,95.42,0,0,1
+" flow flow_diff",0,0,1,1,0,0,-2039.4739201481,4150.4104055893,35,80,TRUE,99.15,0,0,1
+" flow lunar_phase flow_diff",0,0,1,1,1,0,-2038.87535410853,4151.29774654459,36,98,TRUE,100.04,0,0,1
+" photo_diff flow chinook0_hatchery_perhour_interpolate",1,0,1,0,0,1,-2040.93087737525,4157.49568850994,37,104,TRUE,106.24,0,0,1
+" photo_diff flow lunar_phase chinook0_hatchery_perhour_interpolate",1,0,1,0,1,1,-2040.21946181992,4158.16217945379,38,121,TRUE,106.9,0,0,1
+" photo_diff flow",1,0,1,0,0,0,-2043.79427178367,4159.05110886043,35,102,TRUE,107.79,0,0,1
+" flow_diff chinook0_hatchery_perhour_interpolate",0,0,0,1,0,1,-2043.06331979907,4159.67367792567,36,100,TRUE,108.41,0,0,1
+" lunar_phase flow_diff chinook0_hatchery_perhour_interpolate",0,0,0,1,1,1,-2042.14770670151,4159.92934716246,37,104,TRUE,108.67,0,0,1
+" photo_diff flow lunar_phase",1,0,1,0,1,0,-2043.3405837696,4160.22820586673,36,92,TRUE,108.97,0,0,1
+" photo_diff chinook0_hatchery_perhour_interpolate",1,0,0,0,0,1,-2044.74363508769,4163.0343085029,36,90,TRUE,111.78,0,0,1
+" photo_diff lunar_phase chinook0_hatchery_perhour_interpolate",1,0,0,0,1,1,-2044.0923228945,4163.81857954845,37,104,TRUE,112.56,0,0,1
+" photo_diff",1,0,0,0,0,0,-2048.60891147078,4166.5983333824,34,77,TRUE,115.34,0,0,1
+" flow chinook0_hatchery_perhour_interpolate",0,0,1,0,0,1,-2047.06703496727,4167.68110826207,36,95,TRUE,116.42,0,0,1
+" photo_diff lunar_phase",1,0,0,0,1,0,-2048.23924603576,4167.94105736461,35,94,TRUE,116.68,0,0,1
+" flow lunar_phase chinook0_hatchery_perhour_interpolate",0,0,1,0,1,1,-2046.31724727052,4168.26842830048,37,86,TRUE,117.01,0,0,1
+" flow_diff",0,0,0,1,0,0,-2050.11400207083,4169.60851458249,34,68,TRUE,118.35,0,0,1
+" flow",0,0,1,0,0,0,-2050.46923964006,4170.31898972096,34,79,TRUE,119.06,0,0,1
+" lunar_phase flow_diff",0,0,0,1,1,0,-2049.68169101412,4170.82594732133,35,85,TRUE,119.57,0,0,1
+" flow lunar_phase",0,0,1,0,1,0,-2050.0102835922,4171.4831324775,35,80,TRUE,120.22,0,0,1
+" chinook0_hatchery_perhour_interpolate",0,0,0,0,0,1,-2058.9600945108,4189.3827543147,35,83,TRUE,138.12,0,0,1
+" lunar_phase chinook0_hatchery_perhour_interpolate",0,0,0,0,1,1,-2058.32139219596,4190.18982271946,36,91,TRUE,138.93,0,0,1
+"none",0,0,0,0,0,0,-2065.22478672326,4197.75044301173,33,61,TRUE,146.49,0,0,1
+" lunar_phase",0,0,0,0,1,0,-2064.93680493236,4199.25412030556,34,67,TRUE,147.99,0,0,1

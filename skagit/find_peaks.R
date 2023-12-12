@@ -156,3 +156,10 @@ ggplot(data_day_night, aes(x = doy)) +
   geom_point(aes(y=chinook0_hatchery_num)) +
   facet_wrap(~year, scales = "free_y")
 
+#make a plot with ggplot for chinook0_wild_num and chinook0_hatchery_num with
+#doy on the x axis
+#add chinook0_hatchery_num
+ggplot(data_day_night, aes(x = doy)) +
+  geom_point(aes(y=chinook0_wild_num)) +
+  facet_wrap(~year, scales = "free_y") +
+  geom_point(aes(y=chinook0_hatchery_num))

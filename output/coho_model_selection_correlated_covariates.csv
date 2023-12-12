@@ -1,0 +1,6 @@
+"","c","d","logLik","AICc","num.param","num.iter","converged","delta_aicc"
+"function1","photoperiod","None",-1341.29383597189,2750.89631391909,33,93,TRUE,0
+"function2","atu_april","None",-1342.80896455146,2753.92657107823,33,90,TRUE,3.03025715913691
+"function","temp","None",-1356.29641344408,2780.90146886348,33,77,TRUE,30.0051549443883
+"function4","photo_diff","None",-1362.85186881073,2794.01237959677,33,66,TRUE,43.116065677681
+"function3","resid","None",-1363.37496750776,2795.05857699083,33,79,TRUE,44.1622630717438

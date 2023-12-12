@@ -518,7 +518,7 @@ for(i in 1:length(list_combinations)){
   if(k==10){
     has_hatchery = 1
     c_num <- length(covariates)
-    fit.model = c(list(c= c), mod_list(nyears,c_num,has_hatchery))
+    fit.model = c(list(c= c), mod_list(nyears,c_num,has_hatchery, TRUE, FALSE, TRUE))
   }
   else{
     has_hatchery = 0
@@ -542,6 +542,23 @@ out.tab.hatchery.all.years.unequalq$deltaAICc <- out.tab.hatchery.all.years.uneq
 min.AICc <- order(out.tab.hatchery.all.years.unequalq$AICc)
 out.tab.hatchery.ordered.unequalq <- out.tab.hatchery.all.years.unequalq[min.AICc, ]
 out.tab.hatchery.ordered.unequalq
+
+ci <- tidy(fits.hatchery.all.years.unequalq[[25]])
+
+ggplot(ci[c(52:55),], aes(x = c("ATU","Flow","Hatchery,\nday",
+                                "Hatchery,\nnight"),
+                          y = estimate, 
+                          ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of effect") +
+  ggtitle("Coho yearlings") + 
+  theme(plot.title = element_text(size = 20))+
+  theme(axis.text.x=element_text(size=14),axis.title.y=element_text(size=14))
+
+ggsave(here("skagit","output","coho_skagit_best_model_all_years.jpeg"), width = 10, height = 10, units = "in")
+
+
 
 
 #trying out just the best model with unequal q
