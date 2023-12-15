@@ -79,6 +79,12 @@ data <- data %>%
          photo_diff_night = c(NA,diff(photoperiod_night))
   )
 
+#convert date$Date to as.Date and then get year
+#first check where date string is not in the right format
+#specify the format and then convert to as.Date
+
+
+data$Date = as.Date(data$Date, format = "%m/%d/%Y")
 data$year = year(data$Date)
 
 # I think the doy limits should be changed from 200 to 218 

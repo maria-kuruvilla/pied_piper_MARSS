@@ -1,0 +1,4 @@
+"","c","d","logLik","AICc","num.param","num.iter","converged","delta_AICc"
+"gradient2","photo_diff","None",-2745.78942837015,5571.17967767411,39,37,TRUE,0
+"gradient","secchi_depth_day","None",-2750.96856269981,5581.53794633344,39,37,TRUE,10.3582686593336
+"gradient1","photoperiod","None",-2751.90082235089,5583.40246563559,39,35,TRUE,12.2227879614848
