@@ -490,21 +490,27 @@ for(i in 1:length(list_combinations)){
   for(j in covariates){
     if(j == 1){
       k = 4
+      #atu
     }
     else if(j==2){
       k = 2
+      #flow
     }
     else if(j==3){
       k = 5
+      #lunar phase
     }
     else if(j==4){
       k = 7
+      #temperature difference
     }
     else if(j==5){
       k = 8
+      #flow difference
     }
     else if(j==6){
       k = 10
+      #hatchery
     }
     
     c = rbind(c,covariates_coho1_skagit[((1+(k-1)*nyears):(k*nyears)),])

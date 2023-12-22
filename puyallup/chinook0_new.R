@@ -532,12 +532,13 @@ write.csv(riv_photo_diff_puyallup, file = here("puyallup",
 
 out.tab.hatchery.all.years.ordered
 
-#round the weights, deltaAICc, AICc, rel.LL, and logLik columns to 2 decimal places
+#round the weights, deltaAICc, AICc, rel.LL, cum weights, and logLik columns to 2 decimal places
 out.tab.hatchery.all.years.ordered$weights <- round(out.tab.hatchery.all.years.ordered$weights,2)
 out.tab.hatchery.all.years.ordered$deltaAICc <- round(out.tab.hatchery.all.years.ordered$deltaAICc,2)
 out.tab.hatchery.all.years.ordered$AICc <- round(out.tab.hatchery.all.years.ordered$AICc,2)
 out.tab.hatchery.all.years.ordered$rel.LL <- round(out.tab.hatchery.all.years.ordered$rel.LL,2)
 out.tab.hatchery.all.years.ordered$logLik <- round(out.tab.hatchery.all.years.ordered$logLik,2)
+out.tab.hatchery.all.years.ordered$cumulative_weights <- round(out.tab.hatchery.all.years.ordered$cumulative_weights,2)
 
 out.tab.hatchery.all.years.ordered
 
@@ -548,7 +549,74 @@ write.csv(out.tab.hatchery.all.years.ordered, file = here("puyallup",
                                                           "model_selection.csv"))
 
 #plot the results from the best model
-autoplot(fits.hatchery.all.years[[28]])
+# autoplot(fits.hatchery.all.years[[28]])
+autoplot(fits.hatchery.all.years[[47]])
+
+#make plot of estimates of the effects in the best model
+
+ci_puyallup <- tidy(fits.hatchery.all.years[[47]])
+
+ggplot(ci_puyallup[c(39:43),], 
+       aes(x = c("Photoperiod\ndifference", "Flow", "Flow\n difference",
+                 "Hatchery,\n day", "Hatchery,\n night"),
+           y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of effect", title = "Puyallup, Chinook sub yearlings") +
+  theme_bw()+
+  theme(axis.text.x=element_text(size=18),axis.title.y=element_text(size=18),
+        title = element_text(size = 18))
+ggsave(here("puyallup","output","chinook_all_years_effects_estimate_corrected.png"), 
+       width = 10, height = 8, units = "in", dpi = 300)
+
+
+#calculate the relative importance of variables
+
+out.tab.hatchery.all.years.ordered$deltaAICc <- NULL
+out.tab.hatchery.all.years.ordered$rel.LL <- NULL
+out.tab.hatchery.all.years.ordered$weights <- NULL
+
+
+weights <- akaike.weights(out.tab.hatchery.all.years.ordered$AICc)
+
+out.tab.hatchery.all.years.ordered$deltaAICc <- weights$deltaAIC
+out.tab.hatchery.all.years.ordered$rel.LL <- weights$rel.LL
+out.tab.hatchery.all.years.ordered$weights <- weights$weights
+
+out.tab.hatchery.all.years.ordered
+# min.AICc <- order(out.tab.hatchery.all.years.ordered$AICc)
+# out.tab.hatchery.all.years.ordered.ordered <- out.tab.hatchery.all.years.ordered[min.AICc, ]
+# out.tab.hatchery.all.years.ordered.ordered
+
+out.tab.hatchery.all.years.ordered$cumulative_weights <- cumsum(out.tab.hatchery.all.years.ordered$weights)
+
+relative_importance_photo_diff_p <- sum(out.tab.hatchery.all.years.ordered$weights[out.tab.hatchery.all.years.ordered$photoperiod==1])
+# relative_importance_temperature_difference <- sum(out.tab.hatchery.all.years.ordered$weights[out.tab.hatchery.all.years.ordered$temperature_difference==1])
+relative_importance_flow_p <- sum(out.tab.hatchery.all.years.ordered$weights[out.tab.hatchery.all.years.ordered$flow==1])
+relative_importance_lunar_phase_p <- sum(out.tab.hatchery.all.years.ordered$weights[out.tab.hatchery.all.years.ordered$lunar_phase==1])
+relative_importance_hatchery_p <- sum(out.tab.hatchery.all.years.ordered$weights[out.tab.hatchery.all.years.ordered$hatchery==1])
+relative_importance_flow_diff_p <- sum(out.tab.hatchery.all.years.ordered$weights[out.tab.hatchery.all.years.ordered$flow_difference==1])
+
+
+riv_puyallup <- data.frame(variable = c("photoperiod difference",
+                                          "flow",
+                                          "lunar phase",
+                                          "flow difference",
+                                          "hatchery"),
+                             relative_importance = c(relative_importance_photo_diff_p,
+                                                     relative_importance_flow_p,
+                                                     relative_importance_lunar_phase_p,
+                                                     relative_importance_flow_diff_p,
+                                                     relative_importance_hatchery_p))
+#round the values and the order them in descending order
+
+riv_puyallup$relative_importance <- round(riv_puyallup$relative_importance, 2)
+riv_puyallup <- riv_puyallup[order(-riv_puyallup$relative_importance),]
+
+#save dataframe
+write.csv(riv_puyallup, file = here("puyallup",
+                                    "output",
+                                    "relative_importance.csv"))
 
 #make my make own plot by using predict() function in MARSS
 
@@ -610,5 +678,6 @@ ggplot(data = pred$pred)+
 
 ggsave(here("puyallup", "output", "predicted_vs_observed.png"), width = 15, height = 5)
 
+#plotting average chinook0_wild_day_fraction and chinook0_hatchery_day_fraction
 
-
+ggplot(data)

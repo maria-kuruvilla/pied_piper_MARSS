@@ -1,0 +1,6 @@
+"","c","logLik","AICc","num.param","num.iter","converged","DeltaAICc"
+"gradient3","resid",-1204.41,2518.74,52,31,TRUE,0
+"gradient1","photoperiod",-1209.72,2529.36,52,29,TRUE,10.62
+"gradient2","atu_solstice",-1215.24,2540.4,52,25,TRUE,21.66
+"gradient","temp",-1215.45,2540.81,52,25,TRUE,22.07
+"gradient4","photo_diff",-1216.81,2543.54,52,27,TRUE,24.8

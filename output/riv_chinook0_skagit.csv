@@ -1,0 +1,8 @@
+"variable","relative_importance"
+"residuals",0.8
+"photoperiod",0.6
+"temperature difference",0.6
+"flow difference",0.3
+"lunar phase",0.3
+"flow",0.3
+"hatchery",0.1
