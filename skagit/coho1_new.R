@@ -25,9 +25,9 @@ lm_temp_day <- lm(temp ~ 1+photoperiod, data = data_day_night)
 
 data_day_night <- data_day_night %>% add_residuals(lm_temp_day)
 
-
+#changing it from <=150 to <150 to see if it changes model selection results
 covariates_coho1_skagit <- arrange(data_day_night,doy) %>%
-  filter(doy >100 & doy <= 150) %>%
+  filter(doy >100 & doy < 150) %>%
   dplyr::select(year,doy, daytime_category, temp, flow, photoperiod, atu_solstice,
                 lunar_phase, resid, temp_diff, flow_diff, photo_diff,
                 coho1_hatchery_perhour_inp, trap) %>%
@@ -66,7 +66,7 @@ for(i in (total_covariates/2 + 1):(total_covariates)){
 
 #subset response variable
 subset_coho_summer_perhour <- arrange(data_day_night,doy) %>%
-  filter(doy > 100 & doy <= 150) %>%
+  filter(doy > 100 & doy < 150) %>%
   mutate(log.value = log(coho1_wild_perhour + 1)) %>%
   dplyr::select(log.value,year,doy,daytime_category,trap) %>%
   pivot_wider(names_from = c(year, daytime_category, trap), values_from = log.value) %>%

@@ -242,7 +242,8 @@ fit_year_effect_coho$AICc #2550
 
 out.tab.all.years.combined_coho <- NULL
 fits.all.years.combined_coho <- NULL
-nyears = num_years
+c <- NULL
+nyears = num_years*2*2
 for(kk in c(1,2,3,4,5,6,7,8,9)){
   c = covariates_coho1_skagit_combined[((1+(kk-1)*nyears):(kk*nyears)),]
   name_long = rownames(covariates_coho1_skagit_combined)[1+(kk-1)*nyears]
@@ -264,7 +265,7 @@ out.tab.all.years.combined_coho
 out.tab.all.years.combined_coho$delta.AICc = out.tab.all.years.combined_coho$AICc - min(out.tab.all.years.combined_coho$AICc)
 out.tab.all.years.combined_coho = out.tab.all.years.combined_coho[order(out.tab.all.years.combined_coho$delta.AICc),]
 #round to 2 decimal places
-out.tab.all.years.combined_coho$delta.AICc = round(out.tab.all.years.combined$delta.AICc,2)
+out.tab.all.years.combined_coho$delta.AICc = round(out.tab.all.years.combined_coho$delta.AICc,2)
 out.tab.all.years.combined_coho
 
 #save the dataframe
@@ -284,7 +285,7 @@ for(i in 1:length(list_combinations)){
   print(covariates)
   c = NULL
   name = NULL
-  temperature = 0
+  atu = 0
   flow = 0
   flow_difference = 0
   hatchery = 0
@@ -292,8 +293,8 @@ for(i in 1:length(list_combinations)){
   lunar_phase = 0
   for(j in covariates){
     if(j == 1){
-      k = 1
-      temperature = 1
+      k = 4
+      atu = 1
     }
     else if(j==2){
       k = 2
@@ -340,7 +341,7 @@ for(i in 1:length(list_combinations)){
                control=list(maxit=2000))
   
   
-  out=data.frame(c=name, temperature=temperature, 
+  out=data.frame(c=name, atu=atu, 
                  flow=flow, flow_difference=flow_difference,
                  temperature_difference=temperature_difference,
                  lunar_phase = lunar_phase ,hatchery=hatchery, 
