@@ -1,0 +1,6 @@
+"","c","d","logLik","AICc","num.param","num.iter","converged","deltaAICc"
+"function3","resid_2","None",-896.46807015332,1849.02165754802,27,64,TRUE,0
+"function1","photoperiod_2","None",-898.650901380929,1853.38732000324,27,56,TRUE,4.36566245521772
+"function","temp_2","None",-899.847778089659,1855.7810734207,27,73,TRUE,6.75941587267744
+"function2","atu_solstice_2","None",-900.481314565956,1857.04814637329,27,62,TRUE,8.02648882527092
+"function4","photo_diff_2","None",-902.236344102421,1860.55820544622,27,60,TRUE,11.5365478982021
