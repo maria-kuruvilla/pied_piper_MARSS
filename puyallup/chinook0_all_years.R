@@ -294,6 +294,7 @@ get_covariate_combinations <- function(covariates) {
 #first using the functions to see which of the correlated covariates best fit
 #the data
 
+
 out.tab.all.years <- NULL
 fits.all.years <- NULL
 nyears = num_years*2
