@@ -101,6 +101,10 @@ data <- data %>%
 data$Date = as.Date(data$Date, format = "%m/%d/%Y")
 data$year = year(data$Date)
 
+
+
+
+
 # I think the doy limits should be changed from 200 to 218 
 covariates_chinook0 <- arrange(data,doy) %>%
   filter(doy >130 & doy <= 218) %>%

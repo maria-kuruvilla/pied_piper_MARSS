@@ -128,3 +128,38 @@ plot_grid(
 #save the plot
 ggsave(here("puyallup","output",
             "chinook0_hatchery_wild.png"), width = 12, height = 10, units = "in", dpi = 300)
+
+
+data_long4 <- data %>%
+  select(year, doy, chinook0_hatchery_perhour, chinook0_wild_perhour, flow) %>%
+  filter(doy >= 130 & doy <= 218 & year == 2016) %>%
+  pivot_longer(cols = c(chinook0_hatchery_perhour, chinook0_wild_perhour),
+               names_to = "origin", values_to = "cpue", names_pattern = "chinook0_(.*)_perhour")
+
+
+ggplot(data_long4, aes(x = doy)) +
+  xlim(130, 218) +
+  geom_line(aes(y = cpue, color = origin), alpha = 0.5,
+            linewidth = 1) +
+  geom_line(aes(y = flow), alpha = 0.5,
+            linewidth = 1) +
+  facet_wrap(~origin, scales = "free_y", nrow = 2, labeller = label_wrap_gen(multi_line=FALSE)) +
+  theme(legend.position = "none") +
+  labs(x = "Day of Year", y = "") +
+  theme_bw()+
+  scale_color_manual(values = c("cadetblue", "salmon")) +
+  theme(strip.text.y = element_text(angle = 0, hjust = 0.5, vjust = 0.5),
+        strip.background = element_blank(),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        plot.title = element_text(size = 14, hjust = 0.5),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        legend.position = "none")
+
+ggplot(data_long4, aes(x = doy)) +
+  xlim(130, 218) +
+  geom_line(aes(y = flow), alpha = 0.5,
+            linewidth = 1)
