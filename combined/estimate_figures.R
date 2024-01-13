@@ -1462,8 +1462,8 @@ p1 <- ggplot(puyallup_covariates) +
             color = "salmon", linewidth = 1.5, alpha = 0.7) + 
   labs(x = "Day of Year", y = "Scaled (Chinook salmon per hour)")+
   theme_classic()+
-  theme(axis.text.x = element_text(size  = 14),
-        axis.text.y = element_text(size  = 14),
+  theme(axis.text.x = element_text(size  = 16),
+        axis.text.y = element_text(size  = 16),
         axis.title.x = element_text(size = 18),
         axis.title.y = element_text(size = 18),
         legend.text = element_text(size = 18),
@@ -1501,8 +1501,8 @@ p2 <- ggplot(puyallup_covariates) +
   scale_color_manual(name = "Origin", values = c("Hatchery" = "cadetblue", "Wild" = "salmon")) + 
   labs(x = "Day of Year", y = "", color = "Origin")+
   theme_classic()+
-  theme(axis.text.x = element_text(size  = 14),
-        axis.text.y = element_text(size  = 14),
+  theme(axis.text.x = element_text(size  = 16),
+        axis.text.y = element_text(size  = 16),
         axis.title.x = element_text(size = 18),
         axis.title.y = element_text(size = 18),
         legend.text = element_text(size = 18),
@@ -1524,11 +1524,11 @@ p3 <- ggplot(puyallup_covariates) +
   scale_color_manual(name = "Origin", values = c("Hatchery" = "cadetblue", "Wild" = "salmon")) + 
   labs(x = "Day of Year", y = "", color = "Origin")+
   theme_classic()+
-  theme(axis.text.x = element_text(size  = 20),
-        axis.text.y = element_text(size  = 20),
-        axis.title.x = element_text(size = 20),
-        axis.title.y = element_text(size = 20),
-        legend.text = element_text(size = 20),
+  theme(axis.text.x = element_text(size  = 16),
+        axis.text.y = element_text(size  = 16),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
+        legend.text = element_text(size = 18),
         legend.title = element_text(size = 20))+
   xlim(130,180)
 
