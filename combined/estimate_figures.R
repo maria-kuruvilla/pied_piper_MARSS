@@ -261,16 +261,14 @@ chinook0_dungeness_plot <- ggplot(ci_chinook0_dungeness[c(34:38),],
                                   aes(x = c("Temperature\n difference", 
                                             "Flow\n difference",
                                             "Photoperiod\n difference", 
-                                            "Hatchery, day", 
-                                            "Hatchery, night"),
+                                            "Hatchery,\nday", 
+                                            "Hatchery,\nnight"),
                                       y = estimate, 
                                       ymin = conf.low, 
                                       ymax = conf.up)) +
   geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "", y = "Estimate of effect"
-       # title = "Dungeness River, Chinook sub yearlings"
-  )+
+  labs(x="", y = "")+
   theme_classic() +
   theme(axis.text.x=element_text(size=18),
         axis.title.y=element_text(size=18),
@@ -408,14 +406,14 @@ chinook0_puyallup_plot <- ggplot(ci_chinook0_puyallup[c(39:43),],
                                   aes(x = c("Flow", 
                                             "Flow\n difference",
                                             "Photoperiod\n difference", 
-                                            "Hatchery, day", 
-                                            "Hatchery, night"),
+                                            "Hatchery,\nday", 
+                                            "Hatchery,\nnight"),
                                       y = estimate, 
                                       ymin = conf.low, 
                                       ymax = conf.up)) +
   geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "", y = "Estimate of effect"
+  labs(x = "", y =""
        # title = "Dungeness River, Chinook sub yearlings"
   )+
   theme_classic() +
@@ -424,8 +422,8 @@ chinook0_puyallup_plot <- ggplot(ci_chinook0_puyallup[c(39:43),],
         axis.text.y = element_text(size = 14)) + 
   scale_x_discrete(guide = guide_axis(n.dodge=2),
                    limits = c("Flow\n difference",
-                              "Hatchery, day", 
-                              "Hatchery, night",
+                              "Hatchery,\nday", 
+                              "Hatchery,\nnight",
                               "Photoperiod\n difference", 
                               "Flow"))
 
@@ -611,7 +609,7 @@ ci_chinook0_skagit <- tidy(fit_chinook0_skagit)
 
 
 chinook0_skagit_plot <- ggplot(ci_chinook0_skagit[c(27:30),], 
-                                 aes(x = c("Photoperiod\n", 
+                                 aes(x = c("Photoperiod", 
                                            "Residuals",
                                            "Temperature\n difference", 
                                            "Hatchery"),
@@ -629,7 +627,7 @@ chinook0_skagit_plot <- ggplot(ci_chinook0_skagit[c(27:30),],
         axis.text.y = element_text(size = 14)) + 
   scale_x_discrete(guide = guide_axis(n.dodge=2),
                    limits = c("Hatchery",
-                              "Photoperiod\n", 
+                              "Photoperiod", 
                               "Residuals",
                               "Temperature\n difference"
                               ))
@@ -655,8 +653,8 @@ chinook0_skagit_plot2
 chinook0_puyallup_plot2 <- chinook0_puyallup_plot + theme(axis.title.y=element_blank(),
                                                           axis.text.y = element_text(size = 18),
                                                           axis.text.x=element_text(size=24)) +
-  scale_x_discrete(guide = guide_axis(n.dodge=3),limits = c("Flow\n difference","Photoperiod\n difference","Hatchery, day", 
-                                                            "Hatchery, night", "Flow")) + 
+  scale_x_discrete(guide = guide_axis(n.dodge=3),limits = c("Flow\n difference","Photoperiod\n difference","Hatchery,\nday", 
+                                                            "Hatchery,\nnight", "Flow")) + 
   scale_y_continuous(breaks = c(-0.25,0,0.25), limits = c(-0.32,0.32))
 
 chinook0_puyallup_plot2
@@ -669,8 +667,8 @@ chinook0_dungeness_plot2 <- chinook0_dungeness_plot + theme(axis.title.y=element
   scale_x_discrete(expand = expansion(add = 1.1), #guide = guide_axis(n.dodge=3),
                    limits = c("Flow\n difference",
                               "Photoperiod\n difference", 
-                              "Hatchery, day", 
-                              "Hatchery, night",
+                              "Hatchery,\nday", 
+                              "Hatchery,\nnight",
                               "Temperature\n difference")
                    )+
   scale_y_continuous(breaks = c(-0.15,0,0.15), limits = c(-0.2,0.2))+
@@ -723,8 +721,9 @@ chinook0_skagit_plot3 <- chinook0_skagit_plot + theme(axis.text.x=element_text(s
   scale_y_continuous(breaks = c(-0.1,0,0.1,0.2), limits = c(-0.15,0.15))+
   scale_x_discrete(#expand = expansion(add = 1.15), #guide = guide_axis(n.dodge=3),
                    limits = c("Temperature\n difference",
+                              "Photoperiod", 
                               "Residuals",
-                              "Photoperiod\n", 
+                              
                               "Hatchery"
                    )) + 
   coord_flip()
@@ -741,11 +740,11 @@ chinook0_puyallup_plot3 <- chinook0_puyallup_plot + theme(axis.title.y=element_t
                                                           axis.text.y = element_text(size = 24, family = "Sans"),
                                                           axis.text.x=element_text(size=24, family = "Sans")) +
   scale_x_discrete(#guide = guide_axis(n.dodge=3),
-                   limits = c("Flow","Hatchery, day", "Hatchery, night", "Photoperiod\n difference",
+                   limits = c("Flow","Hatchery,\nnight","Hatchery,\nday",  "Photoperiod\n difference",
                               "Flow\n difference"
                               
                               )) + 
-  scale_y_continuous(breaks = c(0,0.1, 0.2), limits = c(-0.05,0.32))+
+  scale_y_continuous(breaks = c(-0.2,-0.1,0,0.1, 0.2), limits = c(-0.315,0.315))+
   coord_flip()
 
 chinook0_puyallup_plot3
@@ -758,8 +757,9 @@ chinook0_dungeness_plot3 <- chinook0_dungeness_plot + theme(axis.title.y=element
                                                             axis.text.x=element_text(size=24, family = "Sans")) +
   scale_x_discrete(#expand = expansion(add = 1.1), #guide = guide_axis(n.dodge=3),
                    limits = c("Temperature\n difference",
-                              "Hatchery, day", 
-                              "Hatchery, night",
+                              "Hatchery,\nnight",
+                              "Hatchery,\nday", 
+                              
                               "Photoperiod\n difference",
                               "Flow\n difference"
                               )
@@ -782,6 +782,16 @@ ggpubr::ggarrange(chinook0_dungeness_plot3,
 
 ggsave(here("output","chinook0_covariates_estimates_4.jpeg"), width = 18.5, height = 8)
 
+
+ggpubr::ggarrange(chinook0_dungeness_plot3,
+                  chinook0_puyallup_plot3, 
+                  chinook0_skagit_plot3,
+                  labels = c("a", "b", "c"), ncol = 1, nrow = 3, font.label = list(size = 28, family = "Sans"),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1,1,1), heights = c(1.2,1.2,0.8))
+
+
+ggsave(here("output","chinook0_covariates_estimates_5.jpeg"), width = 16, height = 15)
 
 ####### coho
 
@@ -1028,7 +1038,7 @@ coho1_dungeness_plot <- ggplot(ci_coho1_dungeness[c(33:38),],
            y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed")  +
-  labs(x = "", y = "Estimate of effect",
+  labs(x = "",
   )+
   theme_classic()+
   theme(axis.title.y=element_text(size=28),
@@ -1044,7 +1054,7 @@ coho1_dungeness_plot <- ggplot(ci_coho1_dungeness[c(33:38),],
 coho1_dungeness_plot
 #skagit
 
-
+#####
 
 data_day_night <- read.csv(here("skagit", "data", "skagit_2010-2022_w_covariates.csv"))
 
@@ -1224,7 +1234,7 @@ ci_coho1_skagit <- tidy(fit_coho1_skagit)
 ci_coho1_skagit
 
 coho1_skagit_plot <- ggplot(ci_coho1_skagit[c(27:30),], 
-                               aes(x = c("Flow", "ATU", "Lunar phase\n","Hatchery\n"),
+                               aes(x = c("Flow", "ATU", "Lunar phase","Hatchery"),
                                    y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed")  +
@@ -1235,7 +1245,7 @@ coho1_skagit_plot <- ggplot(ci_coho1_skagit[c(27:30),],
         axis.text.y = element_text(size = 18),
         axis.text.x=element_text(size=24)) +
   scale_y_continuous(breaks = seq(-0.1,0,0.1), limits = c(-0.1,0.1))+
-  scale_x_discrete(limits = c("Hatchery\n","Lunar phase\n",
+  scale_x_discrete(limits = c("Hatchery","Lunar phase",
                               "Flow", "ATU"),
                    guide = guide_axis(n.dodge = 2))
 
@@ -1258,20 +1268,20 @@ ggsave(here("output","coho1_covariates_estimates.jpeg"), width = 18.5, height = 
 
 coho1_dungeness_plot2 <- ggplot(ci_coho1_dungeness[c(33:38),], 
                                aes(x = c("Flow", "Photoperiod", "Temperature\n difference", 
-                                         "Flow\n difference", "Hatchery, day", "Hatchery, night"),
+                                         "Flow\n difference", "Hatchery,\nday", "Hatchery,\nnight"),
                                    y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed")  +
-  labs(x = "", y = "Estimate of effect",
+  labs(x = "", y = "",
   )+
   theme_classic()+
   theme(axis.title.y=element_text(size=24),
         axis.title.x=element_text(size=24),
         axis.text.y = element_text(size = 24),
         axis.text.x=element_text(size=24)) +
-  scale_y_continuous(breaks = seq(-0.1,0.1,0.1), limits = c(-0.15,0.15))+
+  scale_y_continuous(breaks = seq(-0.1,0.1,0.1), limits = c(-0.13,0.13))+
   scale_x_discrete(limits = c("Temperature\n difference", "Photoperiod", "Flow",
-                              "Hatchery, night","Hatchery, day", 
+                              "Hatchery,\nnight","Hatchery,\nday", 
                               "Flow\n difference"
                                ),
                    #guide = guide_axis(n.dodge = 2),
@@ -1285,7 +1295,7 @@ coho1_dungeness_plot2
 
 
 coho1_skagit_plot2 <- ggplot(ci_coho1_skagit[c(27:30),], 
-                            aes(x = c("Flow", "ATU", "Lunar phase\n","Hatchery\n"),
+                            aes(x = c("Flow", "ATU", "Lunar phase","Hatchery"),
                                 y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed")  +
@@ -1296,9 +1306,9 @@ coho1_skagit_plot2 <- ggplot(ci_coho1_skagit[c(27:30),],
         axis.title.x=element_text(size=24),
         axis.text.y = element_text(size = 24),
         axis.text.x=element_text(size=24)) +
-  scale_y_continuous(breaks = seq(-0.1,0.1,0.1), limits = c(-0.12,0.12))+
-  scale_x_discrete(limits = c("ATU", "Flow","Lunar phase\n",
-                              "Hatchery\n")) + 
+  scale_y_continuous(breaks = seq(-0.1,0.1,0.1), limits = c(-0.13,0.13))+
+  scale_x_discrete(limits = c("ATU", "Flow","Lunar phase",
+                              "Hatchery")) + 
   coord_flip()
                    #guide = guide_axis(n.dodge = 2))
 
@@ -1313,3 +1323,279 @@ ggpubr::ggarrange(coho1_dungeness_plot2,
 
 
 ggsave(here("output","coho1_covariates_estimates_2.jpeg"), width = 18.5, height = 8)
+
+
+ggpubr::ggarrange(coho1_dungeness_plot2,
+                  coho1_skagit_plot2,
+                  labels = c("a", "b"), ncol = 1, nrow = 2, font.label = list(size = 28),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1, 1), heights = c(1.3,0.7))
+
+
+ggsave(here("output","coho1_covariates_estimates_3.jpeg"), width = 16, height = 10)
+
+####representative figure for pied piper 
+
+
+skagit_covariates_t <- as.data.frame(t(covariates_coho1_skagit_night))
+skagit_wild_t <- as.data.frame(t(subset_coho_summer_perhour_night))
+
+
+skagit_covariates_t$doy <- as.numeric(rownames(skagit_covariates_t))
+
+skagit_wild_t$doy <- as.numeric(rownames(skagit_wild_t))
+
+colnames(skagit_covariates_t)
+colnames(skagit_wild_t) <- paste0("wild_",colnames(skagit_wild_t))
+
+#plot coho1_hatchery_perhour_inp_2016_night_screw, atu_solstice_2016_night_screw, flow_2016_night_screw, 
+#lunar_phase_2016_night_screw from skagit_covariates_t
+#and then plot 2016_night_screw from skagit_wild_t 
+
+
+ggplot(skagit_covariates_t) + 
+  geom_line(aes(x = doy, y = coho1_hatchery_perhour_inp_2016_night_screw), 
+            color = "cadetblue", linewidth = 1.5, alpha = 0.7) + 
+  geom_line(aes(x = doy, y = flow_2016_night_screw), 
+            color = "darkblue", linewidth = 1.2, alpha = 0.2) + 
+  geom_line(aes(x = doy, y = atu_solstice_2016_night_screw), 
+            color = "darkorange", linewidth = 1.2, alpha = 0.2) +
+  geom_line(data = skagit_wild_t, aes(x = wild_doy, y = wild_2016_night_screw), 
+            color = "salmon", linewidth = 1.5, alpha = 0.7)
+
+#puyallup
+data <- read.csv(here("puyallup", "data","puyallup_2004-2021_all_days_w_covariates_edited.csv"),
+                 na.strings = c("NA",""))
+
+#before interpolating, I need to add 0 to the end of 2018 chinook hatchery column
+#if not, there are nans in the 2018 column even after interpolation
+
+data$chinook0_hatchery_perhour_night[dim(data)[1]] <- 0
+data$chinook0_hatchery_perhour_day[dim(data)[1]] <- 0
+
+#when secchi_depth_day is NA, replace with secchi_depth values
+#when secchi_depth_night is NA, replace with secchi_depth values
+
+data$secchi_depth_day[is.na(data$secchi_depth_day)] <- data$secchi_depth[is.na(data$secchi_depth_day)]
+
+data$secchi_depth_night[is.na(data$secchi_depth_night)] <- data$secchi_depth[is.na(data$secchi_depth_night)]
+
+#interpolating na values for flow_day, flow_night, sechhi_depth_day, secchi_depth_night, hatchery
+
+data <- data %>% 
+  mutate(flow_day_inp = na.approx(flow_day, na.rm = FALSE),
+         flow_night_inp = na.approx(flow_night, na.rm = FALSE),
+         secchi_depth_day_inp = na.approx(secchi_depth_day, na.rm = FALSE),
+         secchi_depth_night_inp = na.approx(secchi_depth_night, na.rm = FALSE),
+         chinook0_hatchery_perhour_night_inp = na.approx(chinook0_hatchery_perhour_night, na.rm = FALSE),
+         chinook0_hatchery_perhour_day_inp = na.approx(chinook0_hatchery_perhour_day, na.rm = FALSE),
+         photoperiod_day = photoperiod,
+         photoperiod_night = photoperiod,
+         lunar_phase_day = lunar_phase,
+         lunar_phase_night = lunar_phase)
+
+
+#making columns for flow diff, photoperiod diff
+data <- data %>%
+  mutate(flow_diff_day = c(NA,diff(flow_day_inp)),
+         flow_diff_night = c(NA,diff(flow_night_inp)),
+         photo_diff_day = c(NA,diff(photoperiod_day)),
+         photo_diff_night = c(NA,diff(photoperiod_night))
+  )
+
+#convert date$Date to as.Date and then get year
+#first check where date string is not in the right format
+#specify the format and then convert to as.Date
+
+
+data$Date = as.Date(data$Date, format = "%m/%d/%Y")
+data$year = year(data$Date)
+#subset response variable
+chinook0_puyallup_figure <- arrange(data,doy) %>%
+  filter(doy > 130 & doy <= 218) %>%
+  mutate(day = chinook0_wild_perhour_day, 
+         night = chinook0_wild_perhour_night ) %>%
+  dplyr::select(day,night ,year,doy) %>%
+  pivot_wider(names_from = c(year), values_from = c(day, night)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:dim(chinook0_puyallup_figure)[1]){
+  chinook0_puyallup_figure[i,] = scale(chinook0_puyallup_figure[i,])[,1]
+}
+
+
+puyallup_covariates <- as.data.frame(t(covariates_chinook0_puyallup))
+puyallup_wild <- as.data.frame(t(chinook0_puyallup_figure))
+
+puyallup_covariates$doy <- as.numeric(rownames(puyallup_covariates))
+puyallup_wild$doy <- as.numeric(rownames(puyallup_wild))
+
+
+#add a column to puyallup_covariates that is chinook0_hatchery_perhour_night_2016
+#if puyallup_wild$log.value_night_2016 is NA, then puyallup_covariates$chinook0_hatchery_perhour_night_2016 is NA
+#otherwise it is chinook0_hatchery_perhour_inp_night_2016
+#call the column chinook0_hatchery_perhour_night_2016
+
+puyallup_covariates$chinook0_hatchery_perhour_night_2016 <- ifelse(is.na(puyallup_wild$night_2016), 
+                                                                   NA, 
+                                                                   puyallup_covariates$chinook0_hatchery_perhour_night_inp_2016)
+#do same for 2019
+
+puyallup_covariates$chinook0_hatchery_perhour_night_2019 <- ifelse(is.na(puyallup_wild$night_2019), 
+                                                                   NA, 
+                                                                   puyallup_covariates$chinook0_hatchery_perhour_night_inp_2019)
+
+
+colnames(puyallup_wild)
+colnames(puyallup_covariates)
+
+p1 <- ggplot(puyallup_covariates) + 
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_inp_2016), 
+            color = "cadetblue", linewidth = 1, alpha = 0.6, linetype = "dotted") + 
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_2016), 
+            color = "cadetblue", linewidth = 1.5, alpha = 0.7) + 
+  # geom_line(aes(x = doy, y = flow_diff_night_2016), 
+  #           color = "darkblue", linewidth = 1.2, alpha = 0.3) + 
+  geom_line(data = puyallup_wild, aes(x = doy, y = night_2016), 
+            color = "salmon", linewidth = 1.5, alpha = 0.7) + 
+  labs(x = "Day of Year", y = "Scaled (Chinook salmon per hour)")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size  = 14),
+        axis.text.y = element_text(size  = 14),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
+        legend.text = element_text(size = 18),
+        legend.title = element_text(size = 20))+
+  xlim(130,180)+
+  scale_y_continuous(limits = c(-1,10), breaks = seq(0,10,2))
+
+p1
+
+ggplot(puyallup_covariates) + 
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_inp_2019), 
+            color = "cadetblue", linewidth = 1, alpha = 0.6, linetype = "dotted") + 
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_2019), 
+            color = "cadetblue", linewidth = 1.5, alpha = 0.7) + 
+  # geom_line(aes(x = doy, y = flow_diff_night_2016), 
+  #           color = "darkblue", linewidth = 1.2, alpha = 0.3) + 
+  geom_line(data = puyallup_wild, aes(x = doy, y = night_2019), 
+            color = "salmon", linewidth = 1.5, alpha = 0.7)
+
+#repeat for 2013
+
+puyallup_covariates$chinook0_hatchery_perhour_night_2013 <- ifelse(is.na(puyallup_wild$night_2013), 
+                                                                   NA, 
+                                                                   puyallup_covariates$chinook0_hatchery_perhour_night_inp_2013)
+#add legend
+p2 <- ggplot(puyallup_covariates) +
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_inp_2013, color = "Hatchery"), 
+            linewidth = 1, alpha = 0.6, linetype = "dotted") + 
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_2013, color = "Hatchery"), 
+            linewidth = 1.5, alpha = 0.7) + 
+  # geom_line(aes(x = doy, y = flow_diff_night_2016), 
+  #           color = "darkblue", linewidth = 1.2, alpha = 0.3) + 
+  geom_line(data = puyallup_wild, aes(x = doy, y = night_2013, color = "Wild"), 
+            linewidth = 1.5, alpha = 0.7) + 
+  scale_color_manual(name = "Origin", values = c("Hatchery" = "cadetblue", "Wild" = "salmon")) + 
+  labs(x = "Day of Year", y = "", color = "Origin")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size  = 14),
+        axis.text.y = element_text(size  = 14),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
+        legend.text = element_text(size = 18),
+        legend.title = element_text(size = 20))
+  
+
+p2
+
+
+p3 <- ggplot(puyallup_covariates) +
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_inp_2019, color = "Hatchery"), 
+            linewidth = 1, alpha = 0.6, linetype = "dotted") + 
+  geom_line(aes(x = doy, y = chinook0_hatchery_perhour_night_2019, color = "Hatchery"), 
+            linewidth = 1.5, alpha = 0.7) + 
+  # geom_line(aes(x = doy, y = flow_diff_night_2016), 
+  #           color = "darkblue", linewidth = 1.2, alpha = 0.3) + 
+  geom_line(data = puyallup_wild, aes(x = doy, y = night_2019, color = "Wild"), 
+            linewidth = 1.5, alpha = 0.7) + 
+  scale_color_manual(name = "Origin", values = c("Hatchery" = "cadetblue", "Wild" = "salmon")) + 
+  labs(x = "Day of Year", y = "", color = "Origin")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size  = 20),
+        axis.text.y = element_text(size  = 20),
+        axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20))+
+  xlim(130,180)
+
+
+p3
+
+
+#combine plots
+library(ggpubr)
+
+ggarrange(p1, p2, ncol = 2, nrow = 1)
+ggarrange(p1, p3, ncol = 2, nrow = 1, widths = c(1,1.3), labels = c("a", "b"), font.label = list(size = 20))
+
+ggsave(here("output","representative_figure_puyallup_chinook_2016_2019.jpeg"), width = 12, height = 6, units = "in")
+
+
+pred <- predict(fit_chinook0_puyallup, type = "ytT", interval = "confidence")
+head(pred)
+
+
+pred.rownames <- substring(unique(pred$pred$.rownames), 11, 
+                           length(unique(pred$pred$.rownames)))
+names(pred.rownames) <- unique(pred$pred$.rownames)
+
+#add a column in pred$pred for label and use pred.rownames to label the rows
+
+pred$pred$label <- pred.rownames[pred$pred$.rownames]
+
+#make a new column for daynight_category and year by parsing the label column
+
+pred$pred$daynight_category <- ifelse(grepl("day", pred$pred$label), "day", "night")
+#use last 4 charachters of label column to get year
+pred$pred$year <- as.numeric(substr(pred$pred$label, nchar(pred$pred$label)-3, nchar(pred$pred$label)))
+#make new columns for if year is less than 2012 and call it 1 else 0
+pred$pred$year.2012 <- ifelse(pred$pred$year < 2012, 1, 0)
+
+
+#reorder pred$pred according to year and then daynight_category
+pred$pred <- pred$pred[order(pred$pred$year, pred$pred$daynight_category),]
+
+#plot the predictions
+#make points transparent by using alpha = 0.5
+#add confidence interval by using geom_ribbon()
+#change the number of columns in facet_grid() so that the figures are not too narrow
+#remove legend
+#make figure wider and shorter
+ggplot(data = pred$pred %>% 
+         filter(year == 2016 & daynight_category == "night"))+
+  
+  geom_line(aes(x = t+130, y = estimate, color = "predicted"))+
+  geom_point(aes(x = t+130, y = y, color = "observed"), alpha = 0.5)+
+  geom_ribbon(aes(x = t+130, ymin = `Lo 95`, ymax = `Hi 95`), alpha = 0.2)+
+  geom_line(data = puyallup_covariates, aes(x = doy, y = chinook0_hatchery_perhour_night_inp_2016), 
+            color = "cadetblue", linewidth = 1.5, alpha = 0.7) +
+  scale_color_manual(name = "Legend", values = c("predicted" = "#257085", "observed" = "black"))+
+  labs(x = "Time", y = "log(CPUE + 1)", title = "Predicted vs Observed Chinook subyearlings, Puyallup River")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme_bw()+
+  theme(
+    strip.background = element_rect(
+      color="white", fill="white", size=1.5, linetype="solid"
+    ),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10),
+    axis.title.x = element_text(size = 10),
+    axis.title.y = element_text(size = 10),
+    legend.position = "none"
+  )
+
