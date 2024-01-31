@@ -1,0 +1,130 @@
+"","c","photoperiod_difference","photoperiod","temperature_difference","flow","lunar_phase","flow_difference","hatchery","logLik","AICc","num.param","num.iter","converged","deltaAICc","rel.LL","weights","cumulative_weights"
+"gradient96"," photoperiod_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,0,1,1,-1590.84,3241.16,29,50,TRUE,0,1,0.11,0.11
+"gradient111"," photo_diff_day photoperiod_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,0,1,1,-1589.83,3241.24,30,54,TRUE,0.09,0.96,0.11,0.22
+"gradient122"," photo_diff_day flow_day_inp photoperiod_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,0,1,1,-1588.92,3241.52,31,54,TRUE,0.36,0.83,0.1,0.32
+"gradient118"," photoperiod_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,1,1,1,-1590.44,3242.45,30,58,TRUE,1.29,0.52,0.06,0.38
+"gradient124"," photo_diff_day photoperiod_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,1,1,1,-1589.4,3242.48,31,55,TRUE,1.32,0.52,0.06,0.44
+"gradient107"," photo_diff_day flow_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,0,1,1,-1590.55,3242.68,30,47,TRUE,1.53,0.47,0.05,0.49
+"gradient126"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,1,1,1,-1588.58,3242.95,32,57,TRUE,1.79,0.41,0.05,0.54
+"gradient116"," flow_day_inp photoperiod_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,0,1,1,-1590.75,3243.08,30,53,TRUE,1.92,0.38,0.04,0.58
+"gradient71"," photo_diff_day flow_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,1,0,1,1,-1591.98,3243.44,29,59,TRUE,2.29,0.32,0.04,0.62
+"gradient102"," photo_diff_day flow_day_inp photoperiod_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,1,0,1,1,-1590.95,3243.48,30,51,TRUE,2.33,0.31,0.04,0.65
+"gradient57"," photoperiod_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,0,0,1,1,-1593.08,3243.54,28,49,TRUE,2.38,0.3,0.03,0.69
+"gradient123"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,1,1,1,-1590.18,3244.04,31,56,TRUE,2.89,0.24,0.03,0.72
+"gradient77"," photo_diff_day photoperiod_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,0,0,1,1,-1592.36,3244.2,29,52,TRUE,3.05,0.22,0.02,0.74
+"gradient82"," photo_diff_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,0,1,1,-1592.38,3244.23,29,50,TRUE,3.07,0.21,0.02,0.76
+"gradient125"," flow_day_inp photoperiod_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,1,1,1,-1590.37,3244.43,31,55,TRUE,3.28,0.19,0.02,0.79
+"gradient62"," flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,0,1,1,-1593.67,3244.72,28,39,TRUE,3.57,0.17,0.02,0.81
+"gradient94"," photoperiod_day lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,0,1,1,1,-1592.65,3244.78,29,51,TRUE,3.62,0.16,0.02,0.82
+"gradient105"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,1,1,1,1,-1591.63,3244.83,30,59,TRUE,3.67,0.16,0.02,0.84
+"gradient120"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,1,1,1,1,-1590.62,3244.92,31,54,TRUE,3.76,0.15,0.02,0.86
+"gradient87"," flow_day_inp photoperiod_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,1,0,1,1,-1592.77,3245.01,29,47,TRUE,3.85,0.15,0.02,0.88
+"gradient112"," photo_diff_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,1,1,1,-1591.84,3245.26,30,51,TRUE,4.1,0.13,0.01,0.89
+"gradient109"," photo_diff_day photoperiod_day lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,0,1,1,1,-1591.9,3245.38,30,49,TRUE,4.22,0.12,0.01,0.91
+"gradient26"," flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,0,0,1,1,-1595.14,3245.56,27,49,TRUE,4.4,0.11,0.01,0.92
+"gradient41"," photo_diff_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,0,0,1,1,-1594.14,3245.65,28,46,TRUE,4.49,0.11,0.01,0.93
+"gradient97"," lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,1,1,1,-1593.16,3245.8,29,49,TRUE,4.65,0.1,0.01,0.94
+"gradient92"," flow_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,0,1,1,-1593.27,3246.01,29,47,TRUE,4.86,0.09,0.01,0.95
+"gradient114"," flow_day_inp photoperiod_day lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,1,1,1,1,-1592.4,3246.38,30,50,TRUE,5.22,0.07,0.01,0.96
+"gradient51"," flow_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,1,0,1,1,-1594.54,3246.45,28,59,TRUE,5.29,0.07,0.01,0.97
+"gradient60"," lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,0,1,1,1,-1594.63,3246.64,28,53,TRUE,5.48,0.06,0.01,0.98
+"gradient80"," photo_diff_day lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,0,1,1,1,-1593.6,3246.66,29,46,TRUE,5.51,0.06,0.01,0.98
+"gradient117"," flow_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,1,1,1,-1592.85,3247.27,30,57,TRUE,6.11,0.05,0.01,0.99
+"gradient90"," flow_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,1,1,1,1,-1594.13,3247.73,29,54,TRUE,6.58,0.04,0,0.99
+"gradient40"," photo_diff_day flow_diff_day temp_diff_day",1,0,1,0,0,1,0,-1597.25,3249.79,27,44,TRUE,8.63,0.01,0,0.99
+"gradient70"," photo_diff_day flow_day_inp flow_diff_day temp_diff_day",1,0,1,1,0,1,0,-1596.48,3250.34,28,47,TRUE,9.18,0.01,0,1
+"gradient79"," photo_diff_day lunar_phase_day flow_diff_day temp_diff_day",1,0,1,0,1,1,0,-1596.55,3250.48,28,46,TRUE,9.33,0.01,0,1
+"gradient76"," photo_diff_day photoperiod_day flow_diff_day temp_diff_day",1,1,1,0,0,1,0,-1596.82,3251.01,28,48,TRUE,9.85,0.01,0,1
+"gradient104"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day temp_diff_day",1,0,1,1,1,1,0,-1595.88,3251.24,29,50,TRUE,10.08,0.01,0,1
+"gradient108"," photo_diff_day photoperiod_day lunar_phase_day flow_diff_day temp_diff_day",1,1,1,0,1,1,0,-1596.14,3251.76,29,52,TRUE,10.6,0,0,1
+"gradient101"," photo_diff_day flow_day_inp photoperiod_day flow_diff_day temp_diff_day",1,1,1,1,0,1,0,-1596.32,3252.11,29,48,TRUE,10.95,0,0,1
+"gradient119"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day flow_diff_day temp_diff_day",1,1,1,1,1,1,0,-1595.72,3253.01,30,56,TRUE,11.86,0,0,1
+"gradient30"," photo_diff_day flow_day_inp flow_diff_day",1,0,0,1,0,1,0,-1599.62,3254.51,27,34,TRUE,13.35,0,0,1
+"gradient10"," photo_diff_day flow_diff_day",1,0,0,0,0,1,0,-1600.7,3254.58,26,51,TRUE,13.43,0,0,1
+"gradient37"," photo_diff_day lunar_phase_day flow_diff_day",1,0,0,0,1,1,0,-1599.91,3255.11,27,47,TRUE,13.95,0,0,1
+"gradient67"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day",1,0,0,1,1,1,0,-1598.96,3255.3,28,47,TRUE,14.14,0,0,1
+"gradient64"," photo_diff_day flow_day_inp photoperiod_day flow_diff_day",1,1,0,1,0,1,0,-1599.6,3256.57,28,49,TRUE,15.41,0,0,1
+"gradient34"," photo_diff_day photoperiod_day flow_diff_day",1,1,0,0,0,1,0,-1600.67,3256.63,27,48,TRUE,15.47,0,0,1
+"gradient73"," photo_diff_day photoperiod_day lunar_phase_day flow_diff_day",1,1,0,0,1,1,0,-1599.89,3257.16,28,45,TRUE,16,0,0,1
+"gradient98"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day flow_diff_day",1,1,0,1,1,1,0,-1598.95,3257.38,29,53,TRUE,16.22,0,0,1
+"gradient25"," flow_diff_day temp_diff_day",0,0,1,0,0,1,0,-1602.84,3258.88,26,40,TRUE,17.72,0,0,1
+"gradient59"," lunar_phase_day flow_diff_day temp_diff_day",0,0,1,0,1,1,0,-1602.09,3259.47,27,51,TRUE,18.31,0,0,1
+"gradient50"," flow_day_inp flow_diff_day temp_diff_day",0,0,1,1,0,1,0,-1602.54,3260.37,27,42,TRUE,19.21,0,0,1
+"gradient56"," photoperiod_day flow_diff_day temp_diff_day",0,1,1,0,0,1,0,-1602.65,3260.59,27,46,TRUE,19.43,0,0,1
+"gradient89"," flow_day_inp lunar_phase_day flow_diff_day temp_diff_day",0,0,1,1,1,1,0,-1601.73,3260.84,28,48,TRUE,19.68,0,0,1
+"gradient93"," photoperiod_day lunar_phase_day flow_diff_day temp_diff_day",0,1,1,0,1,1,0,-1601.92,3261.21,28,44,TRUE,20.05,0,0,1
+"gradient86"," flow_day_inp photoperiod_day flow_diff_day temp_diff_day",0,1,1,1,0,1,0,-1602.16,3261.69,28,49,TRUE,20.54,0,0,1
+"gradient113"," flow_day_inp photoperiod_day lunar_phase_day flow_diff_day temp_diff_day",0,1,1,1,1,1,0,-1601.35,3262.17,29,51,TRUE,21.01,0,0,1
+"gradient4"," flow_diff_day",0,0,0,0,0,1,0,-1605.57,3262.23,25,43,TRUE,21.08,0,0,1
+"gradient22"," lunar_phase_day flow_diff_day",0,0,0,0,1,1,0,-1604.78,3262.74,26,40,TRUE,21.58,0,0,1
+"gradient15"," flow_day_inp flow_diff_day",0,0,0,1,0,1,0,-1605.47,3264.12,26,42,TRUE,22.96,0,0,1
+"gradient19"," photoperiod_day flow_diff_day",0,1,0,0,0,1,0,-1605.56,3264.31,26,44,TRUE,23.15,0,0,1
+"gradient47"," flow_day_inp lunar_phase_day flow_diff_day",0,0,0,1,1,1,0,-1604.63,3264.54,27,48,TRUE,23.38,0,0,1
+"gradient53"," photoperiod_day lunar_phase_day flow_diff_day",0,1,0,0,1,1,0,-1604.77,3264.82,27,51,TRUE,23.66,0,0,1
+"gradient44"," flow_day_inp photoperiod_day flow_diff_day",0,1,0,1,0,1,0,-1605.44,3266.17,27,46,TRUE,25.01,0,0,1
+"gradient83"," flow_day_inp photoperiod_day lunar_phase_day flow_diff_day",0,1,0,1,1,1,0,-1604.6,3266.58,28,52,TRUE,25.42,0,0,1
+"gradient35"," photo_diff_day photoperiod_day temp_diff_day",1,1,1,0,0,0,0,-1673.54,3402.35,27,67,TRUE,161.19,0,0,1
+"gradient65"," photo_diff_day flow_day_inp photoperiod_day temp_diff_day",1,1,1,1,0,0,0,-1672.58,3402.54,28,74,TRUE,161.38,0,0,1
+"gradient8"," photo_diff_day photoperiod_day",1,1,0,0,0,0,0,-1675.61,3404.41,26,75,TRUE,163.26,0,0,1
+"gradient74"," photo_diff_day photoperiod_day lunar_phase_day temp_diff_day",1,1,1,0,1,0,0,-1673.53,3404.43,28,104,TRUE,163.27,0,0,1
+"gradient28"," photo_diff_day flow_day_inp photoperiod_day",1,1,0,1,0,0,0,-1674.58,3404.45,27,76,TRUE,163.29,0,0,1
+"gradient99"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day temp_diff_day",1,1,1,1,1,0,0,-1672.58,3404.63,29,74,TRUE,163.47,0,0,1
+"gradient78"," photo_diff_day photoperiod_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,0,0,1,-1673.01,3405.5,29,88,TRUE,164.34,0,0,1
+"gradient103"," photo_diff_day flow_day_inp photoperiod_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,0,0,1,-1671.96,3405.5,30,86,TRUE,164.35,0,0,1
+"gradient33"," photo_diff_day photoperiod_day lunar_phase_day",1,1,0,0,1,0,0,-1675.61,3406.5,27,69,TRUE,165.34,0,0,1
+"gradient63"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day",1,1,0,1,1,0,0,-1674.58,3406.54,28,75,TRUE,165.38,0,0,1
+"gradient36"," photo_diff_day photoperiod_day chinook0_hatchery_perhour_day_inp",1,1,0,0,0,0,1,-1674.82,3407.02,28,84,TRUE,165.86,0,0,1
+"gradient66"," photo_diff_day flow_day_inp photoperiod_day chinook0_hatchery_perhour_day_inp",1,1,0,1,0,0,1,-1673.81,3407.1,29,96,TRUE,165.94,0,0,1
+"gradient"," photo_diff_day",1,0,0,0,0,0,0,-1678.07,3407.24,25,63,TRUE,166.08,0,0,1
+"gradient110"," photo_diff_day photoperiod_day lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,1,0,1,-1673,3407.58,30,86,TRUE,166.43,0,0,1
+"gradient121"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,1,0,1,-1671.96,3407.61,31,93,TRUE,166.45,0,0,1
+"gradient12"," photo_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,0,0,0,1,-1676.85,3408.98,27,80,TRUE,167.83,0,0,1
+"gradient75"," photo_diff_day photoperiod_day lunar_phase_day chinook0_hatchery_perhour_day_inp",1,1,0,0,1,0,1,-1674.81,3409.09,29,88,TRUE,167.93,0,0,1
+"gradient100"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day chinook0_hatchery_perhour_day_inp",1,1,0,1,1,0,1,-1673.81,3409.19,30,91,TRUE,168.03,0,0,1
+"gradient7"," photo_diff_day flow_day_inp",1,0,0,1,0,0,0,-1678,3409.2,26,68,TRUE,168.04,0,0,1
+"gradient11"," photo_diff_day temp_diff_day",1,0,1,0,0,0,0,-1678.04,3409.27,26,69,TRUE,168.11,0,0,1
+"gradient9"," photo_diff_day lunar_phase_day",1,0,0,0,1,0,0,-1678.06,3409.31,26,67,TRUE,168.16,0,0,1
+"gradient42"," photo_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,0,0,1,-1676.32,3410.02,28,84,TRUE,168.86,0,0,1
+"gradient32"," photo_diff_day flow_day_inp chinook0_hatchery_perhour_day_inp",1,0,0,1,0,0,1,-1676.39,3410.16,28,88,TRUE,169,0,0,1
+"gradient39"," photo_diff_day lunar_phase_day chinook0_hatchery_perhour_day_inp",1,0,0,0,1,0,1,-1676.85,3411.08,28,83,TRUE,169.92,0,0,1
+"gradient31"," photo_diff_day flow_day_inp temp_diff_day",1,0,1,1,0,0,0,-1677.93,3411.14,27,65,TRUE,169.98,0,0,1
+"gradient29"," photo_diff_day flow_day_inp lunar_phase_day",1,0,0,1,1,0,0,-1678,3411.28,27,65,TRUE,170.12,0,0,1
+"gradient72"," photo_diff_day flow_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,0,0,1,-1675.92,3411.32,29,83,TRUE,170.16,0,0,1
+"gradient38"," photo_diff_day lunar_phase_day temp_diff_day",1,0,1,0,1,0,0,-1678.03,3411.35,27,74,TRUE,170.19,0,0,1
+"gradient81"," photo_diff_day lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,1,0,1,-1676.32,3412.12,29,72,TRUE,170.96,0,0,1
+"gradient69"," photo_diff_day flow_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",1,0,0,1,1,0,1,-1676.39,3412.26,29,87,TRUE,171.1,0,0,1
+"gradient68"," photo_diff_day flow_day_inp lunar_phase_day temp_diff_day",1,0,1,1,1,0,0,-1677.92,3413.22,28,86,TRUE,172.07,0,0,1
+"gradient106"," photo_diff_day flow_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,1,0,1,-1675.92,3413.41,30,98,TRUE,172.26,0,0,1
+"gradient45"," flow_day_inp photoperiod_day temp_diff_day",0,1,1,1,0,0,0,-1684.26,3423.8,27,64,TRUE,182.64,0,0,1
+"gradient13"," flow_day_inp photoperiod_day",0,1,0,1,0,0,0,-1685.54,3424.27,26,68,TRUE,183.11,0,0,1
+"gradient84"," flow_day_inp photoperiod_day lunar_phase_day temp_diff_day",0,1,1,1,1,0,0,-1684.26,3425.89,28,78,TRUE,184.73,0,0,1
+"gradient43"," flow_day_inp photoperiod_day lunar_phase_day",0,1,0,1,1,0,0,-1685.53,3426.35,27,78,TRUE,185.19,0,0,1
+"gradient21"," photoperiod_day chinook0_hatchery_perhour_day_inp",0,1,0,0,0,0,1,-1685.83,3426.94,27,40,TRUE,185.79,0,0,1
+"gradient6"," chinook0_hatchery_perhour_day_inp",0,0,0,0,0,0,1,-1687.14,3427.46,26,43,TRUE,186.3,0,0,1
+"gradient58"," photoperiod_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,0,0,1,-1685.36,3428.1,28,43,TRUE,186.94,0,0,1
+"gradient46"," flow_day_inp photoperiod_day chinook0_hatchery_perhour_day_inp",0,1,0,1,0,0,1,-1685.45,3428.27,28,45,TRUE,187.11,0,0,1
+"gradient55"," photoperiod_day lunar_phase_day chinook0_hatchery_perhour_day_inp",0,1,0,0,1,0,1,-1685.72,3428.82,28,43,TRUE,187.66,0,0,1
+"gradient88"," flow_day_inp photoperiod_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,0,0,1,-1684.75,3428.98,29,54,TRUE,187.82,0,0,1
+"gradient27"," temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,0,0,1,-1686.94,3429.15,27,45,TRUE,188,0,0,1
+"gradient17"," flow_day_inp chinook0_hatchery_perhour_day_inp",0,0,0,1,0,0,1,-1686.99,3429.25,27,49,TRUE,188.09,0,0,1
+"gradient24"," lunar_phase_day chinook0_hatchery_perhour_day_inp",0,0,0,0,1,0,1,-1687.05,3429.39,27,46,TRUE,188.23,0,0,1
+"gradient95"," photoperiod_day lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,1,0,1,-1685.24,3429.96,29,46,TRUE,188.8,0,0,1
+"gradient85"," flow_day_inp photoperiod_day lunar_phase_day chinook0_hatchery_perhour_day_inp",0,1,0,1,1,0,1,-1685.37,3430.21,29,56,TRUE,189.05,0,0,1
+"gradient52"," flow_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,0,0,1,-1686.73,3430.84,28,46,TRUE,189.69,0,0,1
+"gradient115"," flow_day_inp photoperiod_day lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,1,0,1,-1684.67,3430.92,30,48,TRUE,189.77,0,0,1
+"gradient61"," lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,1,0,1,-1686.85,3431.08,28,51,TRUE,189.92,0,0,1
+"gradient49"," flow_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",0,0,0,1,1,0,1,-1686.92,3431.22,28,42,TRUE,190.06,0,0,1
+"gradient16"," flow_day_inp temp_diff_day",0,0,1,1,0,0,0,-1689.7,3432.58,26,35,TRUE,191.42,0,0,1
+"gradient1"," flow_day_inp",0,0,0,1,0,0,0,-1690.79,3432.68,25,40,TRUE,191.52,0,0,1
+"gradient91"," flow_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,1,0,1,-1686.67,3432.82,29,51,TRUE,191.66,0,0,1
+"gradient48"," flow_day_inp lunar_phase_day temp_diff_day",0,0,1,1,1,0,0,-1689.69,3434.65,27,45,TRUE,193.5,0,0,1
+"gradient14"," flow_day_inp lunar_phase_day",0,0,0,1,1,0,0,-1690.79,3434.76,26,37,TRUE,193.6,0,0,1
+"gradient127"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,0,0,0,0,-1693.39,3435.79,24,26,TRUE,194.63,0,0,1
+"gradient128"," photo_diff_day flow_day_inp photoperiod_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,0,0,0,0,-1693.39,3435.79,24,26,TRUE,194.63,0,0,1
+"gradient5"," temp_diff_day",0,0,1,0,0,0,0,-1692.36,3435.81,25,36,TRUE,194.66,0,0,1
+"gradient20"," photoperiod_day temp_diff_day",0,1,1,0,0,0,0,-1692.27,3437.74,26,44,TRUE,196.58,0,0,1
+"gradient3"," lunar_phase_day",0,0,0,0,1,0,0,-1693.37,3437.83,25,43,TRUE,196.68,0,0,1
+"gradient23"," lunar_phase_day temp_diff_day",0,0,1,0,1,0,0,-1692.33,3437.84,26,42,TRUE,196.68,0,0,1
+"gradient2"," photoperiod_day",0,1,0,0,0,0,0,-1693.39,3437.88,25,42,TRUE,196.72,0,0,1
+"gradient54"," photoperiod_day lunar_phase_day temp_diff_day",0,1,1,0,1,0,0,-1692.24,3439.76,27,43,TRUE,198.6,0,0,1
+"gradient18"," photoperiod_day lunar_phase_day",0,1,0,0,1,0,0,-1693.37,3439.92,26,38,TRUE,198.76,0,0,1
