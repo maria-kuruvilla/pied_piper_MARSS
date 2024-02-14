@@ -1,0 +1,128 @@
+"","c","photoperiod_difference","temperature","temperature_difference","flow","lunar_phase","flow_difference","hatchery","logLik","AICc","num.param","num.iter","converged","deltaAICc"
+"gradient120"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,1,1,1,1,-2557.10672104,5206.34416776193,45,45,TRUE,0
+"gradient126"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,1,1,1,-2556.77544817989,5207.77746690561,46,46,TRUE,1.43329914367314
+"gradient102"," photo_diff_day flow_day_inp temp_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,1,0,1,1,-2559.23657064894,5208.51017833493,44,41,TRUE,2.1660105729934
+"gradient122"," photo_diff_day flow_day_inp temp_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,0,1,1,-2558.94831676163,5210.02735920519,45,44,TRUE,3.68319144325778
+"gradient98"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day flow_diff_day",1,1,0,1,1,1,0,-2564.02851021494,5216.00252171524,43,45,TRUE,9.65835395330123
+"gradient64"," photo_diff_day flow_day_inp temp_day_inp flow_diff_day",1,1,0,1,0,1,0,-2565.85485379614,5217.5658227002,42,42,TRUE,11.2216549382674
+"gradient119"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day flow_diff_day temp_diff_day",1,1,1,1,1,1,0,-2563.80221559776,5217.64146823256,44,54,TRUE,11.2973004706218
+"gradient101"," photo_diff_day flow_day_inp temp_day_inp flow_diff_day temp_diff_day",1,1,1,1,0,1,0,-2565.66134644847,5219.26819418228,43,37,TRUE,12.9240264203499
+"gradient109"," photo_diff_day temp_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,0,1,1,1,-2567.56396849393,5225.1649740249,44,45,TRUE,18.8208062629692
+"gradient77"," photo_diff_day temp_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",1,1,0,0,0,1,1,-2568.85588213169,5225.65726554873,43,46,TRUE,19.3130977867932
+"gradient124"," photo_diff_day temp_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,1,1,1,-2567.55607589665,5227.24287747524,45,45,TRUE,20.8987097133058
+"gradient111"," photo_diff_day temp_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,0,1,1,-2568.85064737642,5227.73833178988,44,44,TRUE,21.3941640279418
+"gradient73"," photo_diff_day temp_day_inp lunar_phase_day flow_diff_day",1,1,0,0,1,1,0,-2571.79190143792,5229.43991798375,42,45,TRUE,23.0957502218162
+"gradient34"," photo_diff_day temp_day_inp flow_diff_day",1,1,0,0,0,1,0,-2572.97850907566,5229.72589334392,41,36,TRUE,23.3817255819895
+"gradient108"," photo_diff_day temp_day_inp lunar_phase_day flow_diff_day temp_diff_day",1,1,1,0,1,1,0,-2571.78992430212,5231.52534988958,43,41,TRUE,25.1811821276433
+"gradient76"," photo_diff_day temp_day_inp flow_diff_day temp_diff_day",1,1,1,0,0,1,0,-2572.97701785982,5231.81015082756,42,41,TRUE,25.4659830656265
+"gradient105"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,1,1,1,1,-2582.32899831602,5254.69503366907,44,43,TRUE,48.3508659071404
+"gradient71"," photo_diff_day flow_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,1,0,1,1,-2583.40005170915,5254.74560470365,43,39,TRUE,48.40143694172
+"gradient57"," temp_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,0,0,1,1,-2584.4982902603,5254.85269562852,42,37,TRUE,48.5085278665829
+"gradient94"," temp_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,0,1,1,1,-2583.69544370278,5255.3363886909,43,44,TRUE,48.9922209289698
+"gradient87"," flow_day_inp temp_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,1,0,1,1,-2583.7882195578,5255.52194040094,43,52,TRUE,49.1777726390046
+"gradient114"," flow_day_inp temp_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,1,0,1,1,1,1,-2582.88495081049,5255.80693865802,44,44,TRUE,49.462770896087
+"gradient123"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,1,1,1,-2582.23853174105,5256.60778916403,45,41,TRUE,50.2636214020995
+"gradient107"," photo_diff_day flow_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,0,1,1,-2583.29384711062,5256.62473125829,44,48,TRUE,50.2805634963524
+"gradient96"," temp_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,0,1,1,-2584.45571249624,5256.85692627782,43,45,TRUE,50.512758515888
+"gradient118"," temp_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,1,1,1,-2583.65954365593,5257.35612434889,44,55,TRUE,51.0119565869572
+"gradient116"," flow_day_inp temp_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,0,1,1,-2583.77099535824,5257.57902775351,44,44,TRUE,51.2348599915786
+"gradient125"," flow_day_inp temp_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,1,1,1,-2582.8735201319,5257.87776594573,45,45,TRUE,51.5335981837934
+"gradient30"," photo_diff_day flow_day_inp flow_diff_day",1,0,0,1,0,1,0,-2587.39595522179,5258.56078563618,41,39,TRUE,52.2166178742473
+"gradient67"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day",1,0,0,1,1,1,0,-2586.41841215921,5258.69293942634,42,42,TRUE,52.3487716644013
+"gradient70"," photo_diff_day flow_day_inp flow_diff_day temp_diff_day",1,0,1,1,0,1,0,-2587.26165880067,5260.37943270926,42,37,TRUE,54.0352649473298
+"gradient104"," photo_diff_day flow_day_inp lunar_phase_day flow_diff_day temp_diff_day",1,0,1,1,1,1,0,-2586.29827087376,5260.54204303287,43,47,TRUE,54.1978752709356
+"gradient51"," flow_day_inp flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,1,0,1,1,-2587.78238188325,5261.42087887441,42,42,TRUE,55.0767111124715
+"gradient41"," photo_diff_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,0,0,1,1,-2587.86688964123,5261.58989439038,42,46,TRUE,55.2457266284464
+"gradient90"," flow_day_inp lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,1,1,1,1,-2586.93421253016,5261.81392634567,43,40,TRUE,55.4697585837321
+"gradient80"," photo_diff_day lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,0,1,1,1,-2587.14329987009,5262.23210102552,43,45,TRUE,55.8879332635897
+"gradient26"," flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,0,0,1,1,-2589.36346118809,5262.49579756878,41,42,TRUE,56.15162980685
+"gradient10"," photo_diff_day flow_diff_day",1,0,0,0,0,1,0,-2590.57808872555,5262.83995568519,40,38,TRUE,56.4957879232552
+"gradient82"," photo_diff_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,0,1,1,-2587.56273689966,5263.07097508466,43,43,TRUE,56.7268073227278
+"gradient60"," lunar_phase_day flow_diff_day chinook0_hatchery_perhour_day_inp",0,0,0,0,1,1,1,-2588.6668685538,5263.18985221552,42,45,TRUE,56.8456844535813
+"gradient92"," flow_day_inp flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,0,1,1,-2587.64156889103,5263.2286390674,43,45,TRUE,56.8844713054677
+"gradient37"," photo_diff_day lunar_phase_day flow_diff_day",1,0,0,0,1,1,0,-2589.87622449389,5263.52132418038,41,40,TRUE,57.1771564184492
+"gradient117"," flow_day_inp lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,1,1,1,-2586.80811356289,5263.65326416281,44,44,TRUE,57.3090964008807
+"gradient112"," photo_diff_day lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,1,1,1,-2586.852153571,5263.74134417904,44,43,TRUE,57.3971764171083
+"gradient62"," flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,0,1,1,-2589.10437601252,5264.06486713294,42,36,TRUE,57.7206993710106
+"gradient40"," photo_diff_day flow_diff_day temp_diff_day",1,0,1,0,0,1,0,-2590.27329018296,5264.31545555852,41,30,TRUE,57.9712877965831
+"gradient97"," lunar_phase_day flow_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,1,1,1,-2588.42096537546,5264.78743203627,43,43,TRUE,58.4432642743313
+"gradient79"," photo_diff_day lunar_phase_day flow_diff_day temp_diff_day",1,0,1,0,1,1,0,-2589.57177997243,5264.99967505277,42,40,TRUE,58.6555072908359
+"gradient19"," temp_day_inp flow_diff_day",0,1,0,0,0,1,0,-2592.74197404772,5267.16772632953,40,36,TRUE,60.8235585675948
+"gradient53"," temp_day_inp lunar_phase_day flow_diff_day",0,1,0,0,1,1,0,-2592.0750479902,5267.91897117301,41,37,TRUE,61.5748034110757
+"gradient4"," flow_diff_day",0,0,0,0,0,1,0,-2594.58271705164,5268.76625503709,39,40,TRUE,62.4220872751566
+"gradient56"," temp_day_inp flow_diff_day temp_diff_day",0,1,1,0,0,1,0,-2592.67334045328,5269.11555609916,41,40,TRUE,62.7713883372271
+"gradient44"," flow_day_inp temp_day_inp flow_diff_day",0,1,0,1,0,1,0,-2592.73914893664,5269.24717306589,41,42,TRUE,62.9030053039578
+"gradient22"," lunar_phase_day flow_diff_day",0,0,0,0,1,1,0,-2593.94934640507,5269.58247104423,40,37,TRUE,63.2383032822981
+"gradient93"," temp_day_inp lunar_phase_day flow_diff_day temp_diff_day",0,1,1,0,1,1,0,-2592.01381030566,5269.88373571923,42,41,TRUE,63.5395679572948
+"gradient83"," flow_day_inp temp_day_inp lunar_phase_day flow_diff_day",0,1,0,1,1,1,0,-2592.06596964411,5269.98805439613,42,41,TRUE,63.6438866342005
+"gradient25"," flow_diff_day temp_diff_day",0,0,1,0,0,1,0,-2594.36717128395,5270.41812080199,40,42,TRUE,64.0739530400524
+"gradient15"," flow_day_inp flow_diff_day",0,0,0,1,0,1,0,-2594.41741932645,5270.51861688699,40,40,TRUE,64.1744491250602
+"gradient86"," flow_day_inp temp_day_inp flow_diff_day temp_diff_day",0,1,1,1,0,1,0,-2592.67324633596,5271.20260777984,42,41,TRUE,64.8584400179079
+"gradient47"," flow_day_inp lunar_phase_day flow_diff_day",0,0,0,1,1,1,0,-2593.74421190697,5271.25729900654,41,36,TRUE,64.9131312446025
+"gradient59"," lunar_phase_day flow_diff_day temp_diff_day",0,0,1,0,1,1,0,-2593.74439054217,5271.25765627695,41,40,TRUE,64.9134885150161
+"gradient113"," flow_day_inp temp_day_inp lunar_phase_day flow_diff_day temp_diff_day",0,1,1,1,1,1,0,-2592.00848224035,5271.96246576606,43,46,TRUE,65.6182980041212
+"gradient50"," flow_day_inp flow_diff_day temp_diff_day",0,0,1,1,0,1,0,-2594.24241925376,5272.25371370013,41,38,TRUE,65.9095459381988
+"gradient89"," flow_day_inp lunar_phase_day flow_diff_day temp_diff_day",0,0,1,1,1,1,0,-2593.58419223723,5273.02449958238,42,40,TRUE,66.6803318204475
+"gradient100"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",1,1,0,1,1,0,1,-2701.71013274736,5493.45730253175,44,45,TRUE,287.113134769815
+"gradient121"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,1,0,1,-2701.20355533736,5494.53783635666,45,49,TRUE,288.193668594721
+"gradient63"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day",1,1,0,1,1,0,0,-2705.69709694787,5497.25030900364,42,39,TRUE,290.90614124171
+"gradient99"," photo_diff_day flow_day_inp temp_day_inp lunar_phase_day temp_diff_day",1,1,1,1,1,0,0,-2705.49668051166,5498.93886230867,43,47,TRUE,292.594694546733
+"gradient66"," photo_diff_day flow_day_inp temp_day_inp chinook0_hatchery_perhour_day_inp",1,1,0,1,0,0,1,-2705.7270096909,5499.39952066714,43,42,TRUE,293.055352905203
+"gradient103"," photo_diff_day flow_day_inp temp_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,1,0,0,1,-2705.2239901779,5500.48501739284,44,45,TRUE,294.140849630903
+"gradient28"," photo_diff_day flow_day_inp temp_day_inp",1,1,0,1,0,0,0,-2709.48036548814,5502.72960616889,41,46,TRUE,296.385438406956
+"gradient65"," photo_diff_day flow_day_inp temp_day_inp temp_diff_day",1,1,1,1,0,0,0,-2709.27434362309,5504.4048023541,42,45,TRUE,298.060634592168
+"gradient75"," photo_diff_day temp_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",1,1,0,0,1,0,1,-2708.32789009091,5504.60128146716,43,45,TRUE,298.257113705229
+"gradient33"," photo_diff_day temp_day_inp lunar_phase_day",1,1,0,0,1,0,0,-2710.59453935433,5504.95795390127,41,39,TRUE,298.613786139334
+"gradient110"," photo_diff_day temp_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,1,0,1,-2708.2209927546,5506.47902254624,44,38,TRUE,300.134854784302
+"gradient74"," photo_diff_day temp_day_inp lunar_phase_day temp_diff_day",1,1,1,0,1,0,0,-2710.56917075816,5506.99445662423,42,40,TRUE,300.650288862294
+"gradient36"," photo_diff_day temp_day_inp chinook0_hatchery_perhour_day_inp",1,1,0,0,0,0,1,-2711.31062987543,5508.47737485877,42,43,TRUE,302.133207096835
+"gradient8"," photo_diff_day temp_day_inp",1,1,0,0,0,0,0,-2713.55862902115,5508.80103627638,40,34,TRUE,302.456868514447
+"gradient78"," photo_diff_day temp_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",1,1,1,0,0,0,1,-2711.18448806442,5510.31447741418,43,44,TRUE,303.970309652248
+"gradient35"," photo_diff_day temp_day_inp temp_diff_day",1,1,1,0,0,0,0,-2713.5234344364,5510.8157440654,41,42,TRUE,304.471576303462
+"gradient55"," temp_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",0,1,0,0,1,0,1,-2739.13555928581,5564.12723367953,42,33,TRUE,357.783065917593
+"gradient95"," temp_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,1,0,1,-2738.82533229287,5565.59616587108,43,35,TRUE,359.25199810915
+"gradient21"," temp_day_inp chinook0_hatchery_perhour_day_inp",0,1,0,0,0,0,1,-2740.93457042723,5565.63801604707,41,36,TRUE,359.293848285136
+"gradient85"," flow_day_inp temp_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",0,1,0,1,1,0,1,-2738.90585013261,5565.75720155057,43,40,TRUE,359.413033788637
+"gradient46"," flow_day_inp temp_day_inp chinook0_hatchery_perhour_day_inp",0,1,0,1,0,0,1,-2740.60809607527,5567.07230725845,42,34,TRUE,360.728139496519
+"gradient58"," temp_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,0,0,0,1,-2740.61485437371,5567.08582385534,42,34,TRUE,360.741656093402
+"gradient115"," flow_day_inp temp_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,1,0,1,-2738.66445376489,5567.36594456683,44,40,TRUE,361.021776804891
+"gradient88"," flow_day_inp temp_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",0,1,1,1,0,0,1,-2740.37137033255,5568.68824195045,43,36,TRUE,362.344074188516
+"gradient9"," photo_diff_day lunar_phase_day",1,0,0,0,1,0,0,-2743.78855623991,5569.26089071391,40,36,TRUE,362.916722951977
+"gradient29"," photo_diff_day flow_day_inp lunar_phase_day",1,0,0,1,1,0,0,-2742.9947742178,5569.7584236282,41,45,TRUE,363.414255866263
+"gradient38"," photo_diff_day lunar_phase_day temp_diff_day",1,0,1,0,1,0,0,-2743.48318493997,5570.73524507255,41,42,TRUE,364.391077310618
+"gradient"," photo_diff_day",1,0,0,0,0,0,0,-2745.78928118748,5571.17938330877,39,37,TRUE,364.835215546841
+"gradient68"," photo_diff_day flow_day_inp lunar_phase_day temp_diff_day",1,0,1,1,1,0,0,-2742.7630688396,5571.3822527871,42,40,TRUE,365.03808502517
+"gradient69"," photo_diff_day flow_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",1,0,0,1,1,0,1,-2741.80111231176,5571.54772590887,43,45,TRUE,365.203558146936
+"gradient39"," photo_diff_day lunar_phase_day chinook0_hatchery_perhour_day_inp",1,0,0,0,1,0,1,-2742.95383569241,5571.76378649274,42,37,TRUE,365.419618730803
+"gradient7"," photo_diff_day flow_day_inp",1,0,0,1,0,0,0,-2745.22500341929,5572.13378507267,40,42,TRUE,365.789617310736
+"gradient11"," photo_diff_day temp_diff_day",1,0,1,0,0,0,0,-2745.51117207906,5572.7061223922,40,32,TRUE,366.361954630271
+"gradient106"," photo_diff_day flow_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,1,0,1,-2741.71558378272,5573.46820460247,44,49,TRUE,367.124036840538
+"gradient81"," photo_diff_day lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,1,0,1,-2742.77832230708,5573.5021458995,43,42,TRUE,367.157978137568
+"gradient12"," photo_diff_day chinook0_hatchery_perhour_day_inp",1,0,0,0,0,0,1,-2744.88583525078,5573.54054569417,41,47,TRUE,367.19637793224
+"gradient31"," photo_diff_day flow_day_inp temp_diff_day",1,0,1,1,0,0,0,-2745.00668586965,5573.7822469319,41,42,TRUE,367.438079169966
+"gradient32"," photo_diff_day flow_day_inp chinook0_hatchery_perhour_day_inp",1,0,0,1,0,0,1,-2744.01467585648,5573.88546682088,42,41,TRUE,367.541299058947
+"gradient42"," photo_diff_day temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,0,0,0,1,-2744.73623030242,5575.32857571275,42,45,TRUE,368.984407950814
+"gradient72"," photo_diff_day flow_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",1,0,1,1,0,0,1,-2743.9355376914,5575.81657666815,43,42,TRUE,369.472408906216
+"gradient43"," flow_day_inp temp_day_inp lunar_phase_day",0,1,0,1,1,0,0,-2746.41153277162,5576.59194073585,41,36,TRUE,370.247772973915
+"gradient13"," flow_day_inp temp_day_inp",0,1,0,1,0,0,0,-2747.91051569878,5577.50480963165,40,33,TRUE,371.160641869719
+"gradient18"," temp_day_inp lunar_phase_day",0,1,0,0,1,0,0,-2748.23000547154,5578.14378917717,40,33,TRUE,371.799621415235
+"gradient24"," lunar_phase_day chinook0_hatchery_perhour_day_inp",0,0,0,0,1,0,1,-2747.29169329515,5578.35226178291,41,36,TRUE,372.008094020978
+"gradient84"," flow_day_inp temp_day_inp lunar_phase_day temp_diff_day",0,1,1,1,1,0,0,-2746.37769140702,5578.61149792196,42,43,TRUE,372.267330160023
+"gradient2"," temp_day_inp",0,1,0,0,0,0,0,-2749.95133544981,5579.50349183344,39,27,TRUE,373.159324071505
+"gradient45"," flow_day_inp temp_day_inp temp_diff_day",0,1,1,1,0,0,0,-2747.87547760931,5579.51983041122,41,35,TRUE,373.175662649282
+"gradient6"," chinook0_hatchery_perhour_day_inp",0,0,0,0,0,0,1,-2749.02965130647,5579.74308084702,40,28,TRUE,373.398913085083
+"gradient54"," temp_day_inp lunar_phase_day temp_diff_day",0,1,1,0,1,0,0,-2748.09798150493,5579.96483820246,41,34,TRUE,373.620670440524
+"gradient61"," lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,1,0,1,-2747.28619981926,5580.42851474643,42,36,TRUE,374.084346984491
+"gradient49"," flow_day_inp lunar_phase_day chinook0_hatchery_perhour_day_inp",0,0,0,1,1,0,1,-2747.29085273846,5580.43782058482,42,48,TRUE,374.09365282289
+"gradient20"," temp_day_inp temp_diff_day",0,1,1,0,0,0,0,-2749.80971080259,5581.30319983927,40,31,TRUE,374.95903207734
+"gradient17"," flow_day_inp chinook0_hatchery_perhour_day_inp",0,0,0,1,0,0,1,-2749.01454870248,5581.79797259757,41,37,TRUE,375.453804835636
+"gradient27"," temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,0,0,0,1,-2749.02533863092,5581.81955245445,41,34,TRUE,375.475384692513
+"gradient91"," flow_day_inp lunar_phase_day temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,1,0,1,-2747.28436113854,5582.51422356243,43,45,TRUE,376.170055800495
+"gradient3"," lunar_phase_day",0,0,0,0,1,0,0,-2751.85319861967,5583.30721817316,39,33,TRUE,376.963050411222
+"gradient52"," flow_day_inp temp_diff_day chinook0_hatchery_perhour_day_inp",0,0,1,1,0,0,1,-2749.00737972789,5583.8708745637,42,39,TRUE,377.526706801768
+"gradient14"," flow_day_inp lunar_phase_day",0,0,0,1,1,0,0,-2751.15325435366,5583.9902869414,40,30,TRUE,377.646119179463
+"gradient1"," flow_day_inp",0,0,0,1,0,0,0,-2752.74907900665,5585.09897894712,39,32,TRUE,378.754811185187
+"gradient23"," lunar_phase_day temp_diff_day",0,0,1,0,1,0,0,-2751.83903141829,5585.36184107066,40,34,TRUE,379.017673308729
+"gradient48"," flow_day_inp lunar_phase_day temp_diff_day",0,0,1,1,1,0,0,-2751.08341503481,5585.93570526222,41,39,TRUE,379.591537500283
+"gradient5"," temp_diff_day",0,0,1,0,0,0,0,-2753.5759669788,5586.75275489141,39,30,TRUE,380.408587129476
+"gradient16"," flow_day_inp temp_diff_day",0,0,1,1,0,0,0,-2752.68023888845,5587.04425601099,40,34,TRUE,380.700088249053

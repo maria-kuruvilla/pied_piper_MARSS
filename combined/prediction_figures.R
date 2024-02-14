@@ -401,7 +401,75 @@ ggsave(here("output","coho1_dungeness_prediction_w_hatchery.png"), width = 6, he
   
   
   
+  #############
+
+# Puyallup new chinook model with temp
+
+### puyallup
+
+predict_chinook0_puyallup_new <- predict(fits.hatchery.all.years[[121]], type = "ytT", interval = "confidence")
+
+glimpse(predict_chinook0_puyallup_new$pred)
+
+head(predict_chinook0_puyallup_new$pred)
+
+predict_chinook0_puyallup_new$pred$trap <- 'screw'
+
+#last 4 characters of rowname is year, but length of rowname varies depending on whether it's a day or night trap
+predict_chinook0_puyallup_new$pred$year <-  as.numeric(substr(predict_chinook0_puyallup_new$pred$.rownames, 
+                                                          nchar(predict_chinook0_puyallup_new$pred$.rownames)-3, 
+                                                          nchar(predict_chinook0_puyallup_new$pred$.rownames)))
+
+#if rowname has 'day' in it, then it's a day trap, otherwise it's a night trap
+predict_chinook0_puyallup_new$pred$daynight_category <- ifelse(grep("day", 
+                                                                predict_chinook0_puyallup_new$pred$.rownames, 
+                                                                value = TRUE) == predict_chinook0_puyallup_new$pred$.rownames, 
+                                                           "day", "night")
+predict_chinook0_puyallup_new$pred$doy <- predict_chinook0_puyallup_new$pred$t+130
+puyallup_covariates_chinook0_new <- as.data.frame(t(covariates_chinook0_puyallup_w_temp))
+
+puyallup_covariates_chinook0_new$doy <- as.numeric(rownames(puyallup_covariates_chinook0_new))
+
+puyallup_covariates_chinook0_long_new <-  puyallup_covariates_chinook0_new %>% 
+  select(doy, starts_with("chinook")) %>%
+  pivot_longer(cols = -c(doy), names_to = c(".value","daynight_category","year"),
+               names_pattern = "(.*)_(.*)_(.{4})") %>%
+  mutate(year = as.numeric(year), trap = 'screw')
+
+predict_chinook0_puyallup_new$pred <- predict_chinook0_puyallup_new$pred %>%
+  left_join(puyallup_covariates_chinook0_long_new, by = c("doy","year", "daynight_category", "trap"))
+
+
+ggplot(data = predict_chinook0_puyallup_new$pred)+
   
+  geom_line(aes(x = doy, y = estimate, color = "wild, predicted"))+
+  geom_point(aes(x = doy, y = y, color = "wild, observed"), size = 0.2)+
+  geom_ribbon(aes(x = doy, ymin = `Lo 95`, ymax = `Hi 95`), alpha = 0.2)+
+  geom_line(data = predict_chinook0_puyallup_new$pred, aes(x = doy, y = log(chinook0_hatchery_perhour+1), 
+                                                       color = "hatchery")) +
+  facet_wrap(~year+daynight_category, ncol = 6, labeller = label_wrap_gen(multi_line=FALSE))+
+  labs(x = "Day of year", y = "Log(Chinook salmon per hour)", title = "")+
+  scale_color_manual(name = "", values = c("wild, predicted" = "salmon", "wild, observed" = "salmon", hatchery = "cadetblue"),
+                     guide = guide_legend(override.aes = list(
+                       linetype = c(1,NA,1),
+                       shape = c(NA,19,NA),
+                       size = c(4,2,4))))+
+  scale_y_continuous(breaks = c(-3,0,3))+
+  scale_x_continuous(limit = c(130, 200), breaks = c(140,160,180))+
+  theme_classic()+
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        strip.background = element_rect(
+          color="white", fill="white"),
+        strip.text = element_text(size = 10),
+        axis.text.x = element_text(size = 8, angle = 90, hjust = 1),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14))
+
+ggsave(here("output","chinook0_puyallup_prediction_w_hatchery_new.png"), width = 6, height = 8, units = "in", dpi = 300)
+
   
   
   

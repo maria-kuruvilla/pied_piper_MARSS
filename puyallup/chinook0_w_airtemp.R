@@ -9,6 +9,7 @@ library(GGally)
 library(tidyverse)
 library(zoo)
 library(modelr)
+library(qpcR)
 
 
 #load data
@@ -424,6 +425,14 @@ fits.hatchery.all.years[[121]]
 ci_puyallup_chinook_airtemp <- tidy(fits.hatchery.all.years[[121]])
 ci_puyallup_chinook_airtemp
 
+#save table
+
+write.csv(out.tab.hatchery.ordered, file = here("puyallup","output",
+                                                 "chinook_correlated_covariates_selection_hatchery_w_airtemp.csv"))
+
+#save fits
+save(fits.hatchery.all.years, file = here("puyallup","output",
+                                          "chinook_correlated_covariates_selection_hatchery_w_airtemp_fits.RData"))
 
 ggplot(ci_puyallup_chinook_airtemp[c(39:45),], 
        aes(x = c("Photoperiod difference", "Flow", "Temperature", "Lunar phase",
@@ -437,5 +446,106 @@ ggplot(ci_puyallup_chinook_airtemp[c(39:45),],
   theme(axis.text.x=element_text(size=18),axis.title.y=element_text(size=18),
         title = element_text(size = 18))
 
+########
 
+
+#calculate relative variable importance
+
+nyears
+fit <- MARSS(subset_chinook_summer_perhour, model=mod_list(nyears,0,0,FALSE,FALSE), 
+             silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+photoperiod_difference = 0
+temperature = 0
+flow = 0
+lunar_phase = 0
+hatchery = 0
+flow_difference = 0
+temperature_difference = 0
+out=data.frame(c=name, photoperiod_difference = photoperiod_difference, flow = flow,
+               temperature = temperature, temperature_difference = temperature_difference,
+               flow_difference = flow_difference,
+               lunar_phase = lunar_phase, hatchery = hatchery,
+               logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+               num.iter=fit$numIter, converged=!fit$convergence,
+               stringsAsFactors = FALSE)
+
+#first drop the delta Aicc column from out.tab.hatchery.all.years
+out.tab.hatchery.all.years$deltaAICc <- NULL
+
+out.tab.hatchery.all.years=rbind(out.tab.hatchery.all.years,out)
+fits.hatchery.all.years=c(fits.hatchery.all.years,list(fit))
+
+# out.tab.hatchery.all.years$deltaAICc <- NULL
+out.tab.hatchery.all.years$rel.LL <- NULL
+out.tab.hatchery.all.years$weights <- NULL
+
+
+weights <- akaike.weights(out.tab.hatchery.all.years$AICc)
+
+out.tab.hatchery.all.years$deltaAICc <- weights$deltaAIC
+out.tab.hatchery.all.years$rel.LL <- weights$rel.LL
+out.tab.hatchery.all.years$weights <- weights$weights
+
+
+min.AICc <- order(out.tab.hatchery.all.years$AICc)
+out.tab.hatchery.all.years.ordered <- out.tab.hatchery.all.years[min.AICc, ]
+out.tab.hatchery.all.years.ordered
+
+out.tab.hatchery.all.years.ordered$cumulative_weights <- cumsum(out.tab.hatchery.all.years.ordered$weights)
+
+relative_importance_photo_diff <- sum(out.tab.hatchery.all.years$weights[out.tab.hatchery.all.years$photoperiod_difference==1])
+relative_importance_flow <- sum(out.tab.hatchery.all.years$weights[out.tab.hatchery.all.years$flow==1])
+relative_importance_lunar_phase <- sum(out.tab.hatchery.all.years$weights[out.tab.hatchery.all.years$lunar_phase==1])
+relative_importance_hatchery <- sum(out.tab.hatchery.all.years$weights[out.tab.hatchery.all.years$hatchery==1])
+relative_importance_flow_diff <- sum(out.tab.hatchery.all.years$weights[out.tab.hatchery.all.years$flow_difference==1])
+relative_importance_temperature <- sum(out.tab.hatchery.all.years$weights[out.tab.hatchery.all.years$temperature==1])
+relative_importance_temperature_diff <- sum(out.tab.hatchery.all.years$weights[out.tab.hatchery.all.years$temperature_difference==1])
+
+riv_photo_diff_puyallup <- data.frame(variable = c("photoperiod difference",
+                                                   "temperature",
+                                                   "temperature difference",
+                                                   "flow",
+                                                   "lunar phase",
+                                                   "flow difference",
+                                                   "hatchery"),
+                                      relative_importance = c(relative_importance_photo_diff,
+                                                              relative_importance_temperature,
+                                                              relative_importance_temperature_diff,
+                                                              relative_importance_flow,
+                                                              relative_importance_lunar_phase,
+                                                              relative_importance_flow_diff,
+                                                              relative_importance_hatchery))
+
+
+#sort according to relative importance
+riv_photo_diff_puyallup[order(riv_photo_diff_puyallup$relative_importance, decreasing = TRUE),]
+
+riv_photo_diff_puyallup <- riv_photo_diff_puyallup[order(riv_photo_diff_puyallup$relative_importance, decreasing = TRUE),]
+riv_photo_diff_puyallup$relative_importance <- round(riv_photo_diff_puyallup$relative_importance,1)
+
+riv_photo_diff_puyallup
+
+#save the dataframe riv_photo_diff_puyallup
+
+write.csv(riv_photo_diff_puyallup, file = here("puyallup",
+                                               "output","riv_photo_diff_puyallup_new.csv"))
+
+out.tab.hatchery.all.years.ordered
+
+#round the weights, deltaAICc, AICc, rel.LL, cum weights, and logLik columns to 2 decimal places
+out.tab.hatchery.all.years.ordered$weights <- round(out.tab.hatchery.all.years.ordered$weights,2)
+out.tab.hatchery.all.years.ordered$deltaAICc <- round(out.tab.hatchery.all.years.ordered$deltaAICc,2)
+out.tab.hatchery.all.years.ordered$AICc <- round(out.tab.hatchery.all.years.ordered$AICc,2)
+out.tab.hatchery.all.years.ordered$rel.LL <- round(out.tab.hatchery.all.years.ordered$rel.LL,2)
+out.tab.hatchery.all.years.ordered$logLik <- round(out.tab.hatchery.all.years.ordered$logLik,2)
+out.tab.hatchery.all.years.ordered$cumulative_weights <- round(out.tab.hatchery.all.years.ordered$cumulative_weights,2)
+
+out.tab.hatchery.all.years.ordered
+
+#save the dataframe out.tab.hatchery.all.years.ordered
+
+write.csv(out.tab.hatchery.all.years.ordered, file = here("puyallup",
+                                                          "output",
+                                                          "model_selection_new.csv"))
                         
