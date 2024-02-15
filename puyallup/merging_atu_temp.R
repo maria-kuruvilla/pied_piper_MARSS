@@ -17,7 +17,7 @@ atu_temp <- read_csv(here("puyallup","data", "puyallup_airtemp_atu.csv"))
 
 #read in the puyallup catch data
 
-puyallup_catch <- read_csv(here("puyallup","data", "puyallup_2004-2021_all_days_w_covariates_w_airtemp_coho.csv"))
+puyallup_catch <- read_csv(here("puyallup","data", "puyallup_2004-2021_all_days_w_covariates_w_airtemp_coho_new.csv"))
 
 
 #make new columns in atu_temp - doy and year, then only select those and temp, atu_solstice
