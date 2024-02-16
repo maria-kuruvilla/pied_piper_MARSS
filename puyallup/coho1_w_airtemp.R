@@ -364,7 +364,7 @@ for(i in 1:length(list_combinations)){
   # print(c)
   print(name)
   c_num <- length(covariates)
-  if(k==7){
+  if(k==11){
     has_hatchery = 1
     c_num <- length(covariates)
     fit.model = c(list(c= c), mod_list(nyears,c_num,has_hatchery,FALSE,TRUE))
@@ -394,3 +394,5 @@ out.tab.hatchery.all.years.coho$deltaAICc <- out.tab.hatchery.all.years.coho$AIC
 min.AICc <- order(out.tab.hatchery.all.years.coho$AICc)
 out.tab.hatchery.ordered_coho <- out.tab.hatchery.all.years.coho[min.AICc, ]
 out.tab.hatchery.ordered_coho
+
+fits.hatchery.ordered_coho_best <- fits.hatchery.all.years.coho[[65]]
