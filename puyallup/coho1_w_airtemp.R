@@ -10,6 +10,7 @@ library(tidyverse)
 library(zoo)
 library(modelr)
 library(qpcR)
+library(broom)
 
 
 #load data
@@ -29,12 +30,36 @@ ggplot(data)+
   facet_wrap(~year, scales = "free_y")+
   scale_x_continuous(limit = c(90,160))
 
+ggsave(here("puyallup","output",
+            "puyallup_coho1_hatchery_catchrate_night.png"), 
+       width = 10, height = 10, units = "in")
+
+ggplot(data)+
+  geom_point(aes(x = doy, y = coho1_hatchery_perhour_day), alpha = 0.5)+
+  facet_wrap(~year, scales = "free_y")+
+  scale_x_continuous(limit = c(90,160))
+
+ggsave(here("puyallup","output",
+            "puyallup_coho1_hatchery_catchrate_day.png"),
+       width = 10, height = 10, units = "in")
+       
+
+
 ggplot(data)+
   geom_point(aes(x = doy, y = coho1_wild_perhour_night), alpha = 0.5)+
   facet_wrap(~year, scales = "free_y")+
   scale_x_continuous(limit = c(90,160))
 
+ggsave(here("puyallup","output","puyallup_coho1_wild_catchrate_night.png"), 
+       width = 10, height = 10, units = "in")
 
+ggplot(data)+
+  geom_point(aes(x = doy, y = coho1_wild_perhour_day), alpha = 0.5)+
+  facet_wrap(~year, scales = "free_y")+
+  scale_x_continuous(limit = c(90,160))
+
+ggsave(here("puyallup","output","puyallup_coho1_wild_catchrate_day.png"),
+       width = 10, height = 10, units = "in")
 
 covariates_coho1_puyallup_w_temp <- arrange(data,doy) %>%
   filter(doy >90 & doy <= 160) %>%
@@ -302,6 +327,26 @@ fit.model = c(list(c= c), mod_list(nyears,4,1, FALSE, TRUE))
 fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
              control=list(maxit=2000))
 
+
+
+checkpoint_file <- here("puyallup","output","checkpoint.txt")
+
+# Function to read the last executed iteration from the file
+get_last_iteration <- function() {
+  if (file.exists(checkpoint_file)) {
+    last_iteration <- as.numeric(readLines(checkpoint_file))
+  } else {
+    last_iteration <- 1
+  }
+  return(last_iteration)
+}
+
+# Function to update the last executed iteration in the file
+update_checkpoint <- function(iteration) {
+  writeLines(as.character(iteration), checkpoint_file)
+}
+
+
 atu = 0
 photoperiod = 0
 flow = 0
@@ -309,18 +354,20 @@ lunar_phase = 0
 hatchery = 0
 flow_difference = 0
 temp_difference = 0
-
+nyears = num_rows
 list_combinations <- get_covariate_combinations(1:7)
 out.tab.hatchery.all.years.coho <- NULL
 fits.hatchery.all.years.coho <- list()
 num_rows
-for(i in 1:length(list_combinations)){
+start_iteration <- get_last_iteration()
+for(i in start_iteration:length(list_combinations)){
   atu = 0
   photoperiod = 0
   flow = 0
   lunar_phase = 0
   hatchery = 0
   flow_difference = 0
+  temp_difference = 0
   covariate_number <- length(list_combinations[[i]])
   covariates <- list_combinations[[i]]
   print(covariates)
@@ -387,7 +434,7 @@ for(i in 1:length(list_combinations)){
                  stringsAsFactors = FALSE)
   out.tab.hatchery.all.years.coho=rbind(out.tab.hatchery.all.years.coho,out)
   fits.hatchery.all.years.coho=c(fits.hatchery.all.years.coho,list(fit))
-  
+  update_checkpoint(i + 1)
   
 }
 out.tab.hatchery.all.years.coho$deltaAICc <- out.tab.hatchery.all.years.coho$AICc - min(out.tab.hatchery.all.years.coho$AICc)
@@ -395,4 +442,31 @@ min.AICc <- order(out.tab.hatchery.all.years.coho$AICc)
 out.tab.hatchery.ordered_coho <- out.tab.hatchery.all.years.coho[min.AICc, ]
 out.tab.hatchery.ordered_coho
 
-fits.hatchery.ordered_coho_best <- fits.hatchery.all.years.coho[[65]]
+fits.hatchery.ordered_coho_best <- fits.hatchery.all.years.coho[[102]]
+
+ci_fits.hatchery.ordered_coho_best <- tidy(fits.hatchery.ordered_coho_best)
+ci_fits.hatchery.ordered_coho_best                                              
+
+#plot the estimates of the best model
+
+ggplot(ci_fits.hatchery.ordered_coho_best[40:45,], 
+aes(x = c("ATU", "Flow", "Photoperiod",
+          "Flow\n difference",
+          "Hatchery,\n day", "Hatchery,\n night"),
+    y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of effect", title = "Puyallup, Coho yearlings") +
+  theme_bw()+
+  theme(axis.text.x=element_text(size=18),axis.title.y=element_text(size=18),
+        title = element_text(size = 18))
+
+
+autoplot(fits.hatchery.ordered_coho_best)                                         
+
+autoplot(fits.hatchery.ordered_coho_best, plot.type = "model.resids.ytT")
+
+ggsave(here("puyallup","output",
+            "puyallup_coho_best_model_residuals.png"), width = 10, height = 10, units = "in")
+#calculate relative importance of variables
+
