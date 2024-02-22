@@ -464,3 +464,249 @@ autoplot(fit_check_night)
 ci_check <- tidy(fit_check_night)
 ci_check
 
+#susbet fewer years and start at doy 90
+
+
+
+
+
+covariates_coho1_puyallup_w_temp_years <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160, year>=2011) %>%
+  dplyr::select(year,doy, flow_night, 
+                photoperiod_night, secchi_depth_night,
+                lunar_phase_night, temp_night, atu_night,
+                flow_diff_night, photo_diff_night, 
+                temp_diff_night, 
+                resid_night,
+                coho1_hatchery_perhour_night) %>%
+  pivot_wider(names_from = c(year), values_from = c(
+    flow_night, secchi_depth_night,
+    photoperiod_night,
+    lunar_phase_night, temp_night, atu_night,
+    flow_diff_night, photo_diff_night, 
+    temp_diff_night,
+    resid_night,
+    coho1_hatchery_perhour_night)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+
+
+num_years = 2021-2011+1
+num_rows = num_years
+
+total_covariates = dim(covariates_coho1_puyallup_w_temp_years)[1]
+
+
+for(i in 1:(num_rows*6)){ # everything except diffs and hatchery
+  covariates_coho1_puyallup_w_temp_years[i,] = scale(covariates_coho1_puyallup_w_temp_years[i,])[,1]
+}
+
+#just scale
+
+for(i in (num_rows*6 + 1):(total_covariates)){
+  covariates_coho1_puyallup_w_temp_years[i,] = scale(covariates_coho1_puyallup_w_temp_years[i,], center = FALSE, scale= TRUE)[,1]
+}
+
+
+
+#subset response variable
+subset_coho_summer_perhour_years <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160, year >=2011) %>%
+  mutate(log.value_night = log(coho1_wild_perhour_night + 1)) %>%
+  dplyr::select(log.value_night ,year,doy) %>%
+  pivot_wider(names_from = c(year), values_from = c(log.value_night)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:dim(subset_coho_summer_perhour_years)[1]){
+  subset_coho_summer_perhour_years[i,] = scale(subset_coho_summer_perhour_years[i,])[,1]
+}
+
+
+
+c<-NULL
+for(kk in c(1,3,6,7,11)){
+  c = rbind(c,covariates_coho1_puyallup_w_temp_years[((1+(kk-1)*num_rows):(kk*num_rows)),])
+  name_long = rownames(covariates_coho1_puyallup_w_temp_years)[1+(kk-1)*num_rows]
+  name_individual = substr(name_long,1,nchar(name_long)-9)
+  print(name_individual)
+  
+}
+fit.model_check_years = c(list(c= c), mod_list(num_rows,5,0, FALSE, FALSE))
+fit_check_years <- MARSS(subset_coho_summer_perhour_years, model=fit.model_check_years, silent = TRUE, method = "BFGS",
+                         control=list(maxit=2000))
+
+autoplot(fit_check_years)
+
+ci_check <- tidy(fit_check_years)
+ci_check
+
+#model residuals are better. I will try with the same years but both day
+#and night now
+
+
+covariates_coho1_puyallup_w_temp_years2 <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160, year > 2010) %>%
+  dplyr::select(year,doy, flow_day, flow_night, 
+                photoperiod_day, photoperiod_night, secchi_depth_day, secchi_depth_night,
+                lunar_phase_day, lunar_phase_night, temp_day, temp_night, atu_day, atu_night,
+                flow_diff_day, flow_diff_night, photo_diff_day, photo_diff_night, 
+                temp_diff_day, temp_diff_night, 
+                resid_day, resid_night,
+                coho1_hatchery_perhour_day, coho1_hatchery_perhour_night) %>%
+  pivot_wider(names_from = c(year), values_from = c(
+    flow_day, flow_night, secchi_depth_day, secchi_depth_night,
+    photoperiod_day, photoperiod_night, lunar_phase_day, 
+    lunar_phase_night, temp_day, temp_night, atu_day, atu_night,
+    flow_diff_day, flow_diff_night, photo_diff_day, photo_diff_night, 
+    temp_diff_day, temp_diff_night,
+    resid_day, resid_night,
+    coho1_hatchery_perhour_day, coho1_hatchery_perhour_night)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+
+num_years = 2021-2011+1
+num_rows = num_years*2 #day and night
+
+total_covariates = dim(covariates_coho1_puyallup_w_temp_years2)[1]
+
+
+for(i in 1:(num_rows*6)){ # everything except diffs and hatchery
+  covariates_coho1_puyallup_w_temp_years2[i,] = scale(covariates_coho1_puyallup_w_temp_years2[i,])[,1]
+}
+
+#just scale
+
+for(i in (num_rows*6 + 1):(total_covariates)){
+  covariates_coho1_puyallup_w_temp_years2[i,] = scale(covariates_coho1_puyallup_w_temp_years2[i,], center = FALSE, scale= TRUE)[,1]
+}
+
+
+
+
+#subset response variable
+subset_coho_summer_perhour_years2 <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160, year >=2011) %>%
+  mutate(log.value_day = log(coho1_wild_perhour_day + 1),
+         log.value_night = log(coho1_wild_perhour_night + 1)
+         
+         ) %>%
+  dplyr::select(log.value_day,log.value_night , 
+                year,doy) %>%
+  pivot_wider(names_from = c(year), values_from = c(log.value_day,
+                                                    log.value_night)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:dim(subset_coho_summer_perhour_years2)[1]){
+  subset_coho_summer_perhour_years2[i,] = scale(subset_coho_summer_perhour_years2[i,])[,1]
+}
+
+
+c<-NULL
+for(kk in c(1,3,6,7,11)){
+  c = rbind(c,covariates_coho1_puyallup_w_temp_years2[((1+(kk-1)*num_rows):(kk*num_rows)),])
+  name_long = rownames(covariates_coho1_puyallup_w_temp_years2)[1+(kk-1)*num_rows]
+  name_individual = substr(name_long,1,nchar(name_long)-9)
+  print(name_individual)
+  
+}
+fit.model_check_years2 = c(list(c= c), mod_list(num_rows,5,1, FALSE, FALSE))
+fit_check_years2 <- MARSS(subset_coho_summer_perhour_years2, model=fit.model_check_years2, silent = TRUE, method = "BFGS",
+                         control=list(maxit=2000))
+
+
+fit.model_check_years2 = c(list(c= c), mod_list(num_rows,5,1, FALSE, TRUE))
+fit_check_years2 <- MARSS(subset_coho_summer_perhour_years2, model=fit.model_check_years2, silent = TRUE, method = "BFGS",
+                          control=list(maxit=2000))
+
+
+
+autoplot(fit_check_years2)
+
+ci_check <- tidy(fit_check_years2)
+ci_check
+
+#just look at day
+
+
+
+covariates_coho1_puyallup_w_temp_years <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160, year>=2011) %>%
+  dplyr::select(year,doy, flow_day, 
+                photoperiod_day, secchi_depth_day,
+                lunar_phase_day, temp_day, atu_day,
+                flow_diff_day, photo_diff_day, 
+                temp_diff_day, 
+                resid_day,
+                coho1_hatchery_perhour_day) %>%
+  pivot_wider(names_from = c(year), values_from = c(
+    flow_day, secchi_depth_day,
+    photoperiod_day,
+    lunar_phase_day, temp_day, atu_day,
+    flow_diff_day, photo_diff_day, 
+    temp_diff_day,
+    resid_day,
+    coho1_hatchery_perhour_day)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+
+
+num_years = 2021-2011+1
+num_rows = num_years
+
+total_covariates = dim(covariates_coho1_puyallup_w_temp_years)[1]
+
+
+for(i in 1:(num_rows*6)){ # everything except diffs and hatchery
+  covariates_coho1_puyallup_w_temp_years[i,] = scale(covariates_coho1_puyallup_w_temp_years[i,])[,1]
+}
+
+#just scale
+
+for(i in (num_rows*6 + 1):(total_covariates)){
+  covariates_coho1_puyallup_w_temp_years[i,] = scale(covariates_coho1_puyallup_w_temp_years[i,], center = FALSE, scale= TRUE)[,1]
+}
+
+
+
+#subset response variable
+subset_coho_summer_perhour_years <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160, year >=2011) %>%
+  mutate(log.value_day = log(coho1_wild_perhour_day + 1)) %>%
+  dplyr::select(log.value_day ,year,doy) %>%
+  pivot_wider(names_from = c(year), values_from = c(log.value_day)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:dim(subset_coho_summer_perhour_years)[1]){
+  subset_coho_summer_perhour_years[i,] = scale(subset_coho_summer_perhour_years[i,])[,1]
+}
+
+
+
+c<-NULL
+for(kk in c(1,3,6,7,11)){
+  c = rbind(c,covariates_coho1_puyallup_w_temp_years[((1+(kk-1)*num_rows):(kk*num_rows)),])
+  name_long = rownames(covariates_coho1_puyallup_w_temp_years)[1+(kk-1)*num_rows]
+  name_individual = substr(name_long,1,nchar(name_long)-9)
+  print(name_individual)
+  
+}
+fit.model_check_years = c(list(c= c), mod_list(num_rows,5,0, FALSE, FALSE))
+fit_check_years <- MARSS(subset_coho_summer_perhour_years, model=fit.model_check_years, silent = TRUE, method = "BFGS",
+                         control=list(maxit=2000))
+
+autoplot(fit_check_years)
+
+ci_check <- tidy(fit_check_years)
+ci_check
