@@ -8,6 +8,7 @@ library(MARSS)
 library(ggplot2)
 library(tidyverse)
 library(here)
+library(zoo)
 
 predict_coho1_skagit <- predict(fit_coho1_skagit, type = "ytT", interval = "confidence")
 glimpse(predict_coho1_skagit)
@@ -474,8 +475,153 @@ ggsave(here("output","chinook0_puyallup_prediction_w_hatchery_new.png"), width =
   
   
   
-  
+#puyallup coho model
 
+
+#load data
+data <- read.csv(here("puyallup", "data","puyallup_final.csv"),
+                 na.strings = c("NA",""))
+
+data$coho1_hatchery_perhour_night[dim(data)[1]] <- 0
+data$coho1_hatchery_perhour_day[dim(data)[1]] <- 0
+
+
+data <- data %>% 
+  mutate(coho1_hatchery_perhour_night = na.approx(coho1_hatchery_perhour_night, na.rm = FALSE),
+         coho1_hatchery_perhour_day = na.approx(coho1_hatchery_perhour_day, na.rm = FALSE))
+
+
+
+covariates_coho1_puyallup_w_temp <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160) %>%
+  dplyr::select(year,doy, flow_day, flow_night, 
+                photoperiod_day, photoperiod_night, secchi_depth_day, secchi_depth_night,
+                lunar_phase_day, lunar_phase_night, temp_day, temp_night, atu_day, atu_night,
+                flow_diff_day, flow_diff_night, photo_diff_day, photo_diff_night, 
+                temp_diff_day, temp_diff_night, 
+                resid_day, resid_night,
+                coho1_hatchery_perhour_day, coho1_hatchery_perhour_night) %>%
+  pivot_wider(names_from = c(year), values_from = c(
+    flow_day, flow_night, secchi_depth_day, secchi_depth_night,
+    photoperiod_day, photoperiod_night, lunar_phase_day, 
+    lunar_phase_night, temp_day, temp_night, atu_day, atu_night,
+    flow_diff_day, flow_diff_night, photo_diff_day, photo_diff_night, 
+    temp_diff_day, temp_diff_night,
+    resid_day, resid_night,
+    coho1_hatchery_perhour_day, coho1_hatchery_perhour_night)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+
+#scaling the variables
+
+num_years = 2021-2004+1
+num_rows = num_years*2
+total_covariates = dim(covariates_coho1_puyallup_w_temp)[1]
+
+
+for(i in 1:(num_rows*6)){ # everything except diffs and hatchery
+  covariates_coho1_puyallup_w_temp[i,] = scale(covariates_coho1_puyallup_w_temp[i,])[,1]
+}
+
+#just scale
+
+for(i in (num_rows*6 + 1):(total_covariates)){
+  covariates_coho1_puyallup_w_temp[i,] = scale(covariates_coho1_puyallup_w_temp[i,], center = FALSE, scale= TRUE)[,1]
+}
+
+
+
+#subset response variable
+subset_coho_summer_perhour <- arrange(data,doy) %>%
+  filter(doy > 90 & doy <= 160) %>%
+  mutate(log.value_day = log(coho1_wild_perhour_day + 1), 
+         log.value_night = log(coho1_wild_perhour_night + 1)) %>%
+  dplyr::select(log.value_day, log.value_night ,year,doy) %>%
+  pivot_wider(names_from = c(year), values_from = c(log.value_day, log.value_night)) %>%
+  column_to_rownames(var = "doy") %>%
+  as.matrix() %>%
+  t()
+
+for(i in 1:dim(subset_coho_summer_perhour)[1]){
+  subset_coho_summer_perhour[i,] = scale(subset_coho_summer_perhour[i,])[,1]
+}
+
+c<-NULL
+for(kk in c(1,3,6,7,11)){
+  c = rbind(c,covariates_coho1_puyallup_w_temp[((1+(kk-1)*num_rows):(kk*num_rows)),])
+  name_long = rownames(covariates_coho1_puyallup_w_temp)[1+(kk-1)*num_rows]
+  name_individual = substr(name_long,1,nchar(name_long)-9)
+  print(name_individual)
+  
+}
+fit.model = c(list(c= c), mod_list(nyears,5,1, FALSE, TRUE))
+fit_coho_puyallup_best <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+
+predict_coho_puyallup <- predict(fit_coho_puyallup_best, type = "ytT", interval = "confidence")
+
+glimpse(predict_coho_puyallup$pred)
+
+
+predict_coho_puyallup$pred$trap <- 'screw'
+
+#last 4 characters of rowname is year, but length of rowname varies depending on whether it's a day or night trap
+predict_coho_puyallup$pred$year <-  as.numeric(substr(predict_coho_puyallup$pred$.rownames, 
+                                                              nchar(predict_coho_puyallup$pred$.rownames)-3, 
+                                                              nchar(predict_coho_puyallup$pred$.rownames)))
+
+#if rowname has 'day' in it, then it's a day trap, otherwise it's a night trap
+predict_coho_puyallup$pred$daynight_category <- ifelse(grep("day", 
+                                                                    predict_coho_puyallup$pred$.rownames, 
+                                                                    value = TRUE) == predict_coho_puyallup$pred$.rownames, 
+                                                               "day", "night")
+predict_coho_puyallup$pred$doy <- predict_coho_puyallup$pred$t+90
+puyallup_covariates_coho <- as.data.frame(t(covariates_coho1_puyallup_w_temp))
+
+puyallup_covariates_coho$doy <- as.numeric(rownames(puyallup_covariates_coho))
+
+puyallup_covariates_coho_long <-  puyallup_covariates_coho %>% 
+  select(doy, starts_with("coho")) %>%
+  pivot_longer(cols = -c(doy), names_to = c(".value","daynight_category","year"),
+               names_pattern = "(.*)_(.*)_(.{4})") %>%
+  mutate(year = as.numeric(year), trap = 'screw')
+
+predict_coho_puyallup$pred <- predict_coho_puyallup$pred %>%
+  left_join(puyallup_covariates_coho_long, by = c("doy","year", "daynight_category", "trap"))
+
+
+
+ggplot(data = predict_coho_puyallup$pred)+
+  
+  geom_line(aes(x = doy, y = estimate, color = "wild, predicted"))+
+  geom_point(aes(x = doy, y = y, color = "wild, observed"), size = 0.2)+
+  geom_ribbon(aes(x = doy, ymin = `Lo 95`, ymax = `Hi 95`), alpha = 0.2)+
+  geom_line(data = predict_coho_puyallup$pred, aes(x = doy, y = log(coho1_hatchery_perhour+1), 
+                                                           color = "hatchery")) +
+  facet_wrap(~year+daynight_category, ncol = 6, labeller = label_wrap_gen(multi_line=FALSE))+
+  labs(x = "Day of year", y = "Log(coho salmon per hour)", title = "")+
+  scale_color_manual(name = "", values = c("wild, predicted" = "salmon", "wild, observed" = "salmon", hatchery = "cadetblue"),
+                     guide = guide_legend(override.aes = list(
+                       linetype = c(1,NA,1),
+                       shape = c(NA,19,NA),
+                       size = c(4,2,4))))+
+  # scale_y_continuous(breaks = c(-3,0,3))+
+  scale_x_continuous(limit = c(90, 160), breaks = c(100,120,140))+
+  theme_classic()+
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        strip.background = element_rect(
+          color="white", fill="white"),
+        strip.text = element_text(size = 10),
+        axis.text.x = element_text(size = 8, angle = 90, hjust = 1),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14))
+
+ggsave(here("output","coho1_puyallup_prediction_w_hatchery.png"), width = 6, height = 8, units = "in", dpi = 300)
 
 
 

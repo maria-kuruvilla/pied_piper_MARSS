@@ -118,9 +118,18 @@ chinook0_skagit_plot3 <- chinook0_skagit_plot + theme(axis.text.x=element_text(s
     )) + 
   coord_flip()
 
-chinook0_skagit_plot3
+#draw rectangle around hatchery covariate
+chinook0_skagit_plot4 <- chinook0_skagit_plot3 +
+  geom_rect(aes(xmin = 3.5, xmax = 4.5, ymin = -0.15, ymax = 0.15), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 4.2, y = -0.12, label = "Skagit"), size = 10)
 
+chinook0_puyallup_plot4 <- chinook0_puyallup_plot3+
+  geom_rect(aes(xmin = 2.5, xmax = 4.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 7.4, y = -0.225, label = "Puyallup"), size = 10)
 
+chinook0_dungeness_plot4 <- chinook0_dungeness_plot3+
+  geom_rect(aes(xmin = 1.5, xmax = 3.5, ymin = -0.2, ymax = 0.2), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 5.4, y = -0.145, label = "Dungeness"), size = 10)
 
 ggpubr::ggarrange(chinook0_dungeness_plot3,
                   chinook0_puyallup_plot3, 
@@ -131,3 +140,12 @@ ggpubr::ggarrange(chinook0_dungeness_plot3,
 
 
 ggsave(here("output","chinook0_covariates_estimates_new.jpeg"), width = 16, height = 15)
+
+ggpubr::ggarrange(chinook0_dungeness_plot4,
+                  chinook0_puyallup_plot4, 
+                  chinook0_skagit_plot4,
+                  labels = c("a", "b", "c"), ncol = 1, nrow = 3, font.label = list(size = 28, family = "Sans"),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1,1,1), heights = c(1.15,1.4,0.7))
+
+ggsave(here("output","chinook0_covariates_estimates_new2.jpeg"), width = 16, height = 15)
