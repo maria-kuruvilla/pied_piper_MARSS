@@ -1343,6 +1343,8 @@ coho1_puyallup_plot <- ggplot(ci_coho1_puyallup[c(40:45),],
                                 y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed")  +
+  geom_rect(aes(xmin = 2.5, xmax = 4.5, ymin = -0.28, ymax = 0.28), col = "cadetblue", alpha = 0.0) +
+  geom_text(aes(x = 6.35, y = -0.225, label = "Puyallup"), size = 10)+
   labs(x = "", y = "Estimate of effect",
   )+
   theme_classic()+
@@ -1350,15 +1352,35 @@ coho1_puyallup_plot <- ggplot(ci_coho1_puyallup[c(40:45),],
         axis.title.x=element_text(size=24),
         axis.text.y = element_text(size = 24),
         axis.text.x=element_text(size=24)) +
-  # scale_y_continuous(breaks = seq(-0.1,0.1,0.1), limits = c(-0.13,0.13))+
-  # scale_x_discrete(limits = c("Flow", "Photoperiod", 
-                              # "ATU", "Flow\ndifference","Hatchery,\nday","Hatchery,\nnight")) + 
+  scale_y_continuous(breaks = seq(-0.2,0.2,0.2), limits = c(-0.28,0.28), n.breaks = 3)+
+  scale_x_discrete(limits = c("ATU", "Flow", "Hatchery,\nnight","Hatchery,\nday",
+                              "Photoperiod","Flow\ndifference"
+                               )) +
   coord_flip()
                    #guide = guide_axis(n.dodge = 2))
 
+coho1_puyallup_plot
 
+coho1_dungeness_plot3 <- coho1_dungeness_plot2 + 
+  geom_rect(aes(xmin = 3.5, xmax = 5.5, ymin = -0.13, ymax = 0.13), col = "cadetblue", alpha = 0.0) +
+  geom_text(aes(x = 6.4, y = -0.1, label = "Dungeness"), size = 10)
 
+coho1_dungeness_plot3
 
+coho1_skagit_plot3 <- coho1_skagit_plot2 + 
+  geom_rect(aes(xmin = 3.5, xmax = 4.6, ymin = -0.13, ymax = 0.13), col = "cadetblue", alpha = 0.0) +
+  geom_text(aes(x = 4.3, y = -0.11, label = "Skagit"), size = 10)
+
+coho1_skagit_plot3
+
+ggpubr::ggarrange(coho1_dungeness_plot3,
+                  coho1_puyallup_plot,
+                  coho1_skagit_plot3,
+                  labels = c("a", "b", "c"), ncol = 1, nrow = 3, font.label = list(size = 28),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1, 1, 1), heights = c(1.3,1.05,0.65))
+
+ggsave(here("output","coho1_covariates_estimates_new.jpeg"), width = 16, height = 15)
 ####representative figure for pied piper 
 
 
