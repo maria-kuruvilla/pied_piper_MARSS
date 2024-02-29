@@ -442,10 +442,12 @@ min.AICc <- order(out.tab.hatchery.all.years.coho$AICc)
 out.tab.hatchery.ordered_coho <- out.tab.hatchery.all.years.coho[min.AICc, ]
 out.tab.hatchery.ordered_coho
 
-fits.hatchery.ordered_coho_best <- fits.hatchery.all.years.coho[[102]]
+fits.hatchery.ordered_coho_best <- fits.hatchery.all.years.coho[[103]]
 
 ci_fits.hatchery.ordered_coho_best <- tidy(fits.hatchery.ordered_coho_best)
-ci_fits.hatchery.ordered_coho_best                                              
+ci_fits.hatchery.ordered_coho_best
+
+
 
 #plot the estimates of the best model
 
@@ -468,5 +470,97 @@ autoplot(fits.hatchery.ordered_coho_best, plot.type = "model.resids.ytT")
 
 ggsave(here("puyallup","output",
             "puyallup_coho_best_model_residuals.png"), width = 10, height = 10, units = "in")
+
+
 #calculate relative importance of variables
 
+#first have model with no covariates
+
+fit.model = mod_list(nyears,0,0,FALSE,TRUE)
+fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
+             control=list(maxit=2000))
+atu = 0
+photoperiod = 0
+flow = 0
+lunar_phase = 0
+hatchery = 0
+flow_difference = 0
+temp_difference = 0
+
+out=data.frame(c="No covariates", atu = atu, photoperiod = photoperiod,
+               flow = flow, lunar_phase = lunar_phase, flow_difference = flow_difference,
+               temp_difference = temp_difference,
+               hatchery = hatchery,
+               logLik=fit$logLik, AICc=fit$AICc, num.param=fit$num.params,
+               num.iter=fit$numIter, converged=!fit$convergence,
+               stringsAsFactors = FALSE)
+out.tab.hatchery.all.years.coho$deltaAICc <- NULL
+out.tab.hatchery.all.years.coho=rbind(out.tab.hatchery.all.years.coho,out)
+fits.hatchery.all.years.coho=c(fits.hatchery.all.years.coho,list(fit))
+
+out.tab.hatchery.all.years.coho$deltaAICc <- out.tab.hatchery.all.years.coho$AICc - min(out.tab.hatchery.all.years.coho$AICc)
+
+#calculate weights
+
+weights <- akaike.weights(out.tab.hatchery.all.years.coho$AICc)
+
+out.tab.hatchery.all.years.coho$deltaAICc <- weights$deltaAIC
+out.tab.hatchery.all.years.coho$rel.LL <- weights$rel.LL
+out.tab.hatchery.all.years.coho$weights <- weights$weights
+
+min.AICc <- order(out.tab.hatchery.all.years.coho$AICc)
+out.tab.hatchery.all.years.coho.ordered <- out.tab.hatchery.all.years.coho[min.AICc, ]
+out.tab.hatchery.all.years.coho.ordered
+
+out.tab.hatchery.all.years.coho.ordered$cumulative_weights <- cumsum(out.tab.hatchery.all.years.coho.ordered$weights)
+
+relative_importance_atu <- sum(out.tab.hatchery.all.years.coho$weights[out.tab.hatchery.all.years.coho$atu==1])
+relative_importance_flow <- sum(out.tab.hatchery.all.years.coho$weights[out.tab.hatchery.all.years.coho$flow==1])
+relative_importance_lunar_phase <- sum(out.tab.hatchery.all.years.coho$weights[out.tab.hatchery.all.years.coho$lunar_phase==1])
+relative_importance_hatchery <- sum(out.tab.hatchery.all.years.coho$weights[out.tab.hatchery.all.years.coho$hatchery==1])
+relative_importance_flow_diff <- sum(out.tab.hatchery.all.years.coho$weights[out.tab.hatchery.all.years.coho$flow_difference==1])
+relative_importance_photoperiod <- sum(out.tab.hatchery.all.years.coho$weights[out.tab.hatchery.all.years.coho$photoperiod==1])
+relative_importance_temp_diff <- sum(out.tab.hatchery.all.years.coho$weights[out.tab.hatchery.all.years.coho$temp_difference==1])
+
+riv_puyallup_coho <- data.frame(variable = c("atu",
+                                             "photoperiod",
+                                             "lunar phase",
+                                             "temp difference",
+                                             "flow",
+                                             "flow difference",
+                                             "hatchery"),
+                                relative_importance = c(relative_importance_atu,
+                                                        relative_importance_photoperiod,
+                                                        relative_importance_lunar_phase,
+                                                        relative_importance_temp_diff,
+                                                        relative_importance_flow,
+                                                        relative_importance_flow_diff,
+                                                        relative_importance_hatchery))
+
+riv_puyallup_coho[order(riv_puyallup_coho$relative_importance, decreasing = TRUE),]
+
+riv_puyallup_coho <- riv_puyallup_coho[order(riv_puyallup_coho$relative_importance, decreasing = TRUE),]
+riv_puyallup_coho$relative_importance <- round(riv_puyallup_coho$relative_importance,1)
+
+riv_puyallup_coho
+
+#save the dataframe riv_puyallup_coho
+
+write.csv(riv_puyallup_coho, file = here("puyallup",
+                                               "output","riv_puyallup_coho.csv"))
+
+
+
+#round the weights, deltaAICc, AICc, rel.LL, cum weights, and logLik columns to 2 decimal places
+out.tab.hatchery.all.years.coho.ordered$weights <- round(out.tab.hatchery.all.years.coho.ordered$weights,2)
+out.tab.hatchery.all.years.coho.ordered$deltaAICc <- round(out.tab.hatchery.all.years.coho.ordered$deltaAICc,2)
+out.tab.hatchery.all.years.coho.ordered$AICc <- round(out.tab.hatchery.all.years.coho.ordered$AICc,2)
+out.tab.hatchery.all.years.coho.ordered$rel.LL <- round(out.tab.hatchery.all.years.coho.ordered$rel.LL,2)
+out.tab.hatchery.all.years.coho.ordered$logLik <- round(out.tab.hatchery.all.years.coho.ordered$logLik,2)
+out.tab.hatchery.all.years.coho.ordered$cumulative_weights <- round(out.tab.hatchery.all.years.coho.ordered$cumulative_weights,2)
+
+out.tab.hatchery.all.years.coho.ordered
+
+write.csv(out.tab.hatchery.all.years.ordered, file = here("puyallup",
+                                                          "output",
+                                                          "model_selection_coho.csv"))
