@@ -1,5 +1,5 @@
 #goal - run marss analysis for coho1 in Puyallup
-#with air temperature data
+#with air temperature data but without 2009 and 2021
 
 #load libraries
 library(MARSS)
@@ -11,7 +11,6 @@ library(zoo)
 library(modelr)
 library(qpcR)
 library(broom)
-
 
 #load data
 data <- read.csv(here("puyallup", "data","puyallup_final.csv"),
@@ -25,44 +24,20 @@ data <- data %>%
   mutate(coho1_hatchery_perhour_night = na.approx(coho1_hatchery_perhour_night, na.rm = FALSE),
          coho1_hatchery_perhour_day = na.approx(coho1_hatchery_perhour_day, na.rm = FALSE))
 
-ggplot(data)+
-  geom_point(aes(x = doy, y = coho1_hatchery_perhour_night), alpha = 0.5)+
-  facet_wrap(~year, scales = "free_y")+
-  scale_x_continuous(limit = c(90,160))
-
-ggsave(here("puyallup","output",
-            "puyallup_coho1_hatchery_catchrate_night.png"), 
-       width = 10, height = 10, units = "in")
-
-ggplot(data)+
-  geom_point(aes(x = doy, y = coho1_hatchery_perhour_day), alpha = 0.5)+
-  facet_wrap(~year, scales = "free_y")+
-  scale_x_continuous(limit = c(90,160))
-
-ggsave(here("puyallup","output",
-            "puyallup_coho1_hatchery_catchrate_day.png"),
-       width = 10, height = 10, units = "in")
-       
 
 
-ggplot(data)+
+ggplot(data %>% 
+         filter(year != 2009, year != 2021))+
   geom_point(aes(x = doy, y = coho1_wild_perhour_night), alpha = 0.5)+
+  geom_point(aes(x = doy, y = coho1_hatchery_perhour_night), alpha = 0.5, color = "cadetblue")+
   facet_wrap(~year, scales = "free_y")+
-  scale_x_continuous(limit = c(90,160))
+  scale_x_continuous(limit = c(90,160))+
+  scale_y_log10()
 
-ggsave(here("puyallup","output","puyallup_coho1_wild_catchrate_night.png"), 
-       width = 10, height = 10, units = "in")
 
-ggplot(data)+
-  geom_point(aes(x = doy, y = coho1_wild_perhour_day), alpha = 0.5)+
-  facet_wrap(~year, scales = "free_y")+
-  scale_x_continuous(limit = c(90,160))
-
-ggsave(here("puyallup","output","puyallup_coho1_wild_catchrate_day.png"),
-       width = 10, height = 10, units = "in")
 
 covariates_coho1_puyallup_w_temp <- arrange(data,doy) %>%
-  filter(doy >90 & doy <= 160) %>%
+  filter(doy >90 & doy <= 160, year != 2009, year != 2021) %>%
   dplyr::select(year,doy, flow_day, flow_night, 
                 photoperiod_day, photoperiod_night, secchi_depth_day, secchi_depth_night,
                 lunar_phase_day, lunar_phase_night, temp_day, temp_night, atu_day, atu_night,
@@ -82,12 +57,11 @@ covariates_coho1_puyallup_w_temp <- arrange(data,doy) %>%
   as.matrix() %>%
   t()
 
-
-#scaling the variables
-
-num_years = 2021-2004+1
+num_years = 2021-2004+1 - 2
 num_rows = num_years*2
 total_covariates = dim(covariates_coho1_puyallup_w_temp)[1]
+nyears = num_rows
+
 
 
 for(i in 1:(num_rows*6)){ # everything except diffs and hatchery
@@ -101,10 +75,8 @@ for(i in (num_rows*6 + 1):(total_covariates)){
 }
 
 
-
-#subset response variable
 subset_coho_summer_perhour <- arrange(data,doy) %>%
-  filter(doy > 90 & doy <= 160) %>%
+  filter(doy > 90 & doy <= 160, year != 2009, year != 2021) %>%
   mutate(log.value_day = log(coho1_wild_perhour_day + 1), 
          log.value_night = log(coho1_wild_perhour_night + 1)) %>%
   dplyr::select(log.value_day, log.value_night ,year,doy) %>%
@@ -182,13 +154,6 @@ Cmat <- function(nyears,ncov,hatchery=0, day_on_night = FALSE){
   return(C)
 }
 
-
-#######
-
-#function for Q matrix
-#######
-
-
 Qmat <- function(nyears){
   Q <- matrix(list(0),nrow = nyears,ncol = nyears, byrow = TRUE)
   for(i in 1:nyears){
@@ -206,12 +171,6 @@ Qmat <- function(nyears){
   return(Q)
 }
 
-
-#######
-
-#function for mod list
-
-######
 
 mod_list <- function(nyears,ncov,hatchery=0, day_on_night = FALSE, unequal_q = FALSE){
   
@@ -263,18 +222,18 @@ get_covariate_combinations <- function(covariates) {
   combinations <- lapply(1:n, function(x) combn(covariates, x, simplify = FALSE))
   unlist(combinations, recursive = FALSE)
 }
+
 nyears = num_years*2
 fit.model_equal_q = mod_list(nyears,0,0, FALSE, FALSE)
 fit_equal_q <- MARSS(subset_coho_summer_perhour, model=fit.model_equal_q, silent = TRUE, method = "BFGS",
                      control=list(maxit=2000))
-fit_equal_q$AICc #5495 
+fit_equal_q$AICc #4829
+
 fit.model_unequal_q = mod_list(nyears,0,0, FALSE, TRUE)
 fit_unequal_q <- MARSS(subset_coho_summer_perhour, model=fit.model_unequal_q, silent = TRUE, method = "BFGS",
                        control=list(maxit=2000))
-fit_unequal_q$AICc #5494 
-#unequal is better or equal
+fit_unequal_q$AICc #4822
 
-autoplot(fit_unequal_q)
 
 out.tab.all.years.coho <- NULL
 fits.all.years.coho <- NULL
@@ -304,28 +263,22 @@ out.tab.all.years.coho_ordered$delta_AICc = out.tab.all.years.coho_ordered$AICc 
 out.tab.all.years.coho_ordered
 #save table
 write.csv(out.tab.all.years.coho_ordered, file = here("puyallup","output",
-                                                 "coho_correlated_covariates_selection_atu.csv"))
-#photoperiod and temp - photo
-#secchi_depth and photo diff - photodiff
-#secchi depth and temp - secchi
-#photo diff and resid - photodiff
-#temp and resid - temp
-#photo_diff and #atu - atu
+                                                      "coho_correlated_covariates_selection_atu_subset.csv"))
 
-#atu and photoperiod
-
-#trying with hatchery
+#checking just the best model
 c<-NULL
-for(kk in c(1,3,6,11)){
+for(kk in c(1,3,6,7,11)){
   c = rbind(c,covariates_coho1_puyallup_w_temp[((1+(kk-1)*num_rows):(kk*num_rows)),])
   name_long = rownames(covariates_coho1_puyallup_w_temp)[1+(kk-1)*num_rows]
   name_individual = substr(name_long,1,nchar(name_long)-9)
   print(name_individual)
   
 }
-fit.model = c(list(c= c), mod_list(nyears,4,1, FALSE, TRUE))
+fit.model = c(list(c= c), mod_list(nyears,5,1, FALSE, TRUE))
 fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
              control=list(maxit=2000))
+fit
+
 
 
 
@@ -447,15 +400,11 @@ fits.hatchery.ordered_coho_best <- fits.hatchery.all.years.coho[[103]]
 ci_fits.hatchery.ordered_coho_best <- tidy(fits.hatchery.ordered_coho_best)
 ci_fits.hatchery.ordered_coho_best
 
-
-
-#plot the estimates of the best model
-
-ggplot(ci_fits.hatchery.ordered_coho_best[40:45,], 
-aes(x = c("ATU", "Flow", "Photoperiod",
-          "Flow\n difference",
-          "Hatchery,\n day", "Hatchery,\n night"),
-    y = estimate, ymin = conf.low, ymax = conf.up)) +
+ggplot(ci_fits.hatchery.ordered_coho_best[36:41,], 
+       aes(x = c("ATU", "Flow", "Photoperiod",
+                 "Flow\n difference",
+                 "Hatchery,\n day", "Hatchery,\n night"),
+           y = estimate, ymin = conf.low, ymax = conf.up)) +
   geom_pointrange() +
   geom_hline(yintercept = 0, linetype = "dashed") +
   labs(x = "", y = "Estimate of effect", title = "Puyallup, Coho yearlings") +
@@ -464,17 +413,34 @@ aes(x = c("ATU", "Flow", "Photoperiod",
         title = element_text(size = 18))
 
 
-autoplot(fits.hatchery.ordered_coho_best)                                         
+coho1_puyallup_plot <- ggplot(ci_fits.hatchery.ordered_coho_best[36:41,], 
+                              aes(x = c("ATU", "Flow", "Photoperiod",
+                                        "Flow\ndifference","Hatchery,\nday","Hatchery,\nnight"),
+                                  y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed")  +
+  geom_rect(aes(xmin = 2.5, xmax = 4.5, ymin = -0.28, ymax = 0.28), col = "cadetblue", alpha = 0.0) +
+  geom_text(aes(x = 6.35, y = -0.225, label = "Puyallup"), size = 10)+
+  labs(x = "", y = "Estimate of effect",
+  )+
+  theme_classic()+
+  theme(axis.title.y=element_text(size=24),
+        axis.title.x=element_text(size=24),
+        axis.text.y = element_text(size = 24),
+        axis.text.x=element_text(size=24)) +
+  scale_y_continuous(breaks = seq(-0.2,0.2,0.2), limits = c(-0.3,0.3), n.breaks = 3)+
+  scale_x_discrete(limits = c("ATU", "Flow","Hatchery,\nnight","Hatchery,\nday", "Photoperiod",
+                              "Flow\ndifference"
+  )) +
+  coord_flip()
+#guide = guide_axis(n.dodge = 2))
 
-autoplot(fits.hatchery.ordered_coho_best, plot.type = "model.resids.ytT")
+coho1_puyallup_plot
 
 ggsave(here("puyallup","output",
-            "puyallup_coho_best_model_residuals.png"), width = 10, height = 10, units = "in")
+            "puyallup_coho_best_model_estimates_new.png"), width = 10, height = 5, units = "in")
 
 
-#calculate relative importance of variables
-
-#first have model with no covariates
 
 fit.model = mod_list(nyears,0,0,FALSE,TRUE)
 fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
@@ -547,11 +513,9 @@ riv_puyallup_coho
 #save the dataframe riv_puyallup_coho
 
 write.csv(riv_puyallup_coho, file = here("puyallup",
-                                               "output","riv_puyallup_coho.csv"))
+                                         "output","riv_puyallup_coho_new.csv"))
 
 
-
-#round the weights, deltaAICc, AICc, rel.LL, cum weights, and logLik columns to 2 decimal places
 out.tab.hatchery.all.years.coho.ordered$weights <- round(out.tab.hatchery.all.years.coho.ordered$weights,2)
 out.tab.hatchery.all.years.coho.ordered$deltaAICc <- round(out.tab.hatchery.all.years.coho.ordered$deltaAICc,2)
 out.tab.hatchery.all.years.coho.ordered$AICc <- round(out.tab.hatchery.all.years.coho.ordered$AICc,2)
@@ -561,6 +525,6 @@ out.tab.hatchery.all.years.coho.ordered$cumulative_weights <- round(out.tab.hatc
 
 out.tab.hatchery.all.years.coho.ordered
 
-write.csv(out.tab.hatchery.all.years.ordered, file = here("puyallup",
+write.csv(out.tab.hatchery.all.years.coho.ordered, file = here("puyallup",
                                                           "output",
-                                                          "model_selection_coho.csv"))
+                                                          "model_selection_coho_new.csv"))
