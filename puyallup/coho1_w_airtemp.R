@@ -316,14 +316,14 @@ write.csv(out.tab.all.years.coho_ordered, file = here("puyallup","output",
 
 #trying with hatchery
 c<-NULL
-for(kk in c(1,3,6,11)){
+for(kk in c(1,3,6,7,11)){
   c = rbind(c,covariates_coho1_puyallup_w_temp[((1+(kk-1)*num_rows):(kk*num_rows)),])
   name_long = rownames(covariates_coho1_puyallup_w_temp)[1+(kk-1)*num_rows]
   name_individual = substr(name_long,1,nchar(name_long)-9)
   print(name_individual)
   
 }
-fit.model = c(list(c= c), mod_list(nyears,4,1, FALSE, TRUE))
+fit.model = c(list(c= c), mod_list(nyears,5,1, FALSE, TRUE))
 fit <- MARSS(subset_coho_summer_perhour, model=fit.model, silent = TRUE, method = "BFGS",
              control=list(maxit=2000))
 
