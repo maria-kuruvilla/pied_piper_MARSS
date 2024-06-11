@@ -149,3 +149,32 @@ ggpubr::ggarrange(chinook0_dungeness_plot4,
                   widths = c(1,1,1), heights = c(1.15,1.35,1.15))
 
 ggsave(here("output","chinook0_covariates_estimates_new3.jpeg"), width = 16, height = 15)
+
+#make edits to text location and extent of rectangle
+
+#draw rectangle around hatchery covariate
+chinook0_skagit_plot5 <- chinook0_skagit_plot3 +
+  geom_rect(aes(xmin = 3.5, xmax = 4.5, ymin = -0.15, ymax = 0.15), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 1, y = 0.1, label = "Skagit"), size = 10)
+
+chinook0_puyallup_plot5 <- chinook0_puyallup_plot3+
+  geom_rect(aes(xmin = 2.5, xmax = 4.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 1, y = 0.2, label = "Puyallup"), size = 10)
+
+chinook0_dungeness_plot5 <- chinook0_dungeness_plot3+
+  geom_rect(aes(xmin = 1.5, xmax = 3.5, ymin = -0.2, ymax = 0.2), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 1, y = 0.14, label = "Dungeness"), size = 10)
+
+
+
+ggpubr::ggarrange(chinook0_dungeness_plot5,
+                  chinook0_puyallup_plot5, 
+                  chinook0_skagit_plot5,
+                  labels = c("a", "b", "c"), ncol = 1, nrow = 3, font.label = list(size = 28, family = "Sans"),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1,1,1), heights = c(1.15,1.35,1.15))
+
+ggsave(here("output","chinook0_covariates_estimates_new4.jpeg"), width = 16, height = 15)
+
+
+
