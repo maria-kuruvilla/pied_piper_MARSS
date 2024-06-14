@@ -101,6 +101,31 @@ chinook0_dungeness_plot3 <- chinook0_dungeness_plot + theme(axis.title.y=element
 
 chinook0_dungeness_plot3
 
+chinook0_skagit_plot <- ggplot(ci_chinook0_skagit[c(27:30),], 
+                               aes(x = c("Photoperiod", 
+                                         "Temperature\n residuals",
+                                         "Temperature\n difference", 
+                                         "Hatchery"),
+                                   y = estimate, 
+                                   ymin = conf.low, 
+                                   ymax = conf.up)) +
+  geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "", y = "Estimate of effect"
+       # title = "Dungeness River, Chinook sub yearlings"
+  )+
+  theme_classic() +
+  theme(axis.text.x=element_text(size=18),
+        axis.title.y=element_text(size=18),
+        axis.text.y = element_text(size = 14)) + 
+  scale_x_discrete(guide = guide_axis(n.dodge=2),
+                   limits = c("Hatchery",
+                              "Photoperiod", 
+                              "Temperature\n residuals",
+                              "Temperature\n difference"
+                   ))
+
+chinook0_skagit_plot
 
 chinook0_skagit_plot3 <- chinook0_skagit_plot + theme(axis.text.x=element_text(size=24, family = "Sans"),
                                                       axis.title.y=element_text(size=24, family = "Sans", 
@@ -112,11 +137,18 @@ chinook0_skagit_plot3 <- chinook0_skagit_plot + theme(axis.text.x=element_text(s
   scale_x_discrete(#expand = expansion(add = 1.15), #guide = guide_axis(n.dodge=3),
     limits = c("Temperature\n difference",
                "Photoperiod", 
-               "Residuals",
+               "Temperature\n residuals",
                
                "Hatchery"
     )) + 
   coord_flip()
+
+#change "Residuals" to "Temperature\n residuals"
+
+
+  
+
+
 
 #draw rectangle around hatchery covariate
 chinook0_skagit_plot4 <- chinook0_skagit_plot3 +
@@ -176,5 +208,14 @@ ggpubr::ggarrange(chinook0_dungeness_plot5,
 
 ggsave(here("output","chinook0_covariates_estimates_new4.jpeg"), width = 16, height = 15)
 
+
+ggpubr::ggarrange(chinook0_dungeness_plot5,
+                  chinook0_puyallup_plot5, 
+                  chinook0_skagit_plot5,
+                  labels = c("a", "b", "c"), ncol = 1, nrow = 3, font.label = list(size = 28, family = "Sans"),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1,1,1), heights = c(1.05,1.2,0.75))
+
+ggsave(here("output","chinook0_covariates_estimates_new5.jpeg"), width = 16, height = 15)
 
 
