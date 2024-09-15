@@ -219,3 +219,74 @@ ggpubr::ggarrange(chinook0_dungeness_plot5,
 ggsave(here("output","chinook0_covariates_estimates_new5.jpeg"), width = 16, height = 15)
 
 
+#editing it to make horizontal axis the same for all plots
+chinook0_skagit_plot6 <- chinook0_skagit_plot3 +
+  scale_y_continuous(breaks = c(-0.3,-0.2,-0.1,0,0.1,0.2,0.3), limits = c(-0.295,0.295))+
+  geom_rect(aes(xmin = 3.5, xmax = 4.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 1, y = 0.2, label = "Skagit"), size = 10)
+
+chinook0_puyallup_plot6 <- chinook0_puyallup_plot3+
+  scale_y_continuous(breaks = c(-0.3,-0.2,-0.1,0,0.1,0.2,0.3), limits = c(-0.295,0.295))+
+  geom_rect(aes(xmin = 2.5, xmax = 4.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 1, y = 0.2, label = "Puyallup"), size = 10)
+
+chinook0_dungeness_plot6 <- chinook0_dungeness_plot3+
+  scale_y_continuous(breaks = c(-0.3,-0.2,-0.1,0,0.1,0.2,0.3), limits = c(-0.295,0.295))+
+  geom_rect(aes(xmin = 1.5, xmax = 3.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0, fill = "cadetblue")+
+  geom_text(aes(x = 1, y = 0.2, label = "Dungeness"), size = 10)
+
+ggpubr::ggarrange(chinook0_dungeness_plot6,
+                  chinook0_puyallup_plot6, 
+                  chinook0_skagit_plot6,
+                  labels = c("a", "b", "c"), ncol = 1, nrow = 3, font.label = list(size = 28, family = "Sans"),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1,1,1), heights = c(1.05,1.2,0.75))
+
+ggsave(here("output","chinook0_covariates_estimates_new6.jpeg"), width = 16, height = 15)
+
+
+#editing coho figure to make horizontal axis the same
+
+
+coho1_dungeness_plot5 <- coho1_dungeness_plot2 + 
+  scale_y_continuous(breaks = c(-0.3,-0.2,-0.1,0,0.1,0.2,0.3), limits = c(-0.295,0.295))+#, n.breaks = 5)+
+  geom_rect(aes(xmin = 3.5, xmax = 5.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0) +
+  geom_text(aes(x = 1, y = 0.2, label = "Dungeness"), size = 10)
+
+
+coho1_puyallup_plot2 <- ggplot(ci_coho1_puyallup[c(40:45),], 
+                               aes(x = c("Flow", "Photoperiod", 
+                                         "ATU", "Flow\ndifference","Hatchery,\nday","Hatchery,\nnight"),
+                                   y = estimate, ymin = conf.low, ymax = conf.up)) +
+  geom_pointrange(size = 1, linewidth = 1.5, alpha = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed")  +
+  geom_rect(aes(xmin = 2.5, xmax = 4.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0) +
+  geom_text(aes(x = 1, y = 0.2, label = "Puyallup"), size = 10)+
+  labs(x = "", y = "",
+  )+
+  theme_classic()+
+  theme(axis.title.y=element_text(size=24),
+        axis.title.x=element_text(size=24),
+        axis.text.y = element_text(size = 24),
+        axis.text.x=element_text(size=24)) +
+  scale_y_continuous(breaks = c(-0.3,-0.2,-0.1,0,0.1,0.2,0.3), limits = c(-0.295,0.295))+
+  scale_x_discrete(limits = c("ATU", "Flow", "Hatchery,\nnight","Hatchery,\nday",
+                              "Photoperiod","Flow\ndifference"
+  )) +
+  coord_flip()
+
+coho1_skagit_plot4 <- coho1_skagit_plot2 + 
+  scale_y_continuous(breaks = c(-0.3,-0.2,-0.1,0,0.1,0.2,0.3), limits = c(-0.295,0.295))+
+  geom_rect(aes(xmin = 3.5, xmax = 4.5, ymin = -0.295, ymax = 0.295), col = "cadetblue", alpha = 0.0) +
+  geom_text(aes(x = 1, y = 0.2, label = "Skagit"), size = 10)
+
+ggpubr::ggarrange(coho1_dungeness_plot5,
+                  coho1_puyallup_plot2,
+                  coho1_skagit_plot4,
+                  labels = c("a", "b", "c"), ncol = 1, nrow = 3, font.label = list(size = 28),
+                  common.legend = TRUE, legend = "right",
+                  widths = c(1, 1, 1), heights = c(1,1,0.8))
+
+ggsave(here("output","coho1_covariates_estimates_new4.jpeg"), width = 16, height = 16)
+
+
